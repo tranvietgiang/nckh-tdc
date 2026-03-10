@@ -18,16 +18,18 @@ export default function Login() {
   // Khi load trang: tự động điền lại nếu trước đó có lưu thông tin
   useEffect(() => {
     document.title = "Đăng nhập";
+  }, []);
+
 
     const savedUser = localStorage.getItem("savedUser");
     const savedPass = localStorage.getItem("savedPass");
 
     if (savedUser && savedPass) {
-      setUsername(savedUser);
-      setPassword(savedPass);
-      setRemember(true);
-    }
-  }, []);
+        setUsername(savedUser);
+        setPassword(savedPass);
+        setRemember(true);
+        }
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
