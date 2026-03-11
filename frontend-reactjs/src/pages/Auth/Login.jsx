@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import { setToken, setUser } from "../../utils/storage";
 import { ROLE } from "../../utils/constants";
 
@@ -14,6 +13,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Khi load trang: tự động điền lại nếu trước đó có lưu thông tin
   useEffect(() => {
@@ -30,14 +31,14 @@ export default function Login() {
         setRemember(true);
         }
 
-
+// console.log("LOGIN URL =", `${API_URL}/login`);
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const res = await axios.post(
-        "http://192.168.33.11/api/auth/check-login",
+        `${API_URL}/login`,
         {
           username,
           password,
