@@ -57,6 +57,7 @@ export default function Login() {
       if (user.role === ROLE.STUDENT) navigate("/nckh-student");
       else if (user.role === ROLE.TEACHER) navigate("/nckh-teacher");
       else if (user.role === ROLE.ADMIN) navigate("/nckh-admin");
+      
     } catch (error) {
       if (error.response) {
         console.error("Lỗi server:", error.response.data);
