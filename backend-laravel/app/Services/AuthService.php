@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Services;
+
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Hash;
+
+class AuthService
+{
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
+    public function login(array $data)
+    {
+        $user = $this->userRepository->findByUsername($data['username']);
+
+        if (!$user) {
+            return [
+                'success' => false,
+                'message' => 'User not found'
+            ];
+        }
+
+        if (!Hash::check($data['password'], $user->password)) {
+            return [
+                'success' => false,
+                'message' => 'Password incorrect'
+            ];
+        }
+
+        // tạo token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return [
+            'success' => true,
+            'user' => $user,
+            'token' => $token
+        ];
+    }
+}

@@ -6,21 +6,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+
+    protected $table = 'users';
+    protected $primaryKey = 'user_id';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'major_id',
+        'avatar'
     ];
 
     /**
