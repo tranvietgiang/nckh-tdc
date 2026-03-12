@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Auth/Login";
-import Dashboard from "../pages/Admin/Dashboard";
-import ProtectedRoute from "./protected.route";
+import RoleRoutes from "./role.route";
 
 function AppRoutes() {
   return (
@@ -9,14 +8,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/*" element={<RoleRoutes />} />
       </Routes>
     </BrowserRouter>
   );

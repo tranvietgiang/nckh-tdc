@@ -1,6 +1,6 @@
 import React from "react";
 import AppRoutes from "./routes";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthProvider";
 
 function App() {
   return (
