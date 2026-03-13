@@ -14,7 +14,7 @@ class Review extends Model
 
     protected $fillable = [
         'product_id',
-        'lecturer_id',
+        'teacher_id',
         'comment'
     ];
 }

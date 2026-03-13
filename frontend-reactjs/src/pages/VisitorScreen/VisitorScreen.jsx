@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
+import useTitle from '../../hooks/useTitle';
 
 const VisitorScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMajor, setSelectedMajor] = useState('all');
-
+  useTitle('Trang chủ tham quan');
   // Data mẫu sản phẩm đã được duyệt
   const products = [
     {

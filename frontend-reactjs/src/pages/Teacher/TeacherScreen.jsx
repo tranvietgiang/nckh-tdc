@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
+import UserDropdown from "../../components/common/UserDropdown";
+import useTitle from '../../hooks/useTitle';
 
 const TeacherScreen = () => {
   const [filter, setFilter] = useState('pending');
-  
+  useTitle('Trang chủ giáo viên');
   // Thông tin giảng viên
   const teacher = {
     name: "ThS. Trần Thị Bình",
@@ -92,6 +94,7 @@ const TeacherScreen = () => {
         return [];
     }
   };
+  console.log(getCurrentProducts)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,9 +113,7 @@ const TeacherScreen = () => {
                 <p className="text-sm font-medium text-gray-900">{teacher.name}</p>
                 <p className="text-xs text-gray-500">{teacher.email}</p>
               </div>
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 font-semibold">GV</span>
-              </div>
+             <UserDropdown />
             </div>
           </div>
 
