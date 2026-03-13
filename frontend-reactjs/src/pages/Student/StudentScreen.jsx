@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import UserDropdown from "../../components/common/UserDropdown";
+import useTitle from '../../hooks/useTitle';
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState('all');
-
-  useEffect(() => {
-document.title = "Trang chủ sinh viên";
-  },[])
+  useTitle("Trang chủ sinh viên");
+  
     // Data mẫu - sinh viên hiện tại
   const currentStudent = {
     id: 1,
