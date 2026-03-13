@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserDropdown from "../../components/common/UserDropdown";
 import useTitle from '../../hooks/useTitle';
 
@@ -6,6 +6,20 @@ const AdminScreen = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   useTitle('Trang admin');
+
+    const closeDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if(!closeDropdownRef.current?.contains(e.target)){
+        setShowMobileMenu(false)
+      }}
+
+      document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  },[])
+
+
   const stats = {
     totalUsers: 1250,
     totalStudents: 1200,
@@ -84,7 +98,7 @@ const AdminScreen = () => {
 
               <div className="flex items-center gap-3">
                 {/* Mobile menu button */}
-                <div className="relative lg:hidden">
+                <div className="relative lg:hidden" ref={closeDropdownRef}>
                   <button
                     onClick={() => setShowMobileMenu(!showMobileMenu)}
                     className="px-4 py-2 bg-white border rounded-lg shadow-sm hover:bg-gray-50"
