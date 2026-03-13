@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import UserDropdown from "../../components/common/UserDropdown";
+import useTitle from '../../hooks/useTitle';
 
 const AdminScreen = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
+  useTitle('Trang admin');
   const stats = {
     totalUsers: 1250,
     totalStudents: 1200,

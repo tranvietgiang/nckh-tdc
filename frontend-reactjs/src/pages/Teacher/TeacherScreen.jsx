@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
 import UserDropdown from "../../components/common/UserDropdown";
+import useTitle from '../../hooks/useTitle';
+
 const TeacherScreen = () => {
   const [filter, setFilter] = useState('pending');
-  
+  useTitle('Trang chủ giáo viên');
   // Thông tin giảng viên
   const teacher = {
     name: "ThS. Trần Thị Bình",
