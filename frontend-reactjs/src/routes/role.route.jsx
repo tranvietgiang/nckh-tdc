@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AdminScreen from "../pages/Admin/AdminScreen";
 import StudentScreen from "../pages/Student/StudentScreen";
 import TeacherScreen from "../pages/Teacher/TeacherScreen";
@@ -34,6 +34,8 @@ function RoleRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

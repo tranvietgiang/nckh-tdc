@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext  } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import  authApi  from '../../api/auth.api';
+import { useNavigate,Link } from "react-router-dom";
 import { setToken, setUser } from "../../utils/storage";
 import { ROLE } from "../../utils/constants";
 
 export default function Login() {
   const navigate = useNavigate();
+const { login } = useContext(AuthContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
@@ -36,7 +37,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await authApi.login({
+      const res = await login({
         username,
         password,
       });
@@ -57,6 +58,7 @@ export default function Login() {
       if (user.role === ROLE.STUDENT) navigate("/nckh-student");
       else if (user.role === ROLE.TEACHER) navigate("/nckh-teacher");
       else if (user.role === ROLE.ADMIN) navigate("/nckh-admin");
+      
     } catch (error) {
       if (error.response) {
         console.error("Lỗi server:", error.response.data);
@@ -77,13 +79,15 @@ export default function Login() {
     className="bg-white shadow-lg border border-gray-200 rounded-xl p-10 w-[380px]"
   >
     {/* Logo */}
-    <div className="flex justify-center mb-4">
-      <img
-        src="./public//Images/logo-tdc-orginal.webp"
-        alt="TDC"
-        className="h-14"
-      />
-    </div>
+   <div className="flex justify-center mb-4">
+  <Link to="/nckh-visitor" className="group">
+    <img
+      src="/Images/logo-tdc-orginal.webp"
+      alt="TDC"
+      className="h-14 transition-all duration-300 ease-in-out transform group-hover:scale-110 group-hover:-translate-y-1 hover:drop-shadow-lg"
+    />
+  </Link>
+</div>
 
     <h2 className="text-center text-2xl font-bold text-gray-800 mb-8">
       Đăng nhập hệ thống
