@@ -98,9 +98,15 @@ const StudentScreen = () => {
 
           {/* User Info */}
        <div className="flex items-center justify-between">
+        <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+    Đăng sản phẩm mới
+  </button>
   <div className="flex items-center gap-4">
-    <UserDropdown />
-
+   
+<UserDropdown />
     <div>
       <h1 className="text-2xl font-bold text-gray-900">
         {currentStudent.name}
@@ -111,15 +117,10 @@ const StudentScreen = () => {
       <p className="text-sm text-gray-500 mt-1">
         {currentStudent.email}
       </p>
-    </div>
+    </div> 
   </div>
 
-  <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-    </svg>
-    Đăng sản phẩm mới
-  </button>
+  
 </div>
 
           {/* Stats Cards */}
