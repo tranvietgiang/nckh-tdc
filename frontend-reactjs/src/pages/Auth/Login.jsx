@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext  } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import  authApi  from '../../api/auth.api';
 import { setToken, setUser } from "../../utils/storage";
 import { ROLE } from "../../utils/constants";
 
 export default function Login() {
   const navigate = useNavigate();
+const { login } = useContext(AuthContext);
 
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
@@ -36,7 +37,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await authApi.login({
+      const res = await login({
         username,
         password,
       });
@@ -57,6 +58,7 @@ export default function Login() {
       if (user.role === ROLE.STUDENT) navigate("/nckh-student");
       else if (user.role === ROLE.TEACHER) navigate("/nckh-teacher");
       else if (user.role === ROLE.ADMIN) navigate("/nckh-admin");
+      
     } catch (error) {
       if (error.response) {
         console.error("Lỗi server:", error.response.data);
