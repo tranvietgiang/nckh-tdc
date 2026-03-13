@@ -106,7 +106,7 @@ const StudentScreen = () => {
   </button>
   <div className="flex items-center gap-4">
    
-<UserDropdown />
+
     <div>
       <h1 className="text-2xl font-bold text-gray-900">
         {currentStudent.name}
@@ -117,7 +117,7 @@ const StudentScreen = () => {
       <p className="text-sm text-gray-500 mt-1">
         {currentStudent.email}
       </p>
-    </div> 
+    </div> <UserDropdown />
   </div>
 
   
