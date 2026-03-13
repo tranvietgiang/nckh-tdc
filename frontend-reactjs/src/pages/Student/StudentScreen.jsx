@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserDropdown from "../../components/common/UserDropdown";
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState('all');
 
+  useEffect(() => {
+document.title = "Trang chủ sinh viên";
+  },[])
     // Data mẫu - sinh viên hiện tại
   const currentStudent = {
     id: 1,
@@ -117,7 +120,8 @@ const StudentScreen = () => {
       <p className="text-sm text-gray-500 mt-1">
         {currentStudent.email}
       </p>
-    </div> <UserDropdown />
+    </div>
+     <UserDropdown />
   </div>
 
   
