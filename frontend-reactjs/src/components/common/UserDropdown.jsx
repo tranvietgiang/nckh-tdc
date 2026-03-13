@@ -47,8 +47,7 @@ function UserDropdown() {
       </div>
 
       {showDropdown && (
-        <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-20">
-          <div className="p-3 border-b border-gray-100">
+<div className="absolute right-full top-10 mr-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-20">              <div className="p-3 border-b border-gray-100">
             <p className="text-sm font-semibold text-gray-900">
               {user?.name || "Người dùng"}
             </p>
