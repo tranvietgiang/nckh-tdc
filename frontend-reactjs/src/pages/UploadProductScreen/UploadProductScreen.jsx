@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useBackToPage  from '../../hooks/useBackToPage';
+
 const UploadProductScreen = () => {
   const [formData, setFormData] = useState({
     title: '',
@@ -22,7 +22,9 @@ const UploadProductScreen = () => {
   const [errors, setErrors] = useState({});
   const [currentStep, setCurrentStep] = useState(1);
   const [touchedSteps, setTouchedSteps] = useState({});
-const goBack = useBackToPage();
+  const [selectedImage, setSelectedImage] = useState(null); // State cho ảnh phóng to
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+
   // Data mẫu - sinh viên hiện tại
   const currentStudent = {
     id: 1,
@@ -87,105 +89,60 @@ const goBack = useBackToPage();
     return Object.keys(stepErrors).length === 0;
   };
 
+  // Kiểm tra tất cả các bước đã hoàn thành
+  const isAllStepsCompleted = () => {
+    return isStepValid(1) && isStepValid(2);
+  };
+
   // Xử lý chuyển bước
   const handleNextStep = () => {
-    // Đánh dấu bước hiện tại đã được touch
     setTouchedSteps({ ...touchedSteps, [currentStep]: true });
     
-    // Validate bước hiện tại
     const stepErrors = validateStep(currentStep);
     
     if (Object.keys(stepErrors).length > 0) {
-      // Hiển thị lỗi
       setErrors({ ...errors, ...stepErrors });
-      
-      // Cuộn lên đầu để hiển thị lỗi
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Thông báo
       alert(`⚠️ Vui lòng hoàn thành đầy đủ thông tin ở bước ${currentStep} trước khi tiếp tục!`);
       return;
     }
     
-    // Xóa lỗi của bước hiện tại
     const newErrors = { ...errors };
     Object.keys(stepErrors).forEach(key => delete newErrors[key]);
     setErrors(newErrors);
     
-    // Chuyển bước
     setCurrentStep(currentStep + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Validate form hoàn chỉnh
-  const validateFullForm = () => {
-    const allErrors = {};
-    
-    // Validate step 1
-    if (!formData.title.trim()) {
-      allErrors.title = 'Vui lòng nhập tên sản phẩm';
-    }
-    if (!formData.description.trim()) {
-      allErrors.description = 'Vui lòng nhập mô tả sản phẩm';
-    }
-    if (!formData.content.trim()) {
-      allErrors.content = 'Vui lòng nhập nội dung chi tiết';
-    }
-    if (!formData.major_id) {
-      allErrors.major_id = 'Vui lòng chọn chuyên ngành';
-    }
-    if (!formData.category_id) {
-      allErrors.category_id = 'Vui lòng chọn danh mục';
-    }
-    
-    // Validate step 2
-    if (images.length === 0) {
-      allErrors.images = 'Vui lòng tải lên ít nhất 1 hình ảnh';
-    }
-    
-    setErrors(allErrors);
-    return Object.keys(allErrors).length === 0;
-  };
-
-  // Xử lý submit form
+  // Xử lý submit form - CHỈ Ở BƯỚC 3
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Đánh dấu tất cả các bước đã touch
-    setTouchedSteps({ 1: true, 2: true, 3: true });
+    // Chỉ cho phép submit ở bước 3
+    if (currentStep !== 3) {
+      alert('⚠️ Vui lòng hoàn thành các bước trước khi gửi duyệt!');
+      return;
+    }
     
-    // Validate toàn bộ form
-    if (!validateFullForm()) {
-      // Tìm bước đầu tiên bị lỗi
-      if (!formData.title || !formData.description || !formData.content || !formData.major_id || !formData.category_id) {
-        setCurrentStep(1);
-      } else if (images.length === 0) {
-        setCurrentStep(2);
-      }
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
-      // Thông báo chi tiết
-      const missingFields = [];
-      if (!formData.title) missingFields.push('Tên sản phẩm');
-      if (!formData.description) missingFields.push('Mô tả');
-      if (!formData.content) missingFields.push('Nội dung chi tiết');
-      if (!formData.major_id) missingFields.push('Chuyên ngành');
-      if (!formData.category_id) missingFields.push('Danh mục');
-      if (images.length === 0) missingFields.push('Hình ảnh');
-      
-      alert(`⚠️ Vui lòng hoàn thành đầy đủ thông tin:\n- ${missingFields.join('\n- ')}`);
+    // Kiểm tra tất cả các bước đã hoàn thành
+    if (!isAllStepsCompleted()) {
+      alert('⚠️ Vui lòng hoàn thành đầy đủ thông tin ở bước 1 và 2 trước khi gửi duyệt!');
       return;
     }
     
     setLoading(true);
+    setSubmitStatus(null);
     
     // Giả lập gửi dữ liệu
     setTimeout(() => {
       console.log('Dữ liệu gửi lên:', {
         ...formData,
         tags,
-        images: images.map(img => ({ url: img.url, is_thumbnail: img.id === images[thumbnailIndex]?.id })),
+        images: images.map(img => ({ 
+          url: img.url, 
+          is_thumbnail: img.id === images[thumbnailIndex]?.id 
+        })),
         files,
         student_id: currentStudent.id,
         student_name: currentStudent.name,
@@ -194,9 +151,10 @@ const goBack = useBackToPage();
         created_at: new Date().toISOString()
       });
       
-      alert('🎉 Đăng sản phẩm thành công! Sản phẩm của bạn đang chờ giảng viên duyệt.');
+      setSubmitStatus('success');
       setLoading(false);
       
+      // Không alert nữa, dùng UI thông báo đẹp hơn
     }, 2000);
   };
 
@@ -279,16 +237,101 @@ const goBack = useBackToPage();
     { id: 3, name: 'Tags & Links', icon: '🔗' }
   ];
 
+  // Xử lý phím ESC để đóng modal ảnh
+  React.useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedImage(null);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+      {/* Modal phóng to ảnh */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 transition z-10"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <div 
+            className="relative max-w-7xl max-h-[90vh] animate-scaleIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedImage.url}
+              alt={selectedImage.name}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
+            
+            {/* Thông tin ảnh */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur text-white px-4 py-2 rounded-full text-sm flex items-center gap-3">
+              <span className="max-w-[200px] truncate">{selectedImage.name}</span>
+              <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+              <span>{selectedImage.size}MB</span>
+              {selectedImage.id === images[thumbnailIndex]?.id && (
+                <>
+                  <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+                  <span className="flex items-center gap-1">
+                    <span>👑</span> Ảnh đại diện
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {submitStatus === 'success' && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 animate-scaleIn">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+              Đăng sản phẩm thành công!
+            </h3>
+            <p className="text-gray-600 text-center mb-6">
+              Sản phẩm của bạn đã được gửi đến giảng viên chuyên ngành {currentStudent.major} để duyệt.
+              Bạn sẽ nhận được thông báo khi sản phẩm được phê duyệt.
+            </p>
+            <div className="bg-blue-50 rounded-lg p-3 mb-6">
+              <p className="text-sm text-blue-800 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Thời gian duyệt dự kiến: 24-48 giờ
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setSubmitStatus(null);
+                // Reset form hoặc chuyển trang
+              }}
+              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition font-medium"
+            >
+              Xem sản phẩm của tôi
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-         <button
-      onClick={goBack}
-      className="text-blue-500 hover:text-blue-700"
-    >
-      Quay lại
-    </button>
-        {/* Header với hiệu ứng */}
+        {/* Header */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg mb-4">
             <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,7 +346,7 @@ const goBack = useBackToPage();
           </p>
         </div>
 
-        {/* Progress Steps với trạng thái */}
+        {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => {
@@ -313,7 +356,7 @@ const goBack = useBackToPage();
               return (
                 <React.Fragment key={step.id}>
                   <div className="flex flex-col items-center">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-semibold transition-all duration-300 relative ${
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-semibold transition-all duration-300 ${
                       currentStep === step.id 
                         ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-110' 
                         : isValid && isTouched
@@ -333,9 +376,6 @@ const goBack = useBackToPage();
                     }`}>
                       {step.name}
                     </span>
-                    {isTouched && !isValid && step.id !== currentStep && (
-                      <span className="text-xs text-red-500 mt-1">Chưa hoàn thành</span>
-                    )}
                   </div>
                   {index < steps.length - 1 && (
                     <div className={`flex-1 h-1 mx-4 rounded ${
@@ -358,11 +398,6 @@ const goBack = useBackToPage();
               <div>
                 <h2 className="text-xl font-semibold">{currentStudent.name}</h2>
                 <p className="text-blue-100">{currentStudent.class} - {currentStudent.major}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-sm">
-                    Chờ duyệt bởi giảng viên {currentStudent.major}
-                  </span>
-                </div>
               </div>
             </div>
             <div className="text-right">
@@ -385,40 +420,25 @@ const goBack = useBackToPage();
             </div>
             
             <div className="p-6 space-y-6">
-              {/* Tên sản phẩm */}
+              {/* Form fields - giữ nguyên */}
               <div className="group">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Tên sản phẩm <span className="text-red-500">*</span>
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4v12l-4-2-4 2V4" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-100 transition-all ${
-                      errors.title ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-blue-300'
-                    }`}
-                    placeholder="VD: App Quản Lý Công Việc - TaskFlow"
-                  />
-                </div>
-                {errors.title && (
-                  <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {errors.title}
-                  </p>
-                )}
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border-2 rounded-xl ${
+                    errors.title ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                  }`}
+                  placeholder="VD: App Quản Lý Công Việc - TaskFlow"
+                />
+                {errors.title && <p className="mt-2 text-sm text-red-600">{errors.title}</p>}
               </div>
 
-              {/* Mô tả ngắn */}
-              <div className="group">
+              <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Mô tả ngắn <span className="text-red-500">*</span>
                 </label>
@@ -427,22 +447,14 @@ const goBack = useBackToPage();
                   value={formData.description}
                   onChange={handleChange}
                   rows={3}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-100 transition-all ${
-                    errors.description ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-blue-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl ${
+                    errors.description ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                  placeholder="Mô tả ngắn gọn về sản phẩm của bạn (tối đa 200 từ)..."
+                  placeholder="Mô tả ngắn gọn về sản phẩm..."
                 />
-                {errors.description && (
-                  <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {errors.description}
-                  </p>
-                )}
+                {errors.description && <p className="mt-2 text-sm text-red-600">{errors.description}</p>}
               </div>
 
-              {/* Nội dung chi tiết */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Nội dung chi tiết <span className="text-red-500">*</span>
@@ -452,22 +464,15 @@ const goBack = useBackToPage();
                   value={formData.content}
                   onChange={handleChange}
                   rows={6}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-blue-100 transition-all ${
-                    errors.content ? 'border-red-300 bg-red-50' : 'border-gray-200 hover:border-blue-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl ${
+                    errors.content ? 'border-red-300 bg-red-50' : 'border-gray-200'
                   }`}
-                  placeholder="Mô tả chi tiết về sản phẩm, công nghệ sử dụng, tính năng nổi bật, kết quả đạt được..."
+                  placeholder="Mô tả chi tiết về sản phẩm..."
                 />
-                {errors.content && (
-                  <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {errors.content}
-                  </p>
-                )}
+                {errors.content && <p className="mt-2 text-sm text-red-600">{errors.content}</p>}
               </div>
 
-              {/* Chuyên ngành và danh mục */}
+           {/* Chuyên ngành và danh mục */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -581,7 +586,6 @@ const goBack = useBackToPage();
                   Hình ảnh sản phẩm <span className="text-red-500">*</span>
                 </label>
                 
-                {/* Upload area */}
                 <div className="relative">
                   <input
                     type="file"
@@ -611,17 +615,17 @@ const goBack = useBackToPage();
                   </label>
                 </div>
 
-                {/* Preview images */}
+                {/* Preview images với chức năng phóng to */}
                 {images.length > 0 && (
                   <div className="mt-6">
                     <p className="text-sm font-medium text-gray-700 mb-3 flex items-center justify-between">
                       <span>📸 Hình ảnh đã tải lên ({images.length}/10)</span>
-                      <span className="text-xs text-gray-500">Click để chọn ảnh đại diện</span>
+                      <span className="text-xs text-gray-500">Click vào ảnh để phóng to</span>
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                       {images.map((image, index) => (
                         <div key={image.id} className="relative group">
-                          <div className={`aspect-square rounded-xl overflow-hidden border-4 transition-all ${
+                          <div className={`aspect-square rounded-xl overflow-hidden border-4 transition-all cursor-pointer ${
                             index === thumbnailIndex 
                               ? 'border-purple-500 shadow-xl scale-105' 
                               : 'border-transparent hover:border-gray-300'
@@ -629,8 +633,8 @@ const goBack = useBackToPage();
                             <img
                               src={image.url}
                               alt={image.name}
-                              className="w-full h-full object-cover cursor-pointer"
-                              onClick={() => setAsThumbnail(index)}
+                              className="w-full h-full object-cover"
+                              onClick={() => setSelectedImage(image)}
                             />
                           </div>
                           
@@ -638,8 +642,25 @@ const goBack = useBackToPage();
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
                             <button
                               type="button"
-                              onClick={() => removeImage(image.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedImage(image);
+                              }}
+                              className="w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition flex items-center justify-center"
+                              title="Phóng to"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                              </svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeImage(image.id);
+                              }}
                               className="w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition flex items-center justify-center"
+                              title="Xóa"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -665,12 +686,7 @@ const goBack = useBackToPage();
                 )}
 
                 {errors.images && (
-                  <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {errors.images}
-                  </p>
+                  <p className="mt-2 text-sm text-red-600">{errors.images}</p>
                 )}
               </div>
 
@@ -756,35 +772,24 @@ const goBack = useBackToPage();
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Công nghệ sử dụng
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-5-5A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={handleAddTag}
-                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all"
-                    placeholder="Nhập công nghệ và nhấn Enter (VD: React, Node.js, Python...)"
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleAddTag}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+                  placeholder="Nhập công nghệ và nhấn Enter (VD: React, Node.js...)"
+                />
                 
                 {tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4">
                     {tags.map(tag => (
                       <span
                         key={tag}
-                        className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl text-sm font-medium shadow-md hover:shadow-lg transition-shadow group"
+                        className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl text-sm font-medium"
                       >
                         #{tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          className="ml-1 hover:text-white/80"
-                        >
+                        <button type="button" onClick={() => removeTag(tag)} className="hover:text-white/80">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
@@ -798,30 +803,21 @@ const goBack = useBackToPage();
               {/* Links */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                    </svg>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     GitHub Link
                   </label>
-                  <div className="relative">
-                    <input
-                      type="url"
-                      name="github_link"
-                      value={formData.github_link}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all"
-                      placeholder="https://github.com/username/repo"
-                    />
-                  </div>
+                  <input
+                    type="url"
+                    name="github_link"
+                    value={formData.github_link}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
+                    placeholder="https://github.com/username/repo"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Demo Link
                   </label>
                   <input
@@ -829,7 +825,7 @@ const goBack = useBackToPage();
                     name="demo_link"
                     value={formData.demo_link}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
                     placeholder="https://demo.vercel.app"
                   />
                 </div>
@@ -871,12 +867,16 @@ const goBack = useBackToPage();
               ) : (
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl hover:from-green-700 hover:to-teal-700 transition font-medium shadow-lg hover:shadow-xl flex items-center gap-2 disabled:opacity-50"
+                  disabled={loading || !isAllStepsCompleted()}
+                  className={`px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl flex items-center gap-2 ${
+                    isAllStepsCompleted()
+                      ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   {loading ? (
                     <>
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -895,30 +895,40 @@ const goBack = useBackToPage();
             </div>
           </div>
 
-          {/* Note với trạng thái hoàn thành */}
+          {/* Note */}
           <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
             <p className="text-sm text-gray-600">
               <span className="font-semibold text-blue-600">📌 Lưu ý:</span> Sản phẩm của bạn sẽ được gửi đến giảng viên chuyên ngành <span className="font-semibold">{currentStudent.major}</span> để xét duyệt trong vòng 24-48 giờ.
             </p>
-            {currentStep === 3 && (
-              <div className="mt-2">
-                {isStepValid(1) && isStepValid(2) ? (
-                  <p className="text-sm text-green-600 flex items-center justify-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    Đã hoàn thành đầy đủ thông tin, bạn có thể gửi duyệt!
-                  </p>
-                ) : (
-                  <p className="text-sm text-red-600">
-                    ⚠️ Vui lòng quay lại hoàn thành các bước trước
-                  </p>
-                )}
-              </div>
+            {currentStep === 3 && !isAllStepsCompleted() && (
+              <p className="text-sm text-red-600 mt-2">
+                ⚠️ Vui lòng hoàn thành bước 1 và 2 trước khi gửi duyệt
+              </p>
             )}
           </div>
         </form>
       </div>
+
+      {/* Thêm CSS animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+          from { transform: scale(0.9); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+        
+        .animate-scaleIn {
+          animation: scaleIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
