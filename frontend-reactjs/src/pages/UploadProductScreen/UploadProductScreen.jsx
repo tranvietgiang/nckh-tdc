@@ -213,6 +213,8 @@ const UploadProductScreen = () => {
     setThumbnailIndex(index);
   };
 
+  console.log(setAsThumbnail);
+
   // Xử lý upload file
   const handleFileUpload = (e) => {
     const filesList = Array.from(e.target.files);

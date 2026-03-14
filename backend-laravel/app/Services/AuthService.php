@@ -16,7 +16,7 @@ class AuthService
 
     public function login(array $data)
     {
-        $user = $this->userRepository->findByUsername($data['username']);
+        $user = $this->userRepository->findById($data['username']);
 
         if (!$user) {
             return [
