@@ -129,8 +129,8 @@ const TeacherScreen = () => {
                 <p className="text-sm font-medium text-gray-900">
                   {teacher.name}
                 </p>
-                <p className="text-xs text-gray-500">{teacher.email}</p>
                 <p className="text-xs text-gray-500">{majorName}</p>
+                <p className="text-xs text-gray-500">{teacher.email}</p>
               </div>
               <UserDropdown />
             </div>
