@@ -10,9 +10,6 @@ const TeacherScreen = () => {
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
 
-  // console.log(user);
-  // console.log(majorName);
-  // Thông tin giảng viên
   const teacher = {
     name: user?.name ?? "",
     email: user?.email ?? "",
