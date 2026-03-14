@@ -1,21 +1,39 @@
-import React, {  useState } from 'react';
+import React, {  useState,useContext, useEffect } from 'react';
 import UserDropdown from "../../components/common/UserDropdown";
 import useTitle from '../../hooks/useTitle';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../contexts/AuthContext';
+import { majorApi } from "../../api";
+
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState('all');
   useTitle("Trang chủ sinh viên");
   const navigate = useNavigate();
-
-    // Data mẫu - sinh viên hiện tại
+  const { user } = useContext(AuthContext);
+  const [majorName,setMajorName] = useState('');
+   
   const currentStudent = {
-    id: 1,
-    name: "Nguyễn Văn An",
-    email: "an.nguyen@student.tdc.edu.vn",
-    class: "DHKTPM18A",
+    id: user.user_id,
+    name: user.name,
+    email: user.email,
     major: "Phát triển phần mềm",
     avatar: null
   };
+// lấy tên ngành theo id người đăng nhập
+ useEffect(() => {
+  const fetchMajor = async () => {
+    try {
+      const res = await majorApi.getById(user.major_id);
+      setMajorName(res.major_name);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (user?.major_id) {
+    fetchMajor();
+  }
+}, [user]);
 
   // Data mẫu sản phẩm của sinh viên
   const myProducts = [
@@ -112,13 +130,13 @@ const StudentScreen = () => {
 
     <div>
       <h1 className="text-2xl font-bold text-gray-900">
-        {currentStudent.name}
+        {currentStudent.name ?? ""}
       </h1>
       <p className="text-gray-600 mt-1">
-        {currentStudent.class} - {currentStudent.major}
+       {majorName ?? ""}
       </p>
       <p className="text-sm text-gray-500 mt-1">
-        {currentStudent.email}
+        {currentStudent.email ?? ''}
       </p>
     </div>
      <UserDropdown />
