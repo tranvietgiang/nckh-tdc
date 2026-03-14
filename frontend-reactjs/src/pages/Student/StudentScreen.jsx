@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import UserDropdown from "../../components/common/UserDropdown";
 import useTitle from "../../hooks/useTitle";
 import { useNavigate } from "react-router-dom";
