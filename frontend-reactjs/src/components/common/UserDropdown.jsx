@@ -1,6 +1,7 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useRef } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import useClickOutside from "../../hooks/useClickOutside";
 
 function UserDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -8,18 +9,9 @@ function UserDropdown() {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  useClickOutside(dropdownRef, () => {
+    setShowDropdown(false);
+  });
 
   const handleLogout = async () => {
     await logout();
@@ -47,7 +39,9 @@ function UserDropdown() {
       </div>
 
       {showDropdown && (
-<div className="absolute right-full top-10 mr-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-20">              <div className="p-3 border-b border-gray-100">
+        <div className="absolute right-full top-10 mr-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-20">
+          {" "}
+          <div className="p-3 border-b border-gray-100">
             <p className="text-sm font-semibold text-gray-900">
               {user?.name || "Người dùng"}
             </p>
@@ -55,7 +49,6 @@ function UserDropdown() {
               {user?.email || "Chưa có email"}
             </p>
           </div>
-
           <div className="p-2">
             <button
               onClick={handleProfile}
