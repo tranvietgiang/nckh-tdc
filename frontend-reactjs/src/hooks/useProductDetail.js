@@ -7,7 +7,10 @@ export default function useProductDetail(productId) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!productId) return;
+    if (!productId) {
+      setLoading(false);
+      return;
+    }
     const fetchProductDetail = async () => {
       try {
         setLoading(true);

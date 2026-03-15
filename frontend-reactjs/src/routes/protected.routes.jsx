@@ -2,6 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AdminScreen from "../pages/Admin/AdminScreen";
 import StudentScreen from "../pages/Student/StudentScreen";
 import TeacherScreen from "../pages/Teacher/TeacherScreen";
+import UploadProductScreen from "../pages/UploadProductScreen/UploadProductScreen";
+import ProductDetailScreen from "../pages/ProductDetailScreen/ProductDetailScreen";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
 
@@ -31,6 +33,24 @@ function RoleRoutes() {
         element={
           <ProtectedRoute allowedRoles={[ROLE.TEACHER]}>
             <TeacherScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/upload-product"
+        element={
+          <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
+            <UploadProductScreen />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/product-detail/:id"
+        element={
+          <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
+            <ProductDetailScreen />
           </ProtectedRoute>
         }
       />
