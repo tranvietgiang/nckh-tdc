@@ -1,24 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import UserDropdown from "../../components/common/UserDropdown";
-import useTitle from '../../hooks/useTitle';
+import useTitle from "../../hooks/useTitle";
+import useClickOutside from "../../hooks/useClickOutside";
 
 const AdminScreen = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  useTitle('Trang admin');
+  useTitle("Trang admin");
 
-    const closeDropdownRef = useRef(null);
+  const closeDropdownRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if(!closeDropdownRef.current?.contains(e.target)){
-        setShowMobileMenu(false)
-      }}
-
-      document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  },[])
-
+  useClickOutside(closeDropdownRef, () => {
+    setShowMobileMenu(false);
+  });
 
   const stats = {
     totalUsers: 1250,
@@ -33,17 +27,65 @@ const AdminScreen = () => {
   };
 
   const recentUsers = [
-    { id: 1, name: "Nguyễn Văn An", email: "an.nguyen@student.tdc.edu.vn", role: "student", status: "active" },
-    { id: 2, name: "Trần Thị Bình", email: "binh.tran@student.tdc.edu.vn", role: "student", status: "active" },
-    { id: 3, name: "ThS. Trần Thị Bình", email: "binh.tran@tdc.edu.vn", role: "teacher", status: "active" },
-    { id: 4, name: "Lê Văn Cường", email: "cuong.le@student.tdc.edu.vn", role: "student", status: "inactive" },
+    {
+      id: 1,
+      name: "Nguyễn Văn An",
+      email: "an.nguyen@student.tdc.edu.vn",
+      role: "student",
+      status: "active",
+    },
+    {
+      id: 2,
+      name: "Trần Thị Bình",
+      email: "binh.tran@student.tdc.edu.vn",
+      role: "student",
+      status: "active",
+    },
+    {
+      id: 3,
+      name: "ThS. Trần Thị Bình",
+      email: "binh.tran@tdc.edu.vn",
+      role: "teacher",
+      status: "active",
+    },
+    {
+      id: 4,
+      name: "Lê Văn Cường",
+      email: "cuong.le@student.tdc.edu.vn",
+      role: "student",
+      status: "inactive",
+    },
   ];
 
   const recentActivities = [
-    { id: 1, user: "Nguyễn Văn An", action: "đăng sản phẩm mới", target: "TaskFlow App", time: "5 phút trước" },
-    { id: 2, user: "ThS. Trần Thị Bình", action: "duyệt sản phẩm", target: "TechStore", time: "1 giờ trước" },
-    { id: 3, user: "Admin", action: "cập nhật thông tin", target: "chuyên ngành", time: "3 giờ trước" },
-    { id: 4, user: "Lê Thị Hạnh", action: "đăng ký tài khoản", target: "sinh viên mới", time: "5 giờ trước" },
+    {
+      id: 1,
+      user: "Nguyễn Văn An",
+      action: "đăng sản phẩm mới",
+      target: "TaskFlow App",
+      time: "5 phút trước",
+    },
+    {
+      id: 2,
+      user: "ThS. Trần Thị Bình",
+      action: "duyệt sản phẩm",
+      target: "TechStore",
+      time: "1 giờ trước",
+    },
+    {
+      id: 3,
+      user: "Admin",
+      action: "cập nhật thông tin",
+      target: "chuyên ngành",
+      time: "3 giờ trước",
+    },
+    {
+      id: 4,
+      user: "Lê Thị Hạnh",
+      action: "đăng ký tài khoản",
+      target: "sinh viên mới",
+      time: "5 giờ trước",
+    },
   ];
 
   const menuItems = [
@@ -151,8 +193,12 @@ const AdminScreen = () => {
                 </div>
               </div>
               <div className="mt-4 flex gap-4 text-sm">
-                <span className="text-green-600">SV: {stats.totalStudents}</span>
-                <span className="text-purple-600">GV: {stats.totalTeachers}</span>
+                <span className="text-green-600">
+                  SV: {stats.totalStudents}
+                </span>
+                <span className="text-purple-600">
+                  GV: {stats.totalTeachers}
+                </span>
               </div>
             </div>
 
@@ -169,8 +215,12 @@ const AdminScreen = () => {
                 </div>
               </div>
               <div className="mt-4 flex gap-4 text-sm">
-                <span className="text-green-600">✓ {stats.approvedProducts}</span>
-                <span className="text-yellow-600">⏳ {stats.pendingProducts}</span>
+                <span className="text-green-600">
+                  ✓ {stats.approvedProducts}
+                </span>
+                <span className="text-yellow-600">
+                  ⏳ {stats.pendingProducts}
+                </span>
                 <span className="text-red-600">✗ {stats.rejectedProducts}</span>
               </div>
             </div>
@@ -226,8 +276,8 @@ const AdminScreen = () => {
                           user.role === "student"
                             ? "bg-blue-100 text-blue-600"
                             : user.role === "teacher"
-                            ? "bg-purple-100 text-purple-600"
-                            : "bg-gray-100 text-gray-600"
+                              ? "bg-purple-100 text-purple-600"
+                              : "bg-gray-100 text-gray-600"
                         }`}
                       >
                         {user.name.charAt(0)}
@@ -244,8 +294,8 @@ const AdminScreen = () => {
                           user.role === "student"
                             ? "bg-blue-100 text-blue-800"
                             : user.role === "teacher"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-gray-100 text-gray-800"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         Admin
@@ -257,7 +307,9 @@ const AdminScreen = () => {
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {user.status === "active" ? "Hoạt động" : "Không hoạt động"}
+                        {user.status === "active"
+                          ? "Hoạt động"
+                          : "Không hoạt động"}
                       </span>
                     </div>
                   </div>
@@ -285,13 +337,18 @@ const AdminScreen = () => {
                         <span className="font-medium text-gray-900">
                           {activity.user}
                         </span>
-                        <span className="text-gray-600"> {activity.action}</span>
+                        <span className="text-gray-600">
+                          {" "}
+                          {activity.action}
+                        </span>
                         <span className="font-medium text-gray-900">
                           {" "}
                           {activity.target}
                         </span>
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {activity.time}
+                      </p>
                     </div>
                   </div>
                 ))}

@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-
+import React, { useState } from "react";
+import useBackToPage from "../../hooks/useBackToPage";
 const UploadProductScreen = () => {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    content: '',
-    major_id: '',
-    category_id: '',
-    github_link: '',
-    demo_link: '',
+    title: "",
+    description: "",
+    content: "",
+    major_id: "",
+    category_id: "",
+    github_link: "",
+    demo_link: "",
     price: 0,
-    is_free: true
+    is_free: true,
   });
 
   const [tags, setTags] = useState([]);
-  const [tagInput, setTagInput] = useState('');
+  const [tagInput, setTagInput] = useState("");
   const [images, setImages] = useState([]);
   const [files, setFiles] = useState([]);
   const [thumbnailIndex, setThumbnailIndex] = useState(0);
@@ -24,6 +24,7 @@ const UploadProductScreen = () => {
   const [touchedSteps, setTouchedSteps] = useState({});
   const [selectedImage, setSelectedImage] = useState(null); // State cho ảnh phóng to
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+  const goBack = useBackToPage();
 
   // Data mẫu - sinh viên hiện tại
   const currentStudent = {
@@ -32,15 +33,27 @@ const UploadProductScreen = () => {
     class: "DHKTPM18A",
     major: "Phát triển phần mềm",
     major_id: 1,
-    avatar: null
+    avatar: null,
   };
 
   // Danh sách chuyên ngành
   const majors = [
-    { id: 1, name: "Phát triển phần mềm", code: "PTPM", color: "blue", icon: "💻" },
-    { id: 2, name: "Khoa học dữ liệu", code: "KHDL", color: "green", icon: "📊" },
+    {
+      id: 1,
+      name: "Phát triển phần mềm",
+      code: "PTPM",
+      color: "blue",
+      icon: "💻",
+    },
+    {
+      id: 2,
+      name: "Khoa học dữ liệu",
+      code: "KHDL",
+      color: "green",
+      icon: "📊",
+    },
     { id: 3, name: "Mạng máy tính", code: "MMT", color: "purple", icon: "🌐" },
-    { id: 4, name: "Thiết kế đồ họa", code: "TKĐH", color: "pink", icon: "🎨" }
+    { id: 4, name: "Thiết kế đồ họa", code: "TKĐH", color: "pink", icon: "🎨" },
   ];
 
   // Danh mục sản phẩm
@@ -49,37 +62,37 @@ const UploadProductScreen = () => {
     { id: 2, name: "Đồ án môn học", icon: "📚", color: "indigo" },
     { id: 3, name: "Sản phẩm nghiên cứu", icon: "🔬", color: "emerald" },
     { id: 4, name: "Bài tập lớn", icon: "📝", color: "cyan" },
-    { id: 5, name: "Sản phẩm cá nhân", icon: "⭐", color: "rose" }
+    { id: 5, name: "Sản phẩm cá nhân", icon: "⭐", color: "rose" },
   ];
 
   // Validate từng bước
   const validateStep = (step) => {
     const stepErrors = {};
-    
+
     if (step === 1) {
       if (!formData.title.trim()) {
-        stepErrors.title = 'Vui lòng nhập tên sản phẩm';
+        stepErrors.title = "Vui lòng nhập tên sản phẩm";
       }
       if (!formData.description.trim()) {
-        stepErrors.description = 'Vui lòng nhập mô tả sản phẩm';
+        stepErrors.description = "Vui lòng nhập mô tả sản phẩm";
       }
       if (!formData.content.trim()) {
-        stepErrors.content = 'Vui lòng nhập nội dung chi tiết';
+        stepErrors.content = "Vui lòng nhập nội dung chi tiết";
       }
       if (!formData.major_id) {
-        stepErrors.major_id = 'Vui lòng chọn chuyên ngành';
+        stepErrors.major_id = "Vui lòng chọn chuyên ngành";
       }
       if (!formData.category_id) {
-        stepErrors.category_id = 'Vui lòng chọn danh mục';
+        stepErrors.category_id = "Vui lòng chọn danh mục";
       }
     }
-    
+
     if (step === 2) {
       if (images.length === 0) {
-        stepErrors.images = 'Vui lòng tải lên ít nhất 1 hình ảnh';
+        stepErrors.images = "Vui lòng tải lên ít nhất 1 hình ảnh";
       }
     }
-    
+
     return stepErrors;
   };
 
@@ -97,63 +110,67 @@ const UploadProductScreen = () => {
   // Xử lý chuyển bước
   const handleNextStep = () => {
     setTouchedSteps({ ...touchedSteps, [currentStep]: true });
-    
+
     const stepErrors = validateStep(currentStep);
-    
+
     if (Object.keys(stepErrors).length > 0) {
       setErrors({ ...errors, ...stepErrors });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      alert(`⚠️ Vui lòng hoàn thành đầy đủ thông tin ở bước ${currentStep} trước khi tiếp tục!`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      alert(
+        `⚠️ Vui lòng hoàn thành đầy đủ thông tin ở bước ${currentStep} trước khi tiếp tục!`,
+      );
       return;
     }
-    
+
     const newErrors = { ...errors };
-    Object.keys(stepErrors).forEach(key => delete newErrors[key]);
+    Object.keys(stepErrors).forEach((key) => delete newErrors[key]);
     setErrors(newErrors);
-    
+
     setCurrentStep(currentStep + 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Xử lý submit form - CHỈ Ở BƯỚC 3
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Chỉ cho phép submit ở bước 3
     if (currentStep !== 3) {
-      alert('⚠️ Vui lòng hoàn thành các bước trước khi gửi duyệt!');
+      alert("⚠️ Vui lòng hoàn thành các bước trước khi gửi duyệt!");
       return;
     }
-    
+
     // Kiểm tra tất cả các bước đã hoàn thành
     if (!isAllStepsCompleted()) {
-      alert('⚠️ Vui lòng hoàn thành đầy đủ thông tin ở bước 1 và 2 trước khi gửi duyệt!');
+      alert(
+        "⚠️ Vui lòng hoàn thành đầy đủ thông tin ở bước 1 và 2 trước khi gửi duyệt!",
+      );
       return;
     }
-    
+
     setLoading(true);
     setSubmitStatus(null);
-    
+
     // Giả lập gửi dữ liệu
     setTimeout(() => {
-      console.log('Dữ liệu gửi lên:', {
+      console.log("Dữ liệu gửi lên:", {
         ...formData,
         tags,
-        images: images.map(img => ({ 
-          url: img.url, 
-          is_thumbnail: img.id === images[thumbnailIndex]?.id 
+        images: images.map((img) => ({
+          url: img.url,
+          is_thumbnail: img.id === images[thumbnailIndex]?.id,
         })),
         files,
         student_id: currentStudent.id,
         student_name: currentStudent.name,
         student_class: currentStudent.class,
-        status: 'pending',
-        created_at: new Date().toISOString()
+        status: "pending",
+        created_at: new Date().toISOString(),
       });
-      
-      setSubmitStatus('success');
+
+      setSubmitStatus("success");
       setLoading(false);
-      
+
       // Không alert nữa, dùng UI thông báo đẹp hơn
     }, 2000);
   };
@@ -163,7 +180,7 @@ const UploadProductScreen = () => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
     if (errors[name]) {
       setErrors({ ...errors, [name]: null });
@@ -172,17 +189,17 @@ const UploadProductScreen = () => {
 
   // Xử lý thêm tag
   const handleAddTag = (e) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
+    if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
       if (!tags.includes(tagInput.trim())) {
         setTags([...tags, tagInput.trim()]);
       }
-      setTagInput('');
+      setTagInput("");
     }
   };
 
   const removeTag = (tagToRemove) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   // Xử lý upload ảnh
@@ -193,17 +210,17 @@ const UploadProductScreen = () => {
       file,
       url: URL.createObjectURL(file),
       name: file.name,
-      size: (file.size / 1024 / 1024).toFixed(2)
+      size: (file.size / 1024 / 1024).toFixed(2),
     }));
     setImages([...images, ...newImages]);
-    
+
     if (errors.images) {
       setErrors({ ...errors, images: null });
     }
   };
 
   const removeImage = (imageId) => {
-    setImages(images.filter(img => img.id !== imageId));
+    setImages(images.filter((img) => img.id !== imageId));
     if (thumbnailIndex >= images.length - 1) {
       setThumbnailIndex(Math.max(0, images.length - 2));
     }
@@ -213,6 +230,8 @@ const UploadProductScreen = () => {
     setThumbnailIndex(index);
   };
 
+  console.log(setAsThumbnail);
+
   // Xử lý upload file
   const handleFileUpload = (e) => {
     const filesList = Array.from(e.target.files);
@@ -221,38 +240,39 @@ const UploadProductScreen = () => {
       file,
       name: file.name,
       size: (file.size / 1024 / 1024).toFixed(2),
-      type: file.name.split('.').pop().toUpperCase()
+      type: file.name.split(".").pop().toUpperCase(),
     }));
     setFiles([...files, ...newFiles]);
   };
 
   const removeFile = (fileId) => {
-    setFiles(files.filter(f => f.id !== fileId));
+    setFiles(files.filter((f) => f.id !== fileId));
   };
 
   // Steps
   const steps = [
-    { id: 1, name: 'Thông tin cơ bản', icon: '📋' },
-    { id: 2, name: 'Hình ảnh & Files', icon: '🖼️' },
-    { id: 3, name: 'Tags & Links', icon: '🔗' }
+    { id: 1, name: "Thông tin cơ bản", icon: "📋" },
+    { id: 2, name: "Hình ảnh & Files", icon: "🖼️" },
+    { id: 3, name: "Tags & Links", icon: "🔗" },
   ];
 
   // Xử lý phím ESC để đóng modal ảnh
   React.useEffect(() => {
     const handleEsc = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setSelectedImage(null);
       }
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       {/* Modal phóng to ảnh */}
+
       {selectedImage && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 animate-fadeIn"
           onClick={() => setSelectedImage(null)}
         >
@@ -260,12 +280,22 @@ const UploadProductScreen = () => {
             onClick={() => setSelectedImage(null)}
             className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 transition z-10"
           >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
-          
-          <div 
+
+          <div
             className="relative max-w-7xl max-h-[90vh] animate-scaleIn"
             onClick={(e) => e.stopPropagation()}
           >
@@ -274,10 +304,12 @@ const UploadProductScreen = () => {
               alt={selectedImage.name}
               className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
             />
-            
+
             {/* Thông tin ảnh */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur text-white px-4 py-2 rounded-full text-sm flex items-center gap-3">
-              <span className="max-w-[200px] truncate">{selectedImage.name}</span>
+              <span className="max-w-[200px] truncate">
+                {selectedImage.name}
+              </span>
               <span className="w-1 h-1 bg-white/50 rounded-full"></span>
               <span>{selectedImage.size}MB</span>
               {selectedImage.id === images[thumbnailIndex]?.id && (
@@ -294,25 +326,46 @@ const UploadProductScreen = () => {
       )}
 
       {/* Success Modal */}
-      {submitStatus === 'success' && (
+      {submitStatus === "success" && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 animate-scaleIn">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-8 h-8 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
               Đăng sản phẩm thành công!
             </h3>
             <p className="text-gray-600 text-center mb-6">
-              Sản phẩm của bạn đã được gửi đến giảng viên chuyên ngành {currentStudent.major} để duyệt.
-              Bạn sẽ nhận được thông báo khi sản phẩm được phê duyệt.
+              Sản phẩm của bạn đã được gửi đến giảng viên chuyên ngành{" "}
+              {currentStudent.major} để duyệt. Bạn sẽ nhận được thông báo khi
+              sản phẩm được phê duyệt.
             </p>
             <div className="bg-blue-50 rounded-lg p-3 mb-6">
               <p className="text-sm text-blue-800 flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 Thời gian duyệt dự kiến: 24-48 giờ
               </p>
@@ -331,18 +384,35 @@ const UploadProductScreen = () => {
       )}
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <button
+          onClick={goBack}
+          className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+        >
+          Quay lại
+        </button>
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg mb-4">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-10 h-10 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
             Đăng sản phẩm mới
           </h1>
           <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
-            Chia sẻ sản phẩm công nghệ của bạn với cộng đồng. Điền đầy đủ thông tin để giảng viên duyệt nhanh nhất.
+            Chia sẻ sản phẩm công nghệ của bạn với cộng đồng. Điền đầy đủ thông
+            tin để giảng viên duyệt nhanh nhất.
           </p>
         </div>
 
@@ -352,35 +422,55 @@ const UploadProductScreen = () => {
             {steps.map((step, index) => {
               const isValid = isStepValid(step.id);
               const isTouched = touchedSteps[step.id];
-              
+
               return (
                 <React.Fragment key={step.id}>
                   <div className="flex flex-col items-center">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-semibold transition-all duration-300 ${
-                      currentStep === step.id 
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-110' 
-                        : isValid && isTouched
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 text-gray-500'
-                    }`}>
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-semibold transition-all duration-300 ${
+                        currentStep === step.id
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg scale-110"
+                          : isValid && isTouched
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-200 text-gray-500"
+                      }`}
+                    >
                       {isValid && isTouched && step.id !== currentStep ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-6 h-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       ) : (
                         step.icon
                       )}
                     </div>
-                    <span className={`mt-2 text-sm font-medium ${
-                      currentStep === step.id ? 'text-gray-900' : 'text-gray-500'
-                    }`}>
+                    <span
+                      className={`mt-2 text-sm font-medium ${
+                        currentStep === step.id
+                          ? "text-gray-900"
+                          : "text-gray-500"
+                      }`}
+                    >
                       {step.name}
                     </span>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={`flex-1 h-1 mx-4 rounded ${
-                      currentStep > index + 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600' : 'bg-gray-200'
-                    }`} />
+                    <div
+                      className={`flex-1 h-1 mx-4 rounded ${
+                        currentStep > index + 1
+                          ? "bg-gradient-to-r from-blue-600 to-indigo-600"
+                          : "bg-gray-200"
+                      }`}
+                    />
                   )}
                 </React.Fragment>
               );
@@ -397,7 +487,9 @@ const UploadProductScreen = () => {
               </div>
               <div>
                 <h2 className="text-xl font-semibold">{currentStudent.name}</h2>
-                <p className="text-blue-100">{currentStudent.class} - {currentStudent.major}</p>
+                <p className="text-blue-100">
+                  {currentStudent.class} - {currentStudent.major}
+                </p>
               </div>
             </div>
             <div className="text-right">
@@ -410,15 +502,19 @@ const UploadProductScreen = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Step 1: Thông tin cơ bản */}
-          <div className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ${
-            currentStep === 1 ? 'opacity-100 scale-100' : 'opacity-50 scale-95 hidden'
-          }`}>
+          <div
+            className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ${
+              currentStep === 1
+                ? "opacity-100 scale-100"
+                : "opacity-50 scale-95 hidden"
+            }`}
+          >
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 <span>📋</span> Thông tin cơ bản
               </h2>
             </div>
-            
+
             <div className="p-6 space-y-6">
               {/* Form fields - giữ nguyên */}
               <div className="group">
@@ -431,11 +527,15 @@ const UploadProductScreen = () => {
                   value={formData.title}
                   onChange={handleChange}
                   className={`w-full px-4 py-3 border-2 rounded-xl ${
-                    errors.title ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.title
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="VD: App Quản Lý Công Việc - TaskFlow"
                 />
-                {errors.title && <p className="mt-2 text-sm text-red-600">{errors.title}</p>}
+                {errors.title && (
+                  <p className="mt-2 text-sm text-red-600">{errors.title}</p>
+                )}
               </div>
 
               <div>
@@ -448,11 +548,17 @@ const UploadProductScreen = () => {
                   onChange={handleChange}
                   rows={3}
                   className={`w-full px-4 py-3 border-2 rounded-xl ${
-                    errors.description ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.description
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Mô tả ngắn gọn về sản phẩm..."
                 />
-                {errors.description && <p className="mt-2 text-sm text-red-600">{errors.description}</p>}
+                {errors.description && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.description}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -465,114 +571,155 @@ const UploadProductScreen = () => {
                   onChange={handleChange}
                   rows={6}
                   className={`w-full px-4 py-3 border-2 rounded-xl ${
-                    errors.content ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    errors.content
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
                   }`}
                   placeholder="Mô tả chi tiết về sản phẩm..."
                 />
-                {errors.content && <p className="mt-2 text-sm text-red-600">{errors.content}</p>}
+                {errors.content && (
+                  <p className="mt-2 text-sm text-red-600">{errors.content}</p>
+                )}
               </div>
 
-           {/* Chuyên ngành và danh mục */}
+              {/* Chuyên ngành và danh mục */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Chuyên ngành <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {majors.map(major => (
+                    {majors.map((major) => (
                       <button
                         key={major.id}
                         type="button"
                         onClick={() => {
-                          setFormData({...formData, major_id: major.id});
+                          setFormData({ ...formData, major_id: major.id });
                           if (errors.major_id) {
-                            setErrors({...errors, major_id: null});
+                            setErrors({ ...errors, major_id: null });
                           }
                         }}
                         className={`p-4 rounded-xl border-2 transition-all ${
                           formData.major_id === major.id
                             ? `border-${major.color}-500 bg-${major.color}-50`
-                            : 'border-gray-200 hover:border-gray-300'
+                            : "border-gray-200 hover:border-gray-300"
                         }`}
                       >
                         <div className="text-2xl mb-1">{major.icon}</div>
                         <div className="font-medium text-sm">{major.name}</div>
-                        <div className="text-xs text-gray-500">{major.code}</div>
+                        <div className="text-xs text-gray-500">
+                          {major.code}
+                        </div>
                       </button>
                     ))}
                   </div>
                   {errors.major_id && (
-                    <p className="mt-2 text-sm text-red-600">{errors.major_id}</p>
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.major_id}
+                    </p>
                   )}
                 </div>
 
-             {/* Danh mục */}
-<div>
-  <label className="block text-sm font-semibold text-gray-700 mb-2">
-    Danh mục <span className="text-red-500">*</span>
-  </label>
-  <div className="space-y-2">
-    {categories.map(cat => {
-      const isSelected = formData.category_id === cat.id;
-      
-      return (
-        <button
-          key={cat.id}
-          type="button"
-          onClick={() => {
-            setFormData({...formData, category_id: cat.id});
-            if (errors.category_id) {
-              setErrors({...errors, category_id: null});
-            }
-          }}
-          className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${
-            isSelected 
-              ? `border-${cat.color}-500 bg-${cat.color}-50 ring-4 ring-${cat.color}-100` 
-              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-          }`}
-        >
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-            isSelected ? `bg-${cat.color}-200` : 'bg-gray-100'
-          }`}>
-            <span className="text-xl">{cat.icon}</span>
-          </div>
-          <div className="flex-1 text-left">
-            <p className={`font-medium ${isSelected ? `text-${cat.color}-700` : 'text-gray-700'}`}>
-              {cat.name}
-            </p>
-            {isSelected && (
-              <p className={`text-xs text-${cat.color}-600 mt-0.5 flex items-center gap-1`}>
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                Đang chọn
-              </p>
-            )}
-          </div>
-          {isSelected && (
-            <div className={`w-6 h-6 rounded-full bg-${cat.color}-500 text-white flex items-center justify-center`}>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-          )}
-        </button>
-      );
-    })}
-  </div>
-  {errors.category_id && (
-    <p className="mt-2 text-sm text-red-600">{errors.category_id}</p>
-  )}
-</div>
+                {/* Danh mục */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Danh mục <span className="text-red-500">*</span>
+                  </label>
+                  <div className="space-y-2">
+                    {categories.map((cat) => {
+                      const isSelected = formData.category_id === cat.id;
 
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, category_id: cat.id });
+                            if (errors.category_id) {
+                              setErrors({ ...errors, category_id: null });
+                            }
+                          }}
+                          className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${
+                            isSelected
+                              ? `border-${cat.color}-500 bg-${cat.color}-50 ring-4 ring-${cat.color}-100`
+                              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          <div
+                            className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                              isSelected ? `bg-${cat.color}-200` : "bg-gray-100"
+                            }`}
+                          >
+                            <span className="text-xl">{cat.icon}</span>
+                          </div>
+                          <div className="flex-1 text-left">
+                            <p
+                              className={`font-medium ${isSelected ? `text-${cat.color}-700` : "text-gray-700"}`}
+                            >
+                              {cat.name}
+                            </p>
+                            {isSelected && (
+                              <p
+                                className={`text-xs text-${cat.color}-600 mt-0.5 flex items-center gap-1`}
+                              >
+                                <svg
+                                  className="w-3 h-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                                Đang chọn
+                              </p>
+                            )}
+                          </div>
+                          {isSelected && (
+                            <div
+                              className={`w-6 h-6 rounded-full bg-${cat.color}-500 text-white flex items-center justify-center`}
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {errors.category_id && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.category_id}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Step 2: Hình ảnh & Files */}
-          <div className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ${
-            currentStep === 2 ? 'opacity-100 scale-100' : 'opacity-50 scale-95 hidden'
-          }`}>
+          <div
+            className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ${
+              currentStep === 2
+                ? "opacity-100 scale-100"
+                : "opacity-50 scale-95 hidden"
+            }`}
+          >
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 <span>🖼️</span> Hình ảnh & Files
@@ -585,7 +732,7 @@ const UploadProductScreen = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Hình ảnh sản phẩm <span className="text-red-500">*</span>
                 </label>
-                
+
                 <div className="relative">
                   <input
                     type="file"
@@ -601,8 +748,18 @@ const UploadProductScreen = () => {
                   >
                     <div className="text-center">
                       <div className="inline-flex p-4 bg-white rounded-full shadow-lg mb-4 group-hover:scale-110 transition-transform">
-                        <svg className="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                          className="w-8 h-8 text-purple-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
                         </svg>
                       </div>
                       <p className="text-lg font-medium text-gray-700 mb-2">
@@ -620,16 +777,20 @@ const UploadProductScreen = () => {
                   <div className="mt-6">
                     <p className="text-sm font-medium text-gray-700 mb-3 flex items-center justify-between">
                       <span>📸 Hình ảnh đã tải lên ({images.length}/10)</span>
-                      <span className="text-xs text-gray-500">Click vào ảnh để phóng to</span>
+                      <span className="text-xs text-gray-500">
+                        Click vào ảnh để phóng to
+                      </span>
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                       {images.map((image, index) => (
                         <div key={image.id} className="relative group">
-                          <div className={`aspect-square rounded-xl overflow-hidden border-4 transition-all cursor-pointer ${
-                            index === thumbnailIndex 
-                              ? 'border-purple-500 shadow-xl scale-105' 
-                              : 'border-transparent hover:border-gray-300'
-                          }`}>
+                          <div
+                            className={`aspect-square rounded-xl overflow-hidden border-4 transition-all cursor-pointer ${
+                              index === thumbnailIndex
+                                ? "border-purple-500 shadow-xl scale-105"
+                                : "border-transparent hover:border-gray-300"
+                            }`}
+                          >
                             <img
                               src={image.url}
                               alt={image.name}
@@ -637,7 +798,7 @@ const UploadProductScreen = () => {
                               onClick={() => setSelectedImage(image)}
                             />
                           </div>
-                          
+
                           {/* Overlay buttons */}
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center gap-2">
                             <button
@@ -649,8 +810,18 @@ const UploadProductScreen = () => {
                               className="w-8 h-8 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition flex items-center justify-center"
                               title="Phóng to"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                                />
                               </svg>
                             </button>
                             <button
@@ -662,19 +833,29 @@ const UploadProductScreen = () => {
                               className="w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition flex items-center justify-center"
                               title="Xóa"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
                               </svg>
                             </button>
                           </div>
-                          
+
                           {/* Thumbnail badge */}
                           {index === thumbnailIndex && (
                             <div className="absolute -top-2 -right-2 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
                               👑
                             </div>
                           )}
-                          
+
                           {/* Image info */}
                           <div className="mt-1 text-xs text-gray-500 truncate">
                             {image.name} • {image.size}MB
@@ -695,7 +876,7 @@ const UploadProductScreen = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   File đính kèm
                 </label>
-                
+
                 <div className="relative">
                   <input
                     type="file"
@@ -710,8 +891,18 @@ const UploadProductScreen = () => {
                   >
                     <div className="text-center">
                       <div className="inline-flex p-3 bg-white rounded-full shadow-lg mb-3 group-hover:scale-110 transition-transform">
-                        <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 106.364 6.364l6.364-6.364" />
+                        <svg
+                          className="w-6 h-6 text-indigo-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 106.364 6.364l6.364-6.364"
+                          />
                         </svg>
                       </div>
                       <p className="text-base font-medium text-gray-700 mb-1">
@@ -727,16 +918,25 @@ const UploadProductScreen = () => {
                 {/* List files */}
                 {files.length > 0 && (
                   <div className="mt-6 space-y-3">
-                    <p className="text-sm font-medium text-gray-700">📁 Files đã tải lên ({files.length}/5)</p>
-                    {files.map(file => (
-                      <div key={file.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition group">
+                    <p className="text-sm font-medium text-gray-700">
+                      📁 Files đã tải lên ({files.length}/5)
+                    </p>
+                    {files.map((file) => (
+                      <div
+                        key={file.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
+                      >
                         <div className="flex items-center gap-3 flex-1">
                           <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
                             {file.type}
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900">{file.name}</p>
-                            <p className="text-xs text-gray-500">{file.size} MB</p>
+                            <p className="font-medium text-gray-900">
+                              {file.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {file.size} MB
+                            </p>
                           </div>
                         </div>
                         <button
@@ -744,8 +944,18 @@ const UploadProductScreen = () => {
                           onClick={() => removeFile(file.id)}
                           className="opacity-0 group-hover:opacity-100 w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition flex items-center justify-center"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -757,9 +967,13 @@ const UploadProductScreen = () => {
           </div>
 
           {/* Step 3: Tags & Links */}
-          <div className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ${
-            currentStep === 3 ? 'opacity-100 scale-100' : 'opacity-50 scale-95 hidden'
-          }`}>
+          <div
+            className={`bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ${
+              currentStep === 3
+                ? "opacity-100 scale-100"
+                : "opacity-50 scale-95 hidden"
+            }`}
+          >
             <div className="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 <span>🔗</span> Tags & Liên kết
@@ -780,18 +994,32 @@ const UploadProductScreen = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl"
                   placeholder="Nhập công nghệ và nhấn Enter (VD: React, Node.js...)"
                 />
-                
+
                 {tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-4">
-                    {tags.map(tag => (
+                    {tags.map((tag) => (
                       <span
                         key={tag}
                         className="inline-flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl text-sm font-medium"
                       >
                         #{tag}
-                        <button type="button" onClick={() => removeTag(tag)} className="hover:text-white/80">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="hover:text-white/80"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </span>
@@ -839,12 +1067,12 @@ const UploadProductScreen = () => {
               type="button"
               onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
               className={`px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium ${
-                currentStep === 1 ? 'invisible' : ''
+                currentStep === 1 ? "invisible" : ""
               }`}
             >
               ← Quay lại
             </button>
-            
+
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -852,7 +1080,7 @@ const UploadProductScreen = () => {
               >
                 Lưu nháp
               </button>
-              
+
               {currentStep < 3 ? (
                 <button
                   type="button"
@@ -860,8 +1088,18 @@ const UploadProductScreen = () => {
                   className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition font-medium shadow-lg hover:shadow-xl flex items-center gap-2"
                 >
                   Tiếp theo
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               ) : (
@@ -870,22 +1108,47 @@ const UploadProductScreen = () => {
                   disabled={loading || !isAllStepsCompleted()}
                   className={`px-8 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl flex items-center gap-2 ${
                     isAllStepsCompleted()
-                      ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? "bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
                   }`}
                 >
                   {loading ? (
                     <>
-                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Đang gửi...
                     </>
                   ) : (
                     <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       Gửi duyệt
                     </>
@@ -898,7 +1161,10 @@ const UploadProductScreen = () => {
           {/* Note */}
           <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
             <p className="text-sm text-gray-600">
-              <span className="font-semibold text-blue-600">📌 Lưu ý:</span> Sản phẩm của bạn sẽ được gửi đến giảng viên chuyên ngành <span className="font-semibold">{currentStudent.major}</span> để xét duyệt trong vòng 24-48 giờ.
+              <span className="font-semibold text-blue-600">📌 Lưu ý:</span> Sản
+              phẩm của bạn sẽ được gửi đến giảng viên chuyên ngành{" "}
+              <span className="font-semibold">{currentStudent.major}</span> để
+              xét duyệt trong vòng 24-48 giờ.
             </p>
             {currentStep === 3 && !isAllStepsCompleted() && (
               <p className="text-sm text-red-600 mt-2">
@@ -912,19 +1178,29 @@ const UploadProductScreen = () => {
       {/* Thêm CSS animations */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
-        
+
         @keyframes scaleIn {
-          from { transform: scale(0.9); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
+          from {
+            transform: scale(0.9);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-out;
         }
-        
+
         .animate-scaleIn {
           animation: scaleIn 0.3s ease-out;
         }
