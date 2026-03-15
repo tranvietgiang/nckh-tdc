@@ -4,6 +4,7 @@ import StudentScreen from "../pages/Student/StudentScreen";
 import TeacherScreen from "../pages/Teacher/TeacherScreen";
 import UploadProductScreen from "../pages/UploadProductScreen/UploadProductScreen";
 import ProductDetailScreen from "../pages/ProductDetailScreen/ProductDetailScreen";
+import NotFoundScreen from "../pages/NotFoundScreen/NotFoundScreen";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
 
@@ -54,7 +55,9 @@ function RoleRoutes() {
           </ProtectedRoute>
         }
       />
-
+      <Route path="/not-found" element={<NotFoundScreen />} />
+      {/* 404 Page - luôn đặt ở cuối cùng */}
+      <Route path="/not-found" element={<NotFoundScreen />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
