@@ -8,6 +8,7 @@ const ProductDetailScreen = () => {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState(null);
 
+  console.log(id);
   // Mock data dựa trên cấu trúc database
   useEffect(() => {
     // Giả lập API call

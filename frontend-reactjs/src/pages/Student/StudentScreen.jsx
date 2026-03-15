@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
-import UserDropdown from "../../components/common/UserDropdown";
-import useTitle from "../../hooks/useTitle";
 import { useNavigate } from "react-router-dom";
+import UserDropdown from "../../components/common/UserDropdown";
 import { AuthContext } from "../../contexts/AuthContext";
+import useTitle from "../../hooks/useTitle";
 import useMajorName from "../../hooks/useMajorName";
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -10,6 +10,10 @@ const StudentScreen = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
+
+  const handleViewDetail = (productId) => {
+    navigate(`/products/${productId}`);
+  };
 
   const currentStudent = {
     id: user.user_id,
@@ -406,7 +410,10 @@ const StudentScreen = () => {
                 )}
 
                 <div className="mt-4 flex justify-end">
-                  <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  <button
+                    onClick={() => handleViewDetail(product.product_id)}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
                     Xem chi tiết
                   </button>
                 </div>
