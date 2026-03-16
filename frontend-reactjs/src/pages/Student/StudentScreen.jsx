@@ -4,17 +4,22 @@ import UserDropdown from "../../components/common/UserDropdown";
 import { AuthContext } from "../../contexts/AuthContext";
 import useTitle from "../../hooks/useTitle";
 import useMajorName from "../../hooks/useMajorName";
+import useProductAll from "../../hooks/useProductAll";
+
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
   useTitle("Trang chủ sinh viên");
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
+  const { product, loading, error } = useProductAll();
 
+  console.log(product);
   const handleViewDetail = (productId) => {
     navigate(`/products/${productId}`);
   };
 
+  // thông tin người dùng
   const currentStudent = {
     id: user.user_id,
     name: user.name,
@@ -22,8 +27,6 @@ const StudentScreen = () => {
     major: majorName,
     avatar: null,
   };
-
-  // lấy tên ngành theo id người đăng nhập
 
   // Data mẫu sản phẩm của sinh viên
   const myProducts = [
@@ -108,7 +111,8 @@ const StudentScreen = () => {
     pending: myProducts.filter((p) => p.status === "pending").length,
     rejected: myProducts.filter((p) => p.status === "rejected").length,
   };
-
+  // if (loading) return <p>Đang tải...</p>;
+  // if (error) return <p>Có lỗi xảy ra</p>;
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
