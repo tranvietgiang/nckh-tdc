@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\MajorController;
+use App\Http\Controllers\Api\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES
@@ -24,3 +26,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 */
 
 Route::get('/major/{id}', [MajorController::class, 'majorName'])->middleware('auth:sanctum');
+
+/*
+|--------------------------------------------------------------------------
+| product ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::get('/product/{id}', [ProductController::class, 'productViewId'])->middleware('auth:sanctum');
+Route::get('/products', [ProductController::class, 'productAll'])->middleware('auth:sanctum');
