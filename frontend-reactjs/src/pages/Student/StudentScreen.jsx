@@ -15,8 +15,9 @@ const StudentScreen = () => {
   const { majorName } = useMajorName(user?.major_id);
   const { products, loading, error } = useProductAll();
 
-  const handleViewDetail = (productId) => {
-    navigate(`/products/${productId}`);
+  console.log(products);
+  const handleViewDetail = (id) => {
+    navigate("/product-detail", { state: { productId: id } });
   };
 
   const currentStudent = {
@@ -248,6 +249,7 @@ const StudentScreen = () => {
                   </div>
                 )}
 
+                <div>{products?.product_id}2</div>
                 <div className="mt-4 flex justify-end">
                   <button
                     onClick={() => handleViewDetail(item.product_id)}
