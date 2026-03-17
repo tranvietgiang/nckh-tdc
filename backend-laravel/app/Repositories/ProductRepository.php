@@ -26,9 +26,11 @@ class ProductRepository extends BaseRepository
         $userId = $this->getCurrentUserId();
 
         return Product::join('users', 'products.user_id', '=', 'users.user_id')
+            ->join('categories', 'products.cate_id', '=', "categories.cate_id")
             ->where('products.user_id', $userId)
             ->select(
-                'products.*'
+                'products.*',
+                'categories.category_name',
             )->get();
     }
 }
