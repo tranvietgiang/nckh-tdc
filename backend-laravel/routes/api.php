@@ -33,3 +33,4 @@ Route::get('/major/{id}', [MajorController::class, 'majorName'])->middleware('au
 |--------------------------------------------------------------------------
 */
 Route::get('/product/{id}', [ProductController::class, 'productViewId'])->middleware('auth:sanctum');
+Route::get('/products', [ProductController::class, 'productAll'])->middleware('auth:sanctum');

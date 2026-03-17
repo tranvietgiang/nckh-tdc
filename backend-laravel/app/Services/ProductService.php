@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Repositories\BaseRepository;
 use App\Repositories\ProductRepository;
+use Illuminate\Database\Eloquent\Collection;
 
-class ProductService
+class ProductService extends BaseRepository
 {
     public function __construct(
         protected ProductRepository $productRepository
@@ -14,7 +16,11 @@ class ProductService
 
     public function getProductById(int $productId): ?Product
     {
-
         return $this->productRepository->findProductById($productId);
+    }
+
+    public function getAllProductsByUserId(): Collection
+    {
+        return $this->productRepository->productAllById();
     }
 }
