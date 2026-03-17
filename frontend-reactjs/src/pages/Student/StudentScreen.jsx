@@ -249,7 +249,6 @@ const StudentScreen = () => {
                   </div>
                 )}
 
-                <div>{products?.product_id}2</div>
                 <div className="mt-4 flex justify-end">
                   <button
                     onClick={() => handleViewDetail(item.product_id)}
