@@ -14,6 +14,7 @@ return new class extends Migration
             $table->unsignedInteger('views')->default(0);
             $table->unsignedInteger('likes')->default(0);
             $table->unsignedInteger('downloads')->default(0);
+            $table->unsignedInteger('shares')->default(0);
             $table->timestamps();
 
             $table->foreign('product_id')
