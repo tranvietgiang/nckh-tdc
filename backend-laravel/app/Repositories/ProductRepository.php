@@ -14,10 +14,13 @@ class ProductRepository extends BaseRepository
         return Product::where("product_id", $productId)->exists();
     }
 
-    // tìm một sản phẩm bằng id
+    // tìm một sản phẩm bằng id chi tiết
     public function findProductById(int $productId): ?Product
     {
-        return Product::where("product_id", $productId)->first();
+        $userId = $this->getCurrentUserId();
+        return Product::join('users', "products.user_id", '=', "users.user_id")
+            ->where('products.user_id', $userId)
+            ->where("products.product_id", $productId)->first();
     }
 
     // lấy tất cả sản phẩm của học sinh theo id
@@ -26,9 +29,11 @@ class ProductRepository extends BaseRepository
         $userId = $this->getCurrentUserId();
 
         return Product::join('users', 'products.user_id', '=', 'users.user_id')
+            ->join('categories', 'products.cate_id', '=', "categories.cate_id")
             ->where('products.user_id', $userId)
             ->select(
-                'products.*'
+                'products.*',
+                'categories.category_name',
             )->get();
     }
 }

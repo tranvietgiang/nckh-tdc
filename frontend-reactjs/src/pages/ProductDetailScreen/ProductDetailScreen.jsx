@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
+import useProductDetail from "../../hooks/useProductDetail";
 const ProductDetailScreen = () => {
-  const { id } = useParams();
+  const { state } = useLocation();
+  const id = state?.productId;
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState(null);
 
   console.log(id);
+  useProductDetail(id);
   // Mock data dựa trên cấu trúc database
   useEffect(() => {
     // Giả lập API call

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { productApi } from "../api";
 export default function useProductAll() {
-  const [product, setProductAll] = useState([]);
+  const [products, setProductAll] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -21,5 +21,5 @@ export default function useProductAll() {
 
     getProductAll();
   }, []);
-  return { product, loading, error };
+  return { products, loading, error };
 }
