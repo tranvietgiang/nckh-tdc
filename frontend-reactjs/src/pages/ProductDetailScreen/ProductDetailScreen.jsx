@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
+import useProductDetail from "../../hooks/useProductDetail";
 const ProductDetailScreen = () => {
   const { state } = useLocation();
   const id = state?.productId;
@@ -10,6 +10,7 @@ const ProductDetailScreen = () => {
   const [product, setProduct] = useState(null);
 
   console.log(id);
+  useProductDetail(id);
   // Mock data dựa trên cấu trúc database
   useEffect(() => {
     // Giả lập API call
