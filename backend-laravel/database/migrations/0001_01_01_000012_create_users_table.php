@@ -23,10 +23,12 @@ return new class extends Migration
 
             $table->string('password');
 
-            $table->enum('role', ['student', 'lecturer', 'admin'])
+            $table->string('class')->nullable();
+
+            $table->enum('role', ['student', 'teacher', 'admin'])
                 ->default('student');
 
-            $table->foreignId("major_id")
+            $table->foreignId("major_id")->nullable()
                 ->constrained("majors", "major_id")
                 ->cascadeOnDelete();
 

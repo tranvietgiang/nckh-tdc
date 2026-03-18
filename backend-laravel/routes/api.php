@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-
+use Illuminate\Http\Request;
+use App\Http\Controllers\Api\MajorController;
+use App\Http\Controllers\Api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,13 +15,22 @@ use App\Http\Controllers\Api\AuthController;
 // Xác thực người dùng
 Route::post('/login', [AuthController::class, 'login']);
 
-use Illuminate\Http\Request;
+// đăng xuất
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::options('/login', fn() => response('', 204));
 
-Route::match(['GET', 'POST', 'OPTIONS'], '/ping', function (Request $request) {
-    return response()->json([
-        'ok' => true,
-        'method' => $request->method(),
-    ]);
-});
+/*
+|--------------------------------------------------------------------------
+| Majors ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/major/{id}', [MajorController::class, 'majorName'])->middleware('auth:sanctum');
+
+/*
+|--------------------------------------------------------------------------
+| product ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::get('/product/{id}', [ProductController::class, 'productViewId'])->middleware('auth:sanctum');
+Route::get('/products', [ProductController::class, 'productAll'])->middleware('auth:sanctum');
