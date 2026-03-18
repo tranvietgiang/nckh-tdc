@@ -13,13 +13,18 @@ class ProductService extends BaseRepository
         protected ProductRepository $productRepository
     ) {}
 
-    public function getProductDetailById(int $productId): ?Product
+    public function getProductDetailById(int $productId): ?array
     {
+        if (!$this->productRepository->productExists($productId)) {
+            return  null;
+        };
+
         return $this->productRepository->findProductById($productId);
     }
 
     public function getAllProductsByUserId(): Collection
     {
+
         return $this->productRepository->productAllById();
     }
 }
