@@ -7,7 +7,7 @@ const ProductDetailScreen = () => {
   const { state } = useLocation();
   const id = state?.productId;
 
-  const { product, loading, error } = useProductDetail(123);
+  const { product, loading, error } = useProductDetail(id);
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");

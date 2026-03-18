@@ -16,9 +16,11 @@ class ProductController extends Controller
     public function productViewId(int $id)
     {
         $result =  $this->productService->getProductDetailById($id);
+
         if (!$result) {
             return response()->json([
-                'message' => 'Không tìm sản phẩm cần tìm!',
+                'message' => 'Không tìm thấy sản phẩm cần tìm!',
+                'product_result' => false,
             ], 404);
         }
 
