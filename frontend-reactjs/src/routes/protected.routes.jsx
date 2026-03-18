@@ -48,14 +48,13 @@ function RoleRoutes() {
       />
 
       <Route
-        path="/product-detail/:id"
+        path="/product-detail"
         element={
           <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
             <ProductDetailScreen />
           </ProtectedRoute>
         }
       />
-      <Route path="/not-found" element={<NotFoundScreen />} />
       {/* 404 Page - luôn đặt ở cuối cùng */}
       <Route path="/not-found" element={<NotFoundScreen />} />
       <Route path="*" element={<Navigate to="/login" replace />} />

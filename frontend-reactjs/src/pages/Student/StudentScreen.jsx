@@ -15,8 +15,10 @@ const StudentScreen = () => {
   const { majorName } = useMajorName(user?.major_id);
   const { products, loading, error } = useProductAll();
 
-  const handleViewDetail = (productId) => {
-    navigate(`/products/${productId}`);
+  // console.log(products);
+
+  const handleViewDetail = (id) => {
+    navigate("/product-detail", { state: { productId: id } });
   };
 
   const currentStudent = {

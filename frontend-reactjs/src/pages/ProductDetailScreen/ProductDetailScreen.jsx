@@ -1,173 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import useProductDetail from "../../hooks/useProductDetail";
+import useTitle from "../../hooks/useTitle";
 const ProductDetailScreen = () => {
-  const { id } = useParams();
+  useTitle("Trang xem chi tiết");
+  const { state } = useLocation();
+  const id = state?.productId;
+
+  const { product, loading, error } = useProductDetail(id);
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const [loading, setLoading] = useState(true);
-  const [product, setProduct] = useState(null);
 
-  console.log(id);
-  // Mock data dựa trên cấu trúc database
-  useEffect(() => {
-    // Giả lập API call
-    setTimeout(() => {
-      setProduct({
-        // Từ bảng products
-        product_id: 2,
-        title: "Website Thương Mại Điện Tử - TechStore",
-        description:
-          "Website bán đồ công nghệ với giỏ hàng, thanh toán online và quản lý đơn hàng.",
-        thumbnail:
-          "https://images.unsplash.com/photo-1557821552-17105176677c?w=400",
-        github_link: "https://github.com/binhth/techstore",
-        demo_link: "https://techstore-demo.vercel.app",
-        status: "approved",
-        user_id: "SV2023001",
-        major_id: 1,
-        cate_id: 2,
-        approved_by: "GV2023005",
-        approved_at: "2024-01-20T10:30:00Z",
-        created_at: "2024-01-15T08:00:00Z",
-        updated_at: "2024-01-20T10:30:00Z",
-
-        // Thông tin từ bảng users (tác giả)
-        author: {
-          user_id: "SV2023001",
-          fullname: "Trần Thị Bình",
-          email: "binh.tran@student.tdc.edu.vn",
-          role: "student",
-          class: "DHKTPM19B",
-          avatar: null,
-        },
-
-        // Thông tin từ bảng users (người duyệt)
-        approved_by_user: {
-          user_id: "GV2023005",
-          fullname: "ThS. Nguyễn Văn Phúc",
-          email: "phuc.nguyen@tdc.edu.vn",
-          role: "teacher",
-        },
-
-        // Từ bảng majors
-        major: {
-          major_id: 1,
-          major_name: "Phát triển phần mềm",
-          major_code: "PTPM",
-        },
-
-        // Từ bảng categories
-        category: {
-          cate_id: 2,
-          name: "Đồ án môn học",
-          description: "Các đồ án được thực hiện trong quá trình học tập",
-        },
-
-        // Từ bảng product_images
-        images: [
-          {
-            product_image_id: 1,
-            image_url:
-              "https://images.unsplash.com/photo-1557821552-17105176677c?w=400",
-            created_at: "2024-01-15T08:00:00Z",
-          },
-          {
-            product_image_id: 2,
-            image_url:
-              "https://images.unsplash.com/photo-1557821552-17105176677c?w=400",
-            created_at: "2024-01-15T08:00:00Z",
-          },
-          {
-            product_image_id: 3,
-            image_url:
-              "https://images.unsplash.com/photo-1557821552-17105176677c?w=400",
-            created_at: "2024-01-15T08:00:00Z",
-          },
-        ],
-
-        // Từ bảng product_files
-        files: [
-          {
-            product_file_id: 1,
-            file_url: "/storage/products/techstore/report.pdf",
-            file_type: "pdf",
-            created_at: "2024-01-15T08:00:00Z",
-          },
-          {
-            product_file_id: 2,
-            file_url: "/storage/products/techstore/source.zip",
-            file_type: "zip",
-            created_at: "2024-01-15T08:00:00Z",
-          },
-          {
-            product_file_id: 3,
-            file_url: "/storage/products/techstore/slide.pptx",
-            file_type: "pptx",
-            created_at: "2024-01-15T08:00:00Z",
-          },
-        ],
-
-        // Từ bảng tags và product_tags
-        tags: [
-          {
-            tag_id: 1,
-            tag_name: "React",
-          },
-          {
-            tag_id: 2,
-            tag_name: "Node.js",
-          },
-          {
-            tag_id: 3,
-            tag_name: "MongoDB",
-          },
-          {
-            tag_id: 4,
-            tag_name: "TailwindCSS",
-          },
-        ],
-
-        // Từ bảng reviews
-        reviews: [
-          {
-            review_id: 1,
-            teacher_id: "GV2023005",
-            teacher: {
-              user_id: "GV2023005",
-              fullname: "ThS. Nguyễn Văn Phúc",
-              email: "phuc.nguyen@tdc.edu.vn",
-              role: "teacher",
-            },
-            comment:
-              "Sản phẩm tốt, code sạch, chạy ổn định. Tuy nhiên cần bổ sung thêm unit test.",
-            created_at: "2024-01-20T10:35:00Z",
-          },
-          {
-            review_id: 2,
-            teacher_id: "GV2023002",
-            teacher: {
-              user_id: "GV2023002",
-              fullname: "ThS. Lê Thị Hương",
-              email: "huong.le@tdc.edu.vn",
-              role: "teacher",
-            },
-            comment:
-              "Giao diện đẹp, tính năng thanh toán hoạt động tốt. Có thể phát triển thêm phần quản lý kho.",
-            created_at: "2024-01-19T14:20:00Z",
-          },
-        ],
-
-        // Từ bảng activity_logs
-        activity_logs: {
-          views: 2341,
-          downloads: 77,
-          shares: 23,
-        },
-      });
-      setLoading(false);
-    }, 1000);
-  }, [id]);
+  console.log("id:", id);
+  // console.log("product:", product);
 
   if (loading) {
     return (
@@ -175,6 +21,17 @@ const ProductDetailScreen = () => {
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Đang tải thông tin sản phẩm...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-2">Có lỗi xảy ra</h2>
+          <p className="text-gray-600">{error}</p>
         </div>
       </div>
     );
@@ -210,7 +67,6 @@ const ProductDetailScreen = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      {/* Modal phóng to ảnh */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
@@ -240,7 +96,7 @@ const ProductDetailScreen = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={selectedImage.image_url}
+              src={selectedImage?.image_url}
               alt="Product"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />
@@ -249,7 +105,6 @@ const ProductDetailScreen = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumb */}
         <div className="mb-6">
           <nav className="flex items-center gap-2 text-sm">
             <a
@@ -272,7 +127,6 @@ const ProductDetailScreen = () => {
           </nav>
         </div>
 
-        {/* Header với thông tin cơ bản */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
           <div className="p-6">
             <div className="flex items-start justify-between">
@@ -300,10 +154,10 @@ const ProductDetailScreen = () => {
 
                 <div className="flex items-center gap-3 text-sm">
                   <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
-                    {product.major.major_name}
+                    {product.major?.major_name}
                   </span>
                   <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full">
-                    {product.category.name}
+                    {product.category?.name}
                   </span>
                   <span className="text-gray-500">
                     <svg
@@ -358,7 +212,6 @@ const ProductDetailScreen = () => {
               </div>
             </div>
 
-            {/* Thống kê từ activity_logs */}
             <div className="flex items-center gap-6 mt-4">
               <div className="flex items-center gap-1">
                 <svg
@@ -381,7 +234,7 @@ const ProductDetailScreen = () => {
                   />
                 </svg>
                 <span className="text-sm font-medium">
-                  {product.activity_logs.views} lượt xem
+                  {product.activity_logs?.views || 0} lượt xem
                 </span>
               </div>
               <div className="flex items-center gap-1">
@@ -399,7 +252,7 @@ const ProductDetailScreen = () => {
                   />
                 </svg>
                 <span className="text-sm font-medium">
-                  {product.activity_logs.shares} lượt chia sẻ
+                  {product.activity_logs?.shares || 0} lượt chia sẻ
                 </span>
               </div>
               <div className="flex items-center gap-1">
@@ -417,12 +270,11 @@ const ProductDetailScreen = () => {
                   />
                 </svg>
                 <span className="text-sm font-medium">
-                  {product.activity_logs.downloads} lượt tải
+                  {product.activity_logs?.downloads || 0} lượt tải
                 </span>
               </div>
             </div>
 
-            {/* Thông tin duyệt */}
             {product.status === "approved" && product.approved_by_user && (
               <div className="mt-4 p-3 bg-green-50 rounded-lg flex items-center gap-2">
                 <svg
@@ -448,24 +300,24 @@ const ProductDetailScreen = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content - 2 cột */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Gallery từ product_images */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Hình ảnh sản phẩm</h2>
 
-              {/* Ảnh chính */}
               <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
                 <img
-                  src={product.images[0]?.image_url || product.thumbnail}
+                  src={product.images?.[0]?.image_url || product.thumbnail}
                   alt={product.title}
                   className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
-                  onClick={() => setSelectedImage(product.images[0])}
+                  onClick={() =>
+                    setSelectedImage(
+                      product.images?.[0] || { image_url: product.thumbnail },
+                    )
+                  }
                 />
               </div>
 
-              {/* Danh sách ảnh nhỏ */}
-              {product.images.length > 1 && (
+              {product.images?.length > 1 && (
                 <div className="grid grid-cols-5 gap-4">
                   {product.images.map((img, index) => (
                     <button
@@ -484,7 +336,6 @@ const ProductDetailScreen = () => {
               )}
             </div>
 
-            {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="border-b">
                 <div className="flex">
@@ -506,7 +357,7 @@ const ProductDetailScreen = () => {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    Files đính kèm ({product.files.length})
+                    Files đính kèm ({product.files?.length || 0})
                   </button>
                   <button
                     onClick={() => setActiveTab("reviews")}
@@ -516,7 +367,7 @@ const ProductDetailScreen = () => {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    Đánh giá từ giảng viên ({product.reviews.length})
+                    Đánh giá từ giảng viên ({product.reviews?.length || 0})
                   </button>
                 </div>
               </div>
@@ -525,55 +376,60 @@ const ProductDetailScreen = () => {
                 {activeTab === "overview" && (
                   <div className="prose max-w-none">
                     <p className="text-gray-700">{product.description}</p>
-                    {/* Thêm nội dung chi tiết nếu có */}
                   </div>
                 )}
 
                 {activeTab === "files" && (
                   <div className="space-y-4">
-                    {product.files.map((file) => {
-                      const fileName = file.file_url.split("/").pop();
-                      const fileExt =
-                        file.file_type?.toUpperCase() ||
-                        fileName.split(".").pop().toUpperCase();
+                    {product.files?.length > 0 ? (
+                      product.files.map((file) => {
+                        const fileName = file.file_url.split("/").pop();
+                        const fileExt =
+                          file.file_type?.toUpperCase() ||
+                          fileName.split(".").pop().toUpperCase();
 
-                      return (
-                        <div
-                          key={file.product_file_id}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
-                              {fileExt}
-                            </div>
-                            <div>
-                              <p className="font-medium text-gray-900">
-                                {fileName}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                Ngày tải lên:{" "}
-                                {new Date(file.created_at).toLocaleDateString(
-                                  "vi-VN",
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                          <a
-                            href={file.file_url}
-                            download
-                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm"
+                        return (
+                          <div
+                            key={file.product_file_id}
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
                           >
-                            Tải xuống
-                          </a>
-                        </div>
-                      );
-                    })}
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
+                                {fileExt}
+                              </div>
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {fileName}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  Ngày tải lên:{" "}
+                                  {new Date(file.created_at).toLocaleDateString(
+                                    "vi-VN",
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                            <a
+                              href={file.file_url}
+                              download
+                              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm"
+                            >
+                              Tải xuống
+                            </a>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-center text-gray-500 py-8">
+                        Chưa có file đính kèm
+                      </p>
+                    )}
                   </div>
                 )}
 
                 {activeTab === "reviews" && (
                   <div className="space-y-6">
-                    {product.reviews.length > 0 ? (
+                    {product.reviews?.length > 0 ? (
                       product.reviews.map((review) => (
                         <div
                           key={review.review_id}
@@ -581,13 +437,13 @@ const ProductDetailScreen = () => {
                         >
                           <div className="flex items-start gap-3">
                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                              {review.teacher.fullname.charAt(0)}
+                              {review.teacher?.fullname?.charAt(0) || "G"}
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="font-medium text-gray-900">
-                                    {review.teacher.fullname}
+                                    {review.teacher?.fullname}
                                   </p>
                                   <p className="text-xs text-gray-500">
                                     Giảng viên
@@ -617,34 +473,25 @@ const ProductDetailScreen = () => {
             </div>
           </div>
 
-          {/* Sidebar - 1 cột */}
           <div className="space-y-6">
-            {/* Thông tin tác giả từ users */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Thông tin tác giả</h2>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  {product.author.fullname.charAt(0)}
+                  {product.user_id?.charAt(0) || "U"}
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">
-                    {product.author.fullname}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    MSSV: {product.author.user_id}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {product.author.class}
+                    {product.user_id}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {product.major.major_name}
+                    {product.major?.major_name}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Tags từ product_tags */}
-            {product.tags.length > 0 && (
+            {product.tags?.length > 0 && (
               <div className="bg-white rounded-2xl shadow-xl p-6">
                 <h2 className="text-lg font-semibold mb-4">
                   Công nghệ sử dụng
@@ -662,7 +509,6 @@ const ProductDetailScreen = () => {
               </div>
             )}
 
-            {/* Links từ products */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Liên kết</h2>
               <div className="space-y-3">
@@ -744,7 +590,6 @@ const ProductDetailScreen = () => {
               </div>
             </div>
 
-            {/* Thông tin thời gian */}
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Thông tin thêm</h2>
               <div className="space-y-3 text-sm">
