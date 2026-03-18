@@ -45,6 +45,9 @@ return new class extends Migration
                 ->on("users")
                 ->nullOnDelete();
 
+            //ngày sinh viên chính thức nộp / đăng sản phẩm
+            $table->date('submitted_at')->nullable();
+
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });

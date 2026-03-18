@@ -1,8 +1,7 @@
 import { useState, useEffect,useContext  } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { setToken, setUser } from "../../utils/storage";
+import { useNavigate,Link } from "react-router-dom";
 import { ROLE } from "../../utils/constants";
 
 export default function Login() {
@@ -32,44 +31,41 @@ const { login } = useContext(AuthContext);
 
 
 
-    const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+   const handleLogin = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await login({
-        username,
-        password,
-      });
+  try {
+    const res = await login({
+      username,
+      password,
+    });
 
-      const { user, token } = res;
-
-      setUser(user);
-      setToken(token);
-
-      if (remember) {
-        localStorage.setItem("savedUser", username);
-        localStorage.setItem("savedPass", password);
-      } else {
-        localStorage.removeItem("savedUser");
-        localStorage.removeItem("savedPass");
-      }
-
-      if (user.role === ROLE.STUDENT) navigate("/nckh-student");
-      else if (user.role === ROLE.TEACHER) navigate("/nckh-teacher");
-      else if (user.role === ROLE.ADMIN) navigate("/nckh-admin");
-      
-    } catch (error) {
-      if (error.response) {
-        console.error("Lỗi server:", error.response.data);
-        alert(error.response.data.message || "Sai tài khoản hoặc mật khẩu!");
-      } else {
-        alert("Không thể kết nối tới máy chủ!");
-      }
-    } finally {
-      setLoading(false);
+    if (remember) {
+      localStorage.setItem("savedUser", username);
+      localStorage.setItem("savedPass", password);
+    } else {
+      localStorage.removeItem("savedUser");
+      localStorage.removeItem("savedPass");
     }
-    };
+
+    if (res.user.role === ROLE.STUDENT) navigate("/nckh-student");
+    else if (res.user.role === ROLE.TEACHER) navigate("/nckh-teacher");
+    else if (res.user.role === ROLE.ADMIN) navigate("/nckh-admin");
+  } catch (error) {
+    console.log("error:", error);
+
+    if (error.response) {
+      console.log(error.response);
+      console.error("Lỗi server:", error.response.data);
+      alert(error.response.data.message || "Sai tài khoản hoặc mật khẩu!");
+    } else {
+      alert(error.message || "Không thể kết nối tới máy chủ!");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   return (
@@ -79,13 +75,15 @@ const { login } = useContext(AuthContext);
     className="bg-white shadow-lg border border-gray-200 rounded-xl p-10 w-[380px]"
   >
     {/* Logo */}
-    <div className="flex justify-center mb-4">
-      <img
-        src="./public//Images/logo-tdc-orginal.webp"
-        alt="TDC"
-        className="h-14"
-      />
-    </div>
+   <div className="flex justify-center mb-4">
+  <Link to="/nckh-visitor" className="group">
+    <img
+      src="/Images/logo-tdc-orginal.webp"
+      alt="TDC"
+      className="h-14 transition-all duration-300 ease-in-out transform group-hover:scale-110 group-hover:-translate-y-1 hover:drop-shadow-lg"
+    />
+  </Link>
+</div>
 
     <h2 className="text-center text-2xl font-bold text-gray-800 mb-8">
       Đăng nhập hệ thống
