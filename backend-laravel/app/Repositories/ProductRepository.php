@@ -170,10 +170,19 @@ class ProductRepository extends BaseRepository
 
         return Product::join('users', 'products.user_id', '=', 'users.user_id')
             ->join('categories', 'products.cate_id', '=', "categories.cate_id")
+            ->join('product_statistics', 'products.product_id', '=', "product_statistics.product_id")
             ->where('products.user_id', $userId)
             ->select(
-                'products.*',
+                'products.product_id',
+                'products.title',
+                'products.thumbnail',
+                'products.description',
+                'products.status',
                 'categories.category_name',
+                'products.submitted_at',
+                'product_statistics.views',
+                'product_statistics.likes',
+                // 'products.feedback'
             )->get();
     }
 }
