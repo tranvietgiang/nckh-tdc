@@ -16,7 +16,7 @@ export default function useProductDetail(productId) {
         setLoading(true);
         setError(null);
         const res = await productApi.getProductById(productId);
-        setProduct(res.data);
+        setProduct(res);
       } catch (err) {
         setError(err);
         console.error(err);
