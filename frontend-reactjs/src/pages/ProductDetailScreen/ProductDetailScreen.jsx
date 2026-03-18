@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useProductDetail from "../../hooks/useProductDetail";
-
+import useTitle from "../../hooks/useTitle";
 const ProductDetailScreen = () => {
+  useTitle("Trang xem chi tiết");
   const { state } = useLocation();
   const id = state?.productId;
 
