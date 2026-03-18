@@ -18,7 +18,7 @@ class ProductController extends Controller
         $result =  $this->productService->getProductDetailById($id);
         if (!$result) {
             return response()->json([
-                'message' => 'Không tìm sản phẩm cần tìm!'
+                'message' => 'Không tìm sản phẩm cần tìm!',
             ], 404);
         }
 
