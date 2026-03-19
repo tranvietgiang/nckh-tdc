@@ -2,4 +2,5 @@
 import authApi from "./auth.api";
 import majorApi from "./major.api";
 import productApi from "./product.api";
-export { authApi, majorApi, productApi };
+import teacherApi from "./teacher.api";
+export { authApi, majorApi, productApi, teacherApi };
