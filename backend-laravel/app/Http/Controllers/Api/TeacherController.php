@@ -19,13 +19,30 @@ class TeacherController extends Controller
         if (!$return) {
             return response()->json([
                 'message' => "Đã sảy ra lỗi!",
-                'result_teacher' => false
+                'teacher_result' => false
             ]);
         }
 
         return response()->json([
             'data' => $return,
-            'result_teacher' => true
+            'teacher_result' => true
+        ]);
+    }
+
+    public function getTeacherData()
+    {
+        $return = $this->teacherService->showTeacherData();
+
+        if (!$return) {
+            return response()->json([
+                'message' => "không thể tải data!",
+                'teacher_data_result' => false
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => $return,
+            'teacher_data_result' => true
         ]);
     }
 }
