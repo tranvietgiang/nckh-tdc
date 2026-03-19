@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\BaseRepository;
 use App\Repositories\TeacherRepository;
+use Illuminate\Support\Collection;
 
 class TeacherService extends BaseRepository
 {
@@ -24,6 +25,24 @@ class TeacherService extends BaseRepository
 
         if ($totalRejectedProduct !== null) {
             $data['total_rejectedProduct'] = $totalRejectedProduct;
+        }
+
+        return $data;
+    }
+
+    public function showTeacherData(): ?Collection
+    {
+        $pending =  $this->teacherRepository->pendingTeacherData();
+        $approved =  $this->teacherRepository->approvedTeacherData();
+
+        $data = collect();
+
+        if ($pending !== null) {
+            $data['pending_result'] = $pending;
+        }
+
+        if ($approved !== null) {
+            $data['approved_result'] = $approved;
         }
 
         return $data;

@@ -42,3 +42,4 @@ Route::get('/products', [ProductController::class, 'productAll'])->middleware('a
 |--------------------------------------------------------------------------
 */
 Route::get('/teacher/statistic', [TeacherController::class, 'getTeacherStatistic'])->middleware('auth:sanctum');
+Route::get('/teacher', [TeacherController::class, 'getTeacherData'])->middleware('auth:sanctum');

@@ -38,7 +38,7 @@ export default function useProductDetail(productId) {
     };
 
     fetchProductDetail();
-  }, [productId]);
+  }, [productId, navigate]);
 
   return {
     product,
