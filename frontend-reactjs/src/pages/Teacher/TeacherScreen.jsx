@@ -3,19 +3,21 @@ import UserDropdown from "../../components/common/UserDropdown";
 import useTitle from "../../hooks/useTitle";
 import { AuthContext } from "../../contexts/AuthContext";
 import useMajorName from "../../hooks/useMajorName";
-
+import useTeacherStatistic from "../../hooks/useTeacherStatistic";
 const TeacherScreen = () => {
   const [filter, setFilter] = useState("pending");
   useTitle("Trang chủ giáo viên");
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
+  const { teacherStatistic } = useTeacherStatistic();
 
+  console.log(teacherStatistic);
   const teacher = {
     name: user?.name ?? "",
     email: user?.email ?? "",
     major: majorName ?? "",
-    totalStudents: 45,
-    totalProducts: 78,
+    rejectedProducts: teacherStatistic?.total_rejectedProduct,
+    totalProducts: teacherStatistic?.total_product,
   };
 
   // Data mẫu sản phẩm chờ duyệt
@@ -105,7 +107,7 @@ const TeacherScreen = () => {
         return [];
     }
   };
-  // console.log(getCurrentProducts);
+  console.log(getCurrentProducts);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -155,10 +157,10 @@ const TeacherScreen = () => {
                 {approvedProducts.length}
               </p>
             </div>
-            <div className="bg-blue-50 rounded-xl p-4">
-              <p className="text-sm text-blue-600 font-medium">Sinh viên</p>
-              <p className="text-2xl font-bold text-blue-700 mt-1">
-                {teacher.totalStudents}
+            <div className="bg-red-50 rounded-xl p-4">
+              <p className="text-sm text-red-600 font-medium">Từ chối</p>
+              <p className="text-2xl font-bold text-red-700 mt-1">
+                {teacher.rejectedProducts}
               </p>
             </div>
           </div>
