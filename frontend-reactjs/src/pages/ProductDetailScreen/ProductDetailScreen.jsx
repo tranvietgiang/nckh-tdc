@@ -13,7 +13,7 @@ const ProductDetailScreen = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   console.log("id:", id);
-  console.log("product:", product);
+  // console.log("product:", product);
 
   if (loading) {
     return (

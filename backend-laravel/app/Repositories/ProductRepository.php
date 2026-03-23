@@ -168,12 +168,23 @@ class ProductRepository extends BaseRepository
     {
         $userId = $this->getCurrentUserId();
 
-        return Product::join('users', 'products.user_id', '=', 'users.user_id')
-            ->join('categories', 'products.cate_id', '=', "categories.cate_id")
+        return Product::query()
+            ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
+            ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
+            ->leftJoin('reviews', 'products.product_id', '=', 'reviews.product_id')
             ->where('products.user_id', $userId)
             ->select(
-                'products.*',
+                'products.product_id',
+                'products.title',
+                'products.thumbnail',
+                'products.description',
+                'products.status',
                 'categories.category_name',
-            )->get();
+                'products.submitted_at',
+                DB::raw('COALESCE(product_statistics.views, 0) as views'),
+                DB::raw('COALESCE(product_statistics.likes, 0) as likes'),
+                'reviews.comment as feedback'
+            )
+            ->get();
     }
 }

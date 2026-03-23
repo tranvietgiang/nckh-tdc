@@ -16,6 +16,7 @@ const StudentScreen = () => {
   const { products, loading, error } = useProductAll();
 
   console.log(products);
+
   const handleViewDetail = (id) => {
     navigate("/product-detail", { state: { productId: id } });
   };
