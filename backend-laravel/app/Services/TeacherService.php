@@ -30,21 +30,15 @@ class TeacherService extends BaseRepository
         return $data;
     }
 
-    public function showTeacherData(): ?Collection
+
+    public function showTeacherData(): Collection
     {
-        $pending =  $this->teacherRepository->pendingTeacherData();
-        $approved =  $this->teacherRepository->approvedTeacherData();
+        $products = $this->teacherRepository->teacherAllData();
 
-        $data = collect();
-
-        if ($pending !== null) {
-            $data['pending_result'] = $pending;
-        }
-
-        if ($approved !== null) {
-            $data['approved_result'] = $approved;
-        }
-
-        return $data;
+        return collect([
+            'pending_result' => $products->where('status', 'pending')->values(),
+            'approved_result' => $products->where('status', 'approved')->values(),
+            'rejected_result' => $products->where('status', 'rejected')->values(),
+        ]);
     }
 }

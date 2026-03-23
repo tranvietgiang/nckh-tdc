@@ -33,9 +33,13 @@ class TeacherController extends Controller
     {
         $return = $this->teacherService->showTeacherData();
 
-        if (!$return) {
+        if (
+            $return['pending_result']->isEmpty() &&
+            $return['approved_result']->isEmpty() &&
+            $return['rejected_result']->isEmpty()
+        ) {
             return response()->json([
-                'message' => "không thể tải data!",
+                'message' => 'không thể tải data!',
                 'teacher_data_result' => false
             ], 404);
         }
