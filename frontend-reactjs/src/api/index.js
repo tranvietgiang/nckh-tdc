@@ -1,5 +1,6 @@
 // src/api/index.js
 import authApi from "./auth.api";
 import majorApi from "./major.api";
-
-export { authApi,majorApi };
+import productApi from "./product.api";
+import teacherApi from "./teacher.api";
+export { authApi, majorApi, productApi, teacherApi };
