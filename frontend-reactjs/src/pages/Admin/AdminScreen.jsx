@@ -4,7 +4,7 @@ import useTitle from "../../hooks/useTitle";
 import AdminLayout from "../../layouts/AdminLayout";
 
 import DashboardScreen from "./screens/DashboardScreen";
-import UserScreen from "./screens/UsersScreen";
+import UserScreen from "./screens/UserManager/UsersScreen";
 import ProductScreen from "./screens/ProductsScreen";
 import MajorScreen from "./screens/MajorsScreen";
 import SettingScreen from "./screens/SettingsScreen";
