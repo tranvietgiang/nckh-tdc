@@ -23,6 +23,8 @@ return new class extends Migration
 
             $table->string('password');
 
+            $table->string('class')->nullable();
+
             $table->enum('role', ['student', 'teacher', 'admin'])
                 ->default('student');
 
