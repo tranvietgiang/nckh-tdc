@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { teacherApi } from "../api";
+import { teacherApi } from "../../api";
 export default function useTeacherPendingApproval() {
   const [ProductsData, setTeacher] = useState([]);
   const [loading, setLoading] = useState(false);
