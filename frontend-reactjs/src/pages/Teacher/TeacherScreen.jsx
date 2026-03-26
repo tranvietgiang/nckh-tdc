@@ -3,8 +3,8 @@ import UserDropdown from "../../components/common/UserDropdown";
 import useTitle from "../../hooks/useTitle";
 import { AuthContext } from "../../contexts/AuthContext";
 import useMajorName from "../../hooks/useMajorName";
-import useTeacherStatistic from "../../hooks/useTeacherStatistic";
-import useTeacherPendingApproval from "../../hooks/useTeacherPendingApproval";
+import useTeacherStatistic from "../../hooks/useTeacher/useTeacherStatistic";
+import useTeacherPendingApproval from "../../hooks/useTeacher/useTeacherPendingApproval";
 
 const TeacherScreen = () => {
   const [filter, setFilter] = useState("pending");

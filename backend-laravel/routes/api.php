@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TeacherController;
+use App\Http\Controllers\Api\UploadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,3 +44,10 @@ Route::get('/products', [ProductController::class, 'productAll'])->middleware('a
 */
 Route::get('/teacher/statistic', [TeacherController::class, 'getTeacherStatistic'])->middleware('auth:sanctum');
 Route::get('/teacher', [TeacherController::class, 'getTeacherData'])->middleware('auth:sanctum');
+
+/*
+|--------------------------------------------------------------------------
+| Upload ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::get('/upload/count-published', [UploadController::class, 'countPublishedProducts'])->middleware('auth:sanctum');

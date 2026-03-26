@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { productApi } from "../api";
+import { productApi } from "../../api";
 import { useNavigate } from "react-router-dom";
 
 export default function useProductDetail(productId) {

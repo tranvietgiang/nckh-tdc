@@ -4,8 +4,8 @@ import UserDropdown from "../../components/common/UserDropdown";
 import { AuthContext } from "../../contexts/AuthContext";
 import useTitle from "../../hooks/useTitle";
 import useMajorName from "../../hooks/useMajorName";
-import useProductAll from "../../hooks/useProductAll";
-
+import useProductAll from "../../hooks/useProduct/useProductAll";
+import { mapCurrentStudent } from "../../utils/userMapper";
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
   useTitle("Trang chủ sinh viên");
@@ -14,20 +14,20 @@ const StudentScreen = () => {
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
   const { products, loading, error } = useProductAll();
-
+  const currentStudent = mapCurrentStudent(user, majorName);
   console.log(products);
 
   const handleViewDetail = (id) => {
     navigate("/product-detail", { state: { productId: id } });
   };
 
-  const currentStudent = {
-    id: user?.user_id,
-    name: user?.name,
-    email: user?.email,
-    major: majorName,
-    avatar: null,
-  };
+  // const currentStudent = {
+  //   id: user?.user_id,
+  //   name: user?.name,
+  //   email: user?.email,
+  //   major: majorName,
+  //   avatar: null,
+  // };
 
   const myProducts = useMemo(() => {
     return Array.isArray(products) ? products : [];

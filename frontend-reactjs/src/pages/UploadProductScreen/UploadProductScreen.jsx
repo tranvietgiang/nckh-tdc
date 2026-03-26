@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import useBackToPage from "../../hooks/useBackToPage";
+import { AuthContext } from "../../contexts/AuthContext";
+import { mapCurrentStudent } from "../../utils/userMapper";
+import useMajorName from "../../hooks/useMajorName";
+import useUploadPublishedCount from "../../hooks/useUpload/useUpload";
 const UploadProductScreen = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -25,17 +29,17 @@ const UploadProductScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null); // State cho ảnh phóng to
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
   const goBack = useBackToPage();
+  const { user } = useContext(AuthContext);
+  const { majorName } = useMajorName(user?.major_id);
+  const currentStudent = mapCurrentStudent(user, majorName);
 
-  // Data mẫu - sinh viên hiện tại
-  const currentStudent = {
-    id: 1,
-    name: "Nguyễn Văn An",
-    class: "DHKTPM18A",
-    major: "Phát triển phần mềm",
-    major_id: 1,
-    avatar: null,
-  };
+  // console.log(user);
+  // console.log(currentStudent);
+  const { upload_count, upload_loading, upload_error } =
+    useUploadPublishedCount();
 
+  // console.log(upload_error);
+  // console.log(upload_count);
   // Danh sách chuyên ngành
   const majors = [
     {
@@ -488,13 +492,22 @@ const UploadProductScreen = () => {
               <div>
                 <h2 className="text-xl font-semibold">{currentStudent.name}</h2>
                 <p className="text-blue-100">
-                  {currentStudent.class} - {currentStudent.major}
+                  {currentStudent?.class} - {currentStudent.major}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold">4</div>
-              <div className="text-blue-200">sản phẩm đã đăng</div>
+              <div className="text-3xl font-bold">
+                {upload_loading ? "..." : upload_error ? "Lỗi" : upload_count}
+              </div>
+
+              <div className="text-blue-200">
+                {upload_loading
+                  ? "Đang tải..."
+                  : upload_error
+                    ? "Không tải được dữ liệu"
+                    : "sản phẩm đã đăng"}
+              </div>
             </div>
           </div>
         </div>
