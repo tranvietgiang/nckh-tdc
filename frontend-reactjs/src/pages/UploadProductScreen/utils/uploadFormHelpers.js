@@ -15,13 +15,43 @@ export const validateUploadStep = ({
   files = [],
 }) => {
   const errors = {};
-
   if (step === 1) {
-    if (!formData.title.trim()) errors.title = "Vui lòng nhập tên sản phẩm";
-    if (!formData.description?.trim())
+    // TITLE
+    if (!formData.title.trim()) {
+      errors.title = "Vui lòng nhập tên sản phẩm";
+    } else if (formData.title.length < 5) {
+      errors.title = "Tên phải ≥ 5 ký tự";
+    } else if (formData.title.length > 100) {
+      errors.title = "Tên tối đa 100 ký tự";
+    }
+
+    // DESCRIPTION
+    if (!formData.description?.trim()) {
       errors.description = "Vui lòng nhập mô tả";
-    if (!formData.major_id) errors.major_id = "Chọn chuyên ngành";
-    if (!formData.cate_id) errors.cate_id = "Chọn danh mục";
+    } else if (formData.description.length < 10) {
+      errors.description = "Mô tả phải ≥ 10 ký tự";
+    } else if (formData.description.length > 300) {
+      errors.description = "Mô tả tối đa 300 ký tự";
+    }
+
+    // CONTENT
+    if (!formData.content?.trim()) {
+      errors.content = "Vui lòng nhập nội dung";
+    } else if (formData.content.length < 20) {
+      errors.content = "Nội dung phải ≥ 20 ký tự";
+    } else if (formData.content.length > 5000) {
+      errors.content = "Nội dung tối đa 5000 ký tự";
+    }
+
+    // MAJOR
+    if (!formData.major_id) {
+      errors.major_id = "Chọn chuyên ngành";
+    }
+
+    // CATEGORY
+    if (!formData.cate_id) {
+      errors.cate_id = "Chọn danh mục";
+    }
   }
 
   if (step === 2) {
