@@ -6,7 +6,6 @@ import useMajorName from "../../hooks/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
 // import useBlockNavigation from "../../hooks/useBlockNavigation";
-
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -341,13 +340,12 @@ const UploadProductScreen = () => {
         </div>
 
         <form
-          onSubmit={(e) => {
-            if (
-              !window.confirm("Bạn chắc chắn muốn gửi sản phẩm này để duyệt?")
-            ) {
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && currentStep !== 3) {
               e.preventDefault();
-              return;
             }
+          }}
+          onSubmit={(e) => {
             handleSubmit(e);
           }}
           className="space-y-6"
@@ -407,27 +405,6 @@ const UploadProductScreen = () => {
                   <p className="mt-2 text-sm text-red-600">
                     {errors.description}
                   </p>
-                )}
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Nội dung chi tiết <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  name="content"
-                  value={formData.content}
-                  onChange={handleChange}
-                  rows={6}
-                  className={`w-full rounded-xl border-2 px-4 py-3 ${
-                    errors.content
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-200"
-                  }`}
-                  placeholder="Mô tả chi tiết về sản phẩm..."
-                />
-                {errors.content && (
-                  <p className="mt-2 text-sm text-red-600">{errors.content}</p>
                 )}
               </div>
 
@@ -929,7 +906,10 @@ const UploadProductScreen = () => {
               {currentStep < 3 ? (
                 <button
                   type="button"
-                  onClick={handleNextStep}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNextStep();
+                  }}
                   className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 font-medium text-white shadow-lg transition hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
                 >
                   Tiếp theo

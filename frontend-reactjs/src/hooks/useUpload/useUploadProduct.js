@@ -1,23 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { uploadApi } from "../../api";
-export default function useUploadProduct(data) {
+
+export default function useUploadProduct() {
   const [isUploadingProduct, setLoading] = useState(false);
-  useEffect(() => {
-    const upload = async () => {
-      setLoading(true);
-      try {
-        const res = await uploadApi.uploadProduct(data);
-        if (res.upload_add_result) {
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    upload();
-  }, [data]);
+
+  const uploadProduct = async (data) => {
+    setLoading(true);
+
+    try {
+      const res = await uploadApi.uploadProduct(data);
+      return res;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     isUploadingProduct,
+    uploadProduct,
   };
 }
