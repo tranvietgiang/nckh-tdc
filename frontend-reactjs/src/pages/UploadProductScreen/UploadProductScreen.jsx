@@ -5,7 +5,7 @@ import { mapCurrentStudent } from "../../utils/userMapper";
 import useMajorName from "../../hooks/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUpload";
 import useUploadProductForm from "./hooks/useUploadProductForm";
-
+// import useBlockNavigation from "../../hooks/useBlockNavigation";
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -50,7 +50,7 @@ const UploadProductScreen = () => {
     setSelectedImage,
     setSubmitStatus,
   } = useUploadProductForm(currentStudent);
-
+  // const { handleSafeBack } = useBlockNavigation(loading);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       {selectedImage && (
@@ -204,8 +204,16 @@ const UploadProductScreen = () => {
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <button
-          onClick={goBack}
-          className="rounded-lg bg-gray-200 px-4 py-2 hover:bg-gray-300"
+          onClick={() => {
+            if (loading) return;
+            goBack();
+          }}
+          disabled={loading}
+          className={`rounded-lg px-4 py-2 ${
+            loading
+              ? "cursor-not-allowed bg-gray-300 text-gray-500"
+              : "bg-gray-200 hover:bg-gray-300"
+          }`}
         >
           Quay lại
         </button>
@@ -333,7 +341,18 @@ const UploadProductScreen = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={(e) => {
+            if (
+              !window.confirm("Bạn chắc chắn muốn gửi sản phẩm này để duyệt?")
+            ) {
+              e.preventDefault();
+              return;
+            }
+            handleSubmit(e);
+          }}
+          className="space-y-6"
+        >
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 1
@@ -605,78 +624,62 @@ const UploadProductScreen = () => {
 
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                       {images.map((image, index) => (
-                        <div key={image.id} className="group relative">
-                          <div
-                            className={`aspect-square cursor-pointer overflow-hidden rounded-xl border-4 transition-all ${
-                              index === thumbnailIndex
-                                ? "scale-105 border-purple-500 shadow-xl"
-                                : "border-transparent hover:border-gray-300"
-                            }`}
-                          >
-                            <img
-                              src={image.url}
-                              alt={image.name}
-                              className="h-full w-full object-cover"
-                              onClick={() => setSelectedImage(image)}
-                            />
-                          </div>
-
-                          <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedImage(image);
-                              }}
-                              className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white transition hover:bg-blue-600"
-                              title="Phóng to"
+                        <div key={image.id} className="relative">
+                          {/* KHUNG ẢNH */}
+                          <div className="group relative">
+                            <div
+                              className={`aspect-square cursor-pointer overflow-hidden rounded-xl border-4 transition-all ${
+                                index === thumbnailIndex
+                                  ? "scale-105 border-purple-500 shadow-xl"
+                                  : "border-transparent hover:border-gray-300"
+                              }`}
                             >
-                              <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                                />
-                              </svg>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeImage(image.id);
-                              }}
-                              className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white transition hover:bg-red-600"
-                              title="Xóa"
-                            >
-                              <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-
-                          {index === thumbnailIndex && (
-                            <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-sm font-bold text-white shadow-lg">
-                              👑
+                              <img
+                                src={image.url}
+                                alt={image.name}
+                                className="h-full w-full object-cover"
+                                onClick={() => setSelectedImage(image)}
+                              />
                             </div>
-                          )}
 
+                            {/* OVERLAY CHỈ PHỦ ẢNH */}
+                            <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                              {/* NÚT PHÓNG TO */}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedImage(image);
+                                }}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white transition hover:bg-blue-600"
+                                title="Phóng to"
+                              >
+                                🔍
+                              </button>
+
+                              {/* NÚT XOÁ (ICON RÕ HƠN) */}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeImage(image.id);
+                                }}
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white transition hover:bg-red-600"
+                                title="Xóa"
+                              >
+                                ❌
+                              </button>
+                            </div>
+
+                            {/* ICON ẢNH ĐẠI DIỆN */}
+                            {index === thumbnailIndex && (
+                              <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-sm font-bold text-white shadow-lg">
+                                👑
+                              </div>
+                            )}
+                          </div>
+
+                          {/* NÚT KHÔNG BỊ CHE */}
                           <div className="mt-2 flex gap-2">
                             <button
                               type="button"
