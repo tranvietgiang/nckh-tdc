@@ -3,9 +3,10 @@ import useBackToPage from "../../hooks/useBackToPage";
 import { AuthContext } from "../../contexts/AuthContext";
 import { mapCurrentStudent } from "../../utils/userMapper";
 import useMajorName from "../../hooks/useMajorName";
-import useUploadPublishedCount from "../../hooks/useUpload/useUpload";
+import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
 // import useBlockNavigation from "../../hooks/useBlockNavigation";
+
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -29,7 +30,6 @@ const UploadProductScreen = () => {
     touchedSteps,
     selectedImage,
     submitStatus,
-    majors,
     categories,
     steps,
     isStepValid,
@@ -37,7 +37,6 @@ const UploadProductScreen = () => {
     handleNextStep,
     handlePrevStep,
     handleChange,
-    handleSelectMajor,
     handleSelectCategory,
     handleAddTag,
     removeTag,
@@ -433,37 +432,25 @@ const UploadProductScreen = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                <div className="space-y-2">
+                  <label className="flex items-center gap-1 text-sm font-semibold text-gray-700">
                     Chuyên ngành <span className="text-red-500">*</span>
                   </label>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    {majors.map((major) => (
-                      <button
-                        key={major.id}
-                        type="button"
-                        onClick={() => handleSelectMajor(major.id)}
-                        className={`rounded-xl border-2 p-4 transition-all ${
-                          formData.major_id === major.id
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <div className="mb-1 text-2xl">{major.icon}</div>
-                        <div className="text-sm font-medium">{major.name}</div>
-                        <div className="text-xs text-gray-500">
-                          {major.code}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm hover:border-gray-400 transition">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-gray-600">
+                        🎓
+                      </div>
 
-                  {errors.major_id && (
-                    <p className="mt-2 text-sm text-red-600">
-                      {errors.major_id}
-                    </p>
-                  )}
+                      <div>
+                        <p className="text-sm text-gray-500">Ngành đã chọn</p>
+                        <p className="font-medium text-gray-800">
+                          {majorName || "Chưa chọn chuyên ngành"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div>

@@ -3,7 +3,6 @@ import {
   initialFormData,
   validateUploadStep,
 } from "../utils/uploadFormHelpers";
-
 export default function useUploadProductForm(currentStudent) {
   const [formData, setFormData] = useState(initialFormData);
   const [tags, setTags] = useState([]);
@@ -17,25 +16,6 @@ export default function useUploadProductForm(currentStudent) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
-
-  const majors = [
-    {
-      id: 1,
-      name: "Phát triển phần mềm",
-      code: "PTPM",
-      color: "blue",
-      icon: "💻",
-    },
-    {
-      id: 2,
-      name: "Khoa học dữ liệu",
-      code: "KHDL",
-      color: "green",
-      icon: "📊",
-    },
-    { id: 3, name: "Mạng máy tính", code: "MMT", color: "purple", icon: "🌐" },
-    { id: 4, name: "Thiết kế đồ họa", code: "TKĐH", color: "pink", icon: "🎨" },
-  ];
 
   const categories = [
     { id: 1, name: "Đồ án tốt nghiệp", icon: "🎓", color: "amber" },
@@ -287,7 +267,7 @@ export default function useUploadProductForm(currentStudent) {
     touchedSteps,
     selectedImage,
     submitStatus,
-    majors,
+    // majors,
     categories,
     steps,
     isStepValid,
