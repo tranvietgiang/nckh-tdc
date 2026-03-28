@@ -1,7 +1,6 @@
 export const initialFormData = {
   title: "",
   description: "",
-  content: "",
   github_link: "",
   demo_link: "",
   major_id: "",
@@ -32,20 +31,6 @@ export const validateUploadStep = ({
       errors.description = "Mô tả phải ≥ 10 ký tự";
     } else if (formData.description.length > 300) {
       errors.description = "Mô tả tối đa 300 ký tự";
-    }
-
-    // CONTENT
-    if (!formData.content?.trim()) {
-      errors.content = "Vui lòng nhập nội dung";
-    } else if (formData.content.length < 20) {
-      errors.content = "Nội dung phải ≥ 20 ký tự";
-    } else if (formData.content.length > 5000) {
-      errors.content = "Nội dung tối đa 5000 ký tự";
-    }
-
-    // MAJOR
-    if (!formData.major_id) {
-      errors.major_id = "Chọn chuyên ngành";
     }
 
     // CATEGORY

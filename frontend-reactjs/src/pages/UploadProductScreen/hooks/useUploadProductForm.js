@@ -3,7 +3,9 @@ import {
   initialFormData,
   validateUploadStep,
 } from "../utils/uploadFormHelpers";
-export default function useUploadProductForm(currentStudent) {
+import useUploadProduct from "../../../hooks/useUpload/useUploadProduct";
+
+export default function useUploadProductForm() {
   const [formData, setFormData] = useState(initialFormData);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
@@ -17,6 +19,7 @@ export default function useUploadProductForm(currentStudent) {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
 
+  const { isUploadingProduct, uploadProduct } = useUploadProduct();
   const categories = [
     { id: 1, name: "Đồ án tốt nghiệp", icon: "🎓", color: "amber" },
     { id: 2, name: "Đồ án môn học", icon: "📚", color: "indigo" },
@@ -176,6 +179,10 @@ export default function useUploadProductForm(currentStudent) {
 
     if (currentStep !== 3) return;
 
+    if (!window.confirm("Bạn chắc chắn muốn gửi sản phẩm này để duyệt?")) {
+      return;
+    }
+
     const allErrors = {
       ...validateUploadStep({ step: 1, formData, images, files }),
       ...validateUploadStep({ step: 2, formData, images, files }),
@@ -190,6 +197,8 @@ export default function useUploadProductForm(currentStudent) {
     setLoading(true);
     setSubmitStatus(null);
 
+    if (isUploadingProduct) return;
+
     try {
       const payload = new FormData();
 
@@ -200,8 +209,8 @@ export default function useUploadProductForm(currentStudent) {
       payload.append("demo_link", formData.demo_link || "");
       payload.append("major_id", formData.major_id);
       payload.append("cate_id", formData.cate_id);
-      payload.append("student_id", currentStudent?.id || "");
 
+      console.log(payload);
       tags.forEach((tag) => {
         payload.append("tags[]", tag);
       });
@@ -221,15 +230,13 @@ export default function useUploadProductForm(currentStudent) {
         payload.append("files[]", file.file);
       });
 
-      // đổi API của m ở đây
-      const res = await fetch("http://localhost:8000/api/products", {
-        method: "POST",
-        body: payload,
-      });
+      // hàm upload api
+      const res = await uploadProduct(payload);
+      console.log(res);
 
-      if (!res.ok) {
-        throw new Error("Upload thất bại");
-      }
+      // if (!res.ok) {
+      //   throw new Error("Upload thất bại");
+      // }
 
       setSubmitStatus("success");
     } catch (error) {
@@ -267,7 +274,6 @@ export default function useUploadProductForm(currentStudent) {
     touchedSteps,
     selectedImage,
     submitStatus,
-    // majors,
     categories,
     steps,
     isStepValid,
