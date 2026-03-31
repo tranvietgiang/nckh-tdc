@@ -16,7 +16,8 @@ use App\Http\Controllers\Api\UploadController;
 */
 
 // Xác thực người dùng
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:5,1');
 
 // đăng xuất
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');

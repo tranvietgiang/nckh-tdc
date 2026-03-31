@@ -64,11 +64,16 @@ export default function Login() {
       else if (res.user.role === ROLE.TEACHER) navigate("/nckh-teacher");
       else if (res.user.role === ROLE.ADMIN) navigate("/nckh-admin");
     } catch (error) {
-      console.log("error:", error);
+      // console.log("error:", error);
+
+      toast.dismiss();
+
+      if (error.response?.status === 429) {
+        toast.error(error.response.data.message);
+        return;
+      }
 
       if (error.response) {
-        console.log(error.response);
-        console.error("Lỗi server:", error.response.data);
         toast.error("Sai tài khoản hoặc mật khẩu!");
       } else {
         toast.error(error.message || "Không thể kết nối tới máy chủ!");
