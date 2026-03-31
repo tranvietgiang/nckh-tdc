@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
 use App\Services\UploadService;
+use Illuminate\Container\Attributes\Auth;
 
 class UploadController extends Controller
 {
