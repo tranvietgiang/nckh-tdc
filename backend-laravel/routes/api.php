@@ -59,4 +59,4 @@ Route::get('/upload/count-published', [UploadController::class, 'countPublishedP
 | Categories ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/category/all', [CategoryController::class, 'getAll'])->middleware('auth:sanctum');
+Route::get('/category/all', [CategoryController::class, 'getAllCategories'])->middleware('auth:sanctum');

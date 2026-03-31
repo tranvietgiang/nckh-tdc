@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import useCategory from "../../../hooks/useCategory";
 
 const UploadProductForm = ({
   formData,
@@ -7,7 +8,6 @@ const UploadProductForm = ({
   errors,
   currentStep,
   majorName,
-  categories,
   handleSelectCategory,
   handleImageUpload,
   images,
@@ -34,6 +34,8 @@ const UploadProductForm = ({
   currentStudent,
   setSelectedImage,
 }) => {
+  const { categories, isLoadingCategories, categoryError } = useCategory();
+  const [confirmed, setConfirmed] = useState(false);
   return (
     <form
       onKeyDown={(e) => {
@@ -122,89 +124,65 @@ const UploadProductForm = ({
               </div>
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Danh mục <span className="text-red-500">*</span>
-              </label>
+            {/*  select category */}
+            {isLoadingCategories ? (
+              <p className="text-sm text-gray-500">Đang tải danh mục...</p>
+            ) : categoryError ? (
+              <p className="text-sm text-red-500">Lỗi tải danh mục</p>
+            ) : (
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Danh mục <span className="text-red-500">*</span>
+                </label>
 
-              <div className="space-y-2">
-                {categories.map((cat) => {
-                  const isSelected = formData.cate_id === cat.id;
+                <div className="space-y-2">
+                  {(categories || []).map((cat) => {
+                    const isSelected = formData.cate_id === cat.cate_id;
 
-                  return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => handleSelectCategory(cat.id)}
-                      className={`flex w-full items-center gap-3 rounded-xl border-2 p-4 transition-all ${
-                        isSelected
-                          ? "border-indigo-500 bg-indigo-50 ring-4 ring-indigo-100"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                          isSelected ? "bg-indigo-200" : "bg-gray-100"
+                    return (
+                      <button
+                        key={cat.cate_id}
+                        type="button"
+                        onClick={() => handleSelectCategory(cat.cate_id)}
+                        className={`flex w-full items-center gap-3 rounded-xl border-2 p-4 transition-all ${
+                          isSelected
+                            ? "border-indigo-500 bg-indigo-50 ring-4 ring-indigo-100"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                         }`}
                       >
-                        <span className="text-xl">{cat.icon}</span>
-                      </div>
-
-                      <div className="flex-1 text-left">
-                        <p
-                          className={`font-medium ${
-                            isSelected ? "text-indigo-700" : "text-gray-700"
+                        <div
+                          className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                            isSelected ? "bg-indigo-200" : "bg-gray-100"
                           }`}
                         >
-                          {cat.name}
-                        </p>
-
-                        {isSelected && (
-                          <p className="mt-0.5 flex items-center gap-1 text-xs text-indigo-600">
-                            <svg
-                              className="h-3 w-3"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            Đang chọn
-                          </p>
-                        )}
-                      </div>
-
-                      {isSelected && (
-                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-white">
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                          <span className="text-xl">🗂️</span>
                         </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
 
-              {errors.cate_id && (
-                <p className="mt-2 text-sm text-red-600">{errors.cate_id}</p>
-              )}
-            </div>
+                        <div className="flex-1 text-left">
+                          <p
+                            className={`font-medium ${
+                              isSelected ? "text-indigo-700" : "text-gray-700"
+                            }`}
+                          >
+                            {cat.category_name}
+                          </p>
+
+                          {isSelected && (
+                            <p className="mt-0.5 text-xs text-indigo-600">
+                              ✔ Đang chọn
+                            </p>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {errors.cate_id && (
+                  <p className="mt-2 text-sm text-red-600">{errors.cate_id}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -614,9 +592,9 @@ const UploadProductForm = ({
           ) : (
             <button
               type="submit"
-              disabled={loading || !isAllStepsCompleted()}
+              disabled={loading || !isAllStepsCompleted() || !confirmed}
               className={`flex items-center gap-2 rounded-xl px-8 py-3 font-medium shadow-lg hover:shadow-xl ${
-                isAllStepsCompleted()
+                isAllStepsCompleted() && confirmed
                   ? "bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700"
                   : "cursor-not-allowed bg-gray-300 text-gray-500"
               }`}
@@ -666,20 +644,37 @@ const UploadProductForm = ({
           )}
         </div>
       </div>
+      {currentStep === 3 && !isAllStepsCompleted() && (
+        <p className="mt-2 text-sm text-red-600">
+          ⚠️ Vui lòng hoàn thành bước 1 và 2 trước khi gửi duyệt
+        </p>
+      )}
+
+      {currentStep === 3 && isAllStepsCompleted() && (
+        <div className="mt-4 rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800">
+          ⚠️ Vui lòng kiểm tra thông tin trước khi gửi
+          <div className="mt-2 flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="confirmCheck"
+              checked={confirmed}
+              onChange={(e) => setConfirmed(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+            />
+            <label htmlFor="confirmCheck">
+              Tôi đã đọc và xác nhận thông tin
+            </label>
+          </div>
+        </div>
+      )}
 
       <div className="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-4 text-center">
         <p className="text-sm text-gray-600">
           <span className="font-semibold text-blue-600">📌 Lưu ý:</span> Sản
-          phẩm của bạn sẽ được gửi đến giảng viên chuyên ngành{" "}
+          phẩm của bạn sẽ được gửi đến giảng viên chuyên ngành
           <span className="font-semibold">{currentStudent?.major}</span> để xét
           duyệt trong vòng 24-48 giờ.
         </p>
-
-        {currentStep === 3 && !isAllStepsCompleted() && (
-          <p className="mt-2 text-sm text-red-600">
-            ⚠️ Vui lòng hoàn thành bước 1 và 2 trước khi gửi duyệt
-          </p>
-        )}
       </div>
     </form>
   );

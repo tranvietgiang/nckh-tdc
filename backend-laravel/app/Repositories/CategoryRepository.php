@@ -3,13 +3,12 @@
 namespace App\Repositories;
 
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoryRepository extends BaseRepository
 {
-    public function __construct(protected CategoryRepository $category_repository) {}
-
-    public function getAllCategories(): array
+    public function getAllCategories(): Collection
     {
-        return Category::all()->toArray();
+        return Category::get();
     }
 }
