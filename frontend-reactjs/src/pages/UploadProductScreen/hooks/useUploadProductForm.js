@@ -4,7 +4,7 @@ import {
   validateUploadStep,
 } from "../utils/uploadFormHelpers";
 import useUploadProduct from "../../../hooks/useUpload/useUploadProduct";
-
+import useCategory from "../../../hooks/useCategory";
 export default function useUploadProductForm() {
   const [formData, setFormData] = useState(initialFormData);
   const [tags, setTags] = useState([]);
@@ -18,15 +18,15 @@ export default function useUploadProductForm() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
-
+  const { categories, isLoadingCategories, categoryError } = useCategory();
   const { isUploadingProduct, uploadProduct } = useUploadProduct();
-  const categories = [
-    { id: 1, name: "Đồ án tốt nghiệp", icon: "🎓", color: "amber" },
-    { id: 2, name: "Đồ án môn học", icon: "📚", color: "indigo" },
-    { id: 3, name: "Sản phẩm nghiên cứu", icon: "🔬", color: "emerald" },
-    { id: 4, name: "Bài tập lớn", icon: "📝", color: "cyan" },
-    { id: 5, name: "Sản phẩm cá nhân", icon: "⭐", color: "rose" },
-  ];
+  // const categories = [
+  //   { id: 1, name: "Đồ án tốt nghiệp", icon: "🎓", color: "amber" },
+  //   { id: 2, name: "Đồ án môn học", icon: "📚", color: "indigo" },
+  //   { id: 3, name: "Sản phẩm nghiên cứu", icon: "🔬", color: "emerald" },
+  //   { id: 4, name: "Bài tập lớn", icon: "📝", color: "cyan" },
+  //   { id: 5, name: "Sản phẩm cá nhân", icon: "⭐", color: "rose" },
+  // ];
 
   const steps = [
     { id: 1, name: "Thông tin cơ bản", icon: "📋" },
