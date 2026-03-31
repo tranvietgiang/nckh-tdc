@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import {
   initialFormData,
   validateUploadStep,
-} from "../utils/uploadFormHelpers";
+} from "../utils/validateUploadStep";
 import useUploadProduct from "../../../hooks/useUpload/useUploadProduct";
-import useCategory from "../../../hooks/useCategory";
+import { toast } from "react-toastify";
+
 export default function useUploadProductForm() {
   const [formData, setFormData] = useState(initialFormData);
   const [tags, setTags] = useState([]);
@@ -18,15 +19,8 @@ export default function useUploadProductForm() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
-  const { categories, isLoadingCategories, categoryError } = useCategory();
+
   const { isUploadingProduct, uploadProduct } = useUploadProduct();
-  // const categories = [
-  //   { id: 1, name: "Đồ án tốt nghiệp", icon: "🎓", color: "amber" },
-  //   { id: 2, name: "Đồ án môn học", icon: "📚", color: "indigo" },
-  //   { id: 3, name: "Sản phẩm nghiên cứu", icon: "🔬", color: "emerald" },
-  //   { id: 4, name: "Bài tập lớn", icon: "📝", color: "cyan" },
-  //   { id: 5, name: "Sản phẩm cá nhân", icon: "⭐", color: "rose" },
-  // ];
 
   const steps = [
     { id: 1, name: "Thông tin cơ bản", icon: "📋" },
@@ -59,9 +53,16 @@ export default function useUploadProductForm() {
     if (Object.keys(stepErrors).length > 0) {
       setErrors(stepErrors);
       setTouchedSteps((prev) => ({ ...prev, [currentStep]: true }));
-      return;
+
+      // Hiển thị toast cho từng lỗi
+      Object.values(stepErrors).forEach((msg) => {
+        toast.error(msg, { autoClose: 2000 });
+      });
+
+      return; // dừng chuyển bước
     }
 
+    // nếu không có lỗi
     setErrors({});
     setTouchedSteps((prev) => ({ ...prev, [currentStep]: true }));
     setCurrentStep((prev) => prev + 1);
@@ -128,6 +129,11 @@ export default function useUploadProductForm() {
   const handleImageUpload = (e) => {
     const fileList = Array.from(e.target.files || []);
 
+    // Giới hạn tổng số file là 10
+    if (images.length + fileList.length > 10) {
+      toast.error("Chỉ được tải lên tối đa 10 ảnh");
+      return;
+    }
     const newImages = fileList.map((file, index) => ({
       id: Date.now() + index,
       file,
@@ -178,10 +184,6 @@ export default function useUploadProductForm() {
     e.preventDefault();
 
     if (currentStep !== 3) return;
-
-    if (!window.confirm("Bạn chắc chắn muốn gửi sản phẩm này để duyệt?")) {
-      return;
-    }
 
     const allErrors = {
       ...validateUploadStep({ step: 1, formData, images, files }),
@@ -274,7 +276,6 @@ export default function useUploadProductForm() {
     touchedSteps,
     selectedImage,
     submitStatus,
-    categories,
     steps,
     isStepValid,
     isAllStepsCompleted,

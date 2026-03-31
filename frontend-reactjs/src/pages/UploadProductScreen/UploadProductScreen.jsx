@@ -6,6 +6,8 @@ import useMajorName from "../../hooks/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
 // import useBlockNavigation from "../../hooks/useBlockNavigation";
+import UploadProductForm from "./hooks/UploadProductForm";
+
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -29,7 +31,6 @@ const UploadProductScreen = () => {
     touchedSteps,
     selectedImage,
     submitStatus,
-    categories,
     steps,
     isStepValid,
     isAllStepsCompleted,
@@ -48,7 +49,7 @@ const UploadProductScreen = () => {
     setSelectedImage,
     setSubmitStatus,
   } = useUploadProductForm(currentStudent);
-  // const { handleSafeBack } = useBlockNavigation(loading);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       {selectedImage && (
@@ -215,7 +216,6 @@ const UploadProductScreen = () => {
         >
           Quay lại
         </button>
-
         <div className="mb-8 text-center">
           <div className="mb-4 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg">
             <svg
@@ -242,7 +242,6 @@ const UploadProductScreen = () => {
             tin để giảng viên duyệt nhanh nhất.
           </p>
         </div>
-
         <div className="mb-8">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => {
@@ -305,7 +304,6 @@ const UploadProductScreen = () => {
             })}
           </div>
         </div>
-
         <div className="mb-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white shadow-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -339,7 +337,35 @@ const UploadProductScreen = () => {
           </div>
         </div>
 
-       
+        {/* form input upload */}
+        <UploadProductForm
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          currentStep={currentStep}
+          majorName={currentStudent?.majorName}
+          handleSelectCategory={handleSelectCategory}
+          handleImageUpload={handleImageUpload}
+          images={images}
+          thumbnailIndex={thumbnailIndex}
+          removeImage={removeImage}
+          setAsThumbnail={setAsThumbnail}
+          handleFileUpload={handleFileUpload}
+          files={files}
+          removeFile={removeFile}
+          tagInput={tagInput}
+          setTagInput={setTagInput}
+          handleAddTag={handleAddTag}
+          tags={tags}
+          removeTag={removeTag}
+          handlePrevStep={handlePrevStep}
+          handleNextStep={handleNextStep}
+          loading={loading}
+          isAllStepsCompleted={isAllStepsCompleted}
+          currentStudent={currentStudent}
+          setSelectedImage={setSelectedImage}
+        />
       </div>
 
       <style jsx>{`
