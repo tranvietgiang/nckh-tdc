@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ROLE } from "../../utils/constants";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { validateLogin } from "./validateLogin";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function Login() {
   // Khi load trang: tự động điền lại nếu trước đó có lưu thông tin
   useEffect(() => {
     document.title = "Đăng nhập";
+
     const savedUser = localStorage.getItem("savedUser");
     const savedPass = localStorage.getItem("savedPass");
 
@@ -31,8 +33,18 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     setLoading(true);
 
+    const errorMsg = validateLogin(username, password);
+
+    if (errorMsg) {
+      toast.dismiss();
+      toast.error(errorMsg, { autoClose: 2000 });
+
+      setLoading(false);
+      return;
+    }
     try {
       const res = await login({
         username,
@@ -48,9 +60,8 @@ export default function Login() {
       }
 
       toast.dismiss();
-      if (res.user.role === ROLE.STUDENT) {
-        navigate("/nckh-student");
-      } else if (res.user.role === ROLE.TEACHER) navigate("/nckh-teacher");
+      if (res.user.role === ROLE.STUDENT) navigate("/nckh-student");
+      else if (res.user.role === ROLE.TEACHER) navigate("/nckh-teacher");
       else if (res.user.role === ROLE.ADMIN) navigate("/nckh-admin");
     } catch (error) {
       console.log("error:", error);
@@ -84,10 +95,17 @@ export default function Login() {
           </Link>
         </div>
 
-        <h2 className="text-center text-2xl font-bold text-gray-800 mb-8">
-          Đăng nhập hệ thống
+        <h1 className="text-[18px] font-semibold text-blue-800 tracking-wide mb-1">
+          TRƯỜNG CAO ĐẲNG CÔNG NGHỆ
+        </h1>
+
+        <h2 className="text-2xl font-extrabold text-blue-800 tracking-wider mb-3">
+          THỦ ĐỨC
         </h2>
 
+        <p className="text-sm font-medium text-gray-600 uppercase tracking-widest mb-5">
+          HỆ THỐNG QUẢN LÝ VÀ TRƯNG BÀY SẢN PHẨM
+        </p>
         {/* Tên đăng nhập */}
         <div className="mb-6">
           <input
@@ -96,7 +114,7 @@ export default function Login() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E63C6]"
-            maxLength={30}
+            maxLength={100}
           />
         </div>
 
@@ -106,6 +124,7 @@ export default function Login() {
             type={showPassword ? "text" : "password"}
             placeholder="Mật khẩu"
             value={password}
+            maxLength={100}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E63C6] pr-10"
           />
