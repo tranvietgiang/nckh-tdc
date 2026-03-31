@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Api\ProductController;
@@ -51,3 +52,10 @@ Route::get('/teacher', [TeacherController::class, 'getTeacherData'])->middleware
 |--------------------------------------------------------------------------
 */
 Route::get('/upload/count-published', [UploadController::class, 'countPublishedProducts'])->middleware('auth:sanctum');
+
+/*
+|--------------------------------------------------------------------------
+| Categories ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::get('/category/all', [CategoryController::class, 'getAll'])->middleware('auth:sanctum');

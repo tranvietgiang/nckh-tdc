@@ -4,4 +4,5 @@ import majorApi from "./major.api";
 import productApi from "./product.api";
 import teacherApi from "./teacher.api";
 import uploadApi from "./upload.api";
-export { authApi, majorApi, productApi, teacherApi, uploadApi };
+import { categoryApi } from "./category.api";
+export { authApi, majorApi, productApi, teacherApi, uploadApi, categoryApi };
