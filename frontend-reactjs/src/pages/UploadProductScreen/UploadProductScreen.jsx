@@ -7,7 +7,6 @@ import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCou
 import useUploadProductForm from "./hooks/useUploadProductForm";
 // import useBlockNavigation from "../../hooks/useBlockNavigation";
 import UploadProductForm from "./hooks/UploadProductForm";
-
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -48,6 +47,15 @@ const UploadProductScreen = () => {
     handleSubmit,
     setSelectedImage,
     setSubmitStatus,
+
+    //view draft
+    drafts,
+    openViewDraft,
+    setOpenViewDraft,
+    handleSaveDraft,
+    handleLoadDraft,
+    handleViewDraft,
+    handleDeleteDraft,
   } = useUploadProductForm(currentStudent);
 
   return (
@@ -365,6 +373,14 @@ const UploadProductScreen = () => {
           isAllStepsCompleted={isAllStepsCompleted}
           currentStudent={currentStudent}
           setSelectedImage={setSelectedImage}
+          // view draft
+          drafts={drafts}
+          openViewDraft={openViewDraft}
+          setOpenViewDraft={setOpenViewDraft}
+          handleSaveDraft={handleSaveDraft}
+          handleViewDraft={handleViewDraft}
+          handleLoadDraft={handleLoadDraft}
+          handleDeleteDraft={handleDeleteDraft}
         />
       </div>
 

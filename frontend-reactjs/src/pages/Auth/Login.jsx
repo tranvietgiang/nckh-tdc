@@ -6,7 +6,7 @@ import { ROLE } from "../../utils/constants";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { validateLogin } from "./validateLogin";
-
+import { FaUser, FaLock } from "react-icons/fa";
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
@@ -111,50 +111,38 @@ export default function Login() {
         <p className="text-sm font-medium text-gray-600 uppercase tracking-widest mb-5">
           HỆ THỐNG QUẢN LÝ VÀ TRƯNG BÀY SẢN PHẨM
         </p>
+
         {/* Tên đăng nhập */}
-        <div className="mb-6">
+        <div className="relative mb-6">
+          <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
             placeholder="Tên đăng nhập"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E63C6]"
+            className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 outline-none focus:ring-2 focus:ring-[#1E63C6] focus:border-transparent"
             maxLength={100}
           />
         </div>
 
         {/* Mật khẩu */}
         <div className="relative mb-4">
+          <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Mật khẩu"
             value={password}
             maxLength={100}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E63C6] pr-10"
+            className="w-full border border-gray-300 rounded-lg pl-10 pr-10 py-3 outline-none focus:ring-2 focus:ring-[#1E63C6] focus:border-transparent"
           />
-
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-3 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
           >
-            {showPassword ? <Eye size={22} /> : <EyeOff size={22} />}
+            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
           </button>
-        </div>
-
-        {/* Checkbox */}
-        <div className="flex items-center mb-6">
-          <input
-            type="checkbox"
-            id="remember"
-            checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
-            className="mr-2 accent-[#1E63C6]"
-          />
-          <label htmlFor="remember" className="text-gray-600">
-            Ghi nhớ đăng nhập
-          </label>
         </div>
 
         {/* Button */}
