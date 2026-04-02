@@ -3,7 +3,7 @@ import {
   initialFormData,
   validateUploadStep,
 } from "../utils/validateUploadStep";
-import useUploadProduct from "../../../hooks/useUpload/useUploadProduct";
+import { uploadApi } from "../../../hooks/useUpload/uploadApi.api";
 import { toast } from "react-toastify";
 
 export default function useUploadProductForm() {
@@ -21,7 +21,6 @@ export default function useUploadProductForm() {
   const [touchedSteps, setTouchedSteps] = useState({});
   const [openViewDraft, setOpenViewDraft] = useState(false);
   const [drafts, setDrafts] = useState([]);
-  const { isUploadingProduct, uploadProduct } = useUploadProduct();
 
   const steps = [
     { id: 1, name: "Thông tin cơ bản", icon: "📋" },
@@ -200,8 +199,6 @@ export default function useUploadProductForm() {
     setLoading(true);
     setSubmitStatus(null);
 
-    if (isUploadingProduct) return;
-
     try {
       const payload = new FormData();
 
@@ -234,7 +231,7 @@ export default function useUploadProductForm() {
       });
 
       // hàm upload api
-      const res = await uploadProduct(payload);
+      const res = await uploadApi.uploadProduct(payload);
       console.log(res);
 
       // if (!res.ok) {

@@ -53,6 +53,8 @@ Route::get('/teacher', [TeacherController::class, 'getTeacherData'])->middleware
 |--------------------------------------------------------------------------
 */
 Route::get('/upload/count-published', [UploadController::class, 'countPublishedProducts'])->middleware('auth:sanctum');
+Route::post('/upload', [UploadController::class, 'upload2'])
+    ->middleware('auth:sanctum'); // guard token
 
 /*
 |--------------------------------------------------------------------------
