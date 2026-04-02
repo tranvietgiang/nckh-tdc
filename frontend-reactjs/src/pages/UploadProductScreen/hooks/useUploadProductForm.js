@@ -19,7 +19,8 @@ export default function useUploadProductForm() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
-
+  const [openViewDraft, setOpenViewDraft] = useState(false);
+  const [drafts, setDrafts] = useState([]);
   const { isUploadingProduct, uploadProduct } = useUploadProduct();
 
   const steps = [
@@ -260,6 +261,86 @@ export default function useUploadProductForm() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
+  const handleSaveDraft = () => {
+    const draftData = {
+      id: Date.now(), // 🔥 quan trọng
+      formData,
+      images,
+      files,
+      tags,
+      currentStep,
+      createdAt: new Date().toISOString(),
+    };
+
+    const existingDrafts =
+      JSON.parse(localStorage.getItem("product_drafts")) || [];
+
+    const updatedDrafts = [draftData, ...existingDrafts];
+
+    localStorage.setItem("product_drafts", JSON.stringify(updatedDrafts));
+
+    toast.success("Đã lưu nháp!");
+  };
+
+  useEffect(() => {
+    const drafts = localStorage.getItem("product_drafts"); // ✅ đúng key
+
+    if (drafts) {
+      try {
+        const parsed = JSON.parse(drafts);
+
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const latestDraft = parsed[0]; // lấy bản mới nhất
+
+          setFormData((prev) => ({
+            ...prev,
+            ...latestDraft.formData,
+          }));
+
+          setImages(latestDraft.images ?? []);
+          setFiles(latestDraft.files ?? []);
+          setTags(latestDraft.tags ?? []);
+          setCurrentStep(latestDraft.currentStep ?? 1);
+        }
+      } catch (err) {
+        console.error("Lỗi parse draft:", err);
+      }
+    }
+  }, []);
+
+  const handleViewDraft = () => {
+    const stored = JSON.parse(localStorage.getItem("product_drafts")) || [];
+
+    setDrafts(Array.isArray(stored) ? stored : []);
+    setOpenViewDraft(true);
+  };
+
+  const handleLoadDraft = (draft) => {
+    setFormData(draft.formData || {});
+    setImages(draft.images || []);
+    setFiles(draft.files || []);
+    setTags(draft.tags || []);
+    setCurrentStep(draft.currentStep || 1);
+
+    setOpenViewDraft(false); // đóng modal
+    toast.success("Đã load bản nháp!");
+  };
+
+  const handleDeleteDraft = (id) => {
+    const stored = JSON.parse(localStorage.getItem("product_drafts")) || [];
+
+    // ❌ loại bỏ luôn draft có id đó
+    const updatedDrafts = stored.filter((draft) => draft.id !== id);
+
+    // ✅ ghi đè lại localStorage
+    localStorage.setItem("product_drafts", JSON.stringify(updatedDrafts));
+
+    // ✅ update UI
+    setDrafts(updatedDrafts);
+
+    toast.success("Đã xóa bản nháp!");
+  };
+
   return {
     formData,
     setFormData,
@@ -277,6 +358,8 @@ export default function useUploadProductForm() {
     selectedImage,
     submitStatus,
     steps,
+    openViewDraft,
+    drafts,
     isStepValid,
     isAllStepsCompleted,
     handleNextStep,
@@ -294,5 +377,10 @@ export default function useUploadProductForm() {
     handleSubmit,
     setSelectedImage,
     setSubmitStatus,
+    handleSaveDraft,
+    handleViewDraft,
+    handleLoadDraft,
+    setOpenViewDraft,
+    handleDeleteDraft,
   };
 }
