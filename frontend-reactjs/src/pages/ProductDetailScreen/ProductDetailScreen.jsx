@@ -14,7 +14,18 @@ const ProductDetailScreen = () => {
 
   console.log("id:", id);
   // console.log("product:", product);
+  const getImage = (path) => {
+    if (!path) return "";
 
+    // Nếu path là object, lấy image_url
+    if (typeof path === "object" && path.image_url) {
+      path = path.image_url;
+    }
+
+    if (path.startsWith("http")) return path;
+
+    return `http://localhost:8000/storage/${path}`;
+  };
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -96,7 +107,7 @@ const ProductDetailScreen = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={selectedImage?.image_url}
+              src={getImage(selectedImage)}
               alt="Product"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />
@@ -306,7 +317,7 @@ const ProductDetailScreen = () => {
 
               <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
                 <img
-                  src={product.images?.[0]?.image_url || product.thumbnail}
+                  src={getImage(product.images?.[0] || product.thumbnail)}
                   alt={product.title}
                   className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
                   onClick={() =>

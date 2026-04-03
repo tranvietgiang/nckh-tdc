@@ -185,6 +185,7 @@ class ProductRepository extends BaseRepository
                 DB::raw('COALESCE(product_statistics.likes, 0) as likes'),
                 'reviews.comment as feedback'
             )
+            ->orderByDesc('products.created_at') // 🔥 dùng cái này cho chắc
             ->get();
     }
 }

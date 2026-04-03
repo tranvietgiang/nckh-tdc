@@ -759,7 +759,10 @@ const UploadProductForm = ({
               )}
 
               <button
-                onClick={() => setOpenViewDraft(false)}
+                onClick={() => {
+                  setOpenViewDraft(false);
+                  window.location.reload();
+                }}
                 className="mt-4 w-full rounded-lg bg-gray-200 py-2 hover:bg-gray-300"
               >
                 Đóng

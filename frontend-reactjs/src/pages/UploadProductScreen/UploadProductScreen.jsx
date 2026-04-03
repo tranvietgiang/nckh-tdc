@@ -5,6 +5,7 @@ import { mapCurrentStudent } from "../../utils/userMapper";
 import useMajorName from "../../hooks/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
+import { useNavigate } from "react-router-dom";
 // import useBlockNavigation from "../../hooks/useBlockNavigation";
 import UploadProductForm from "./hooks/UploadProductForm";
 const UploadProductScreen = () => {
@@ -12,7 +13,7 @@ const UploadProductScreen = () => {
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
   const currentStudent = mapCurrentStudent(user, majorName);
-
+  const navigate = useNavigate();
   const { upload_count, upload_loading, upload_error } =
     useUploadPublishedCount();
 
@@ -162,7 +163,7 @@ const UploadProductScreen = () => {
             </div>
 
             <button
-              onClick={() => setSubmitStatus(null)}
+              onClick={() => navigate("/nckh-student")}
               className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 font-medium text-white transition hover:from-blue-700 hover:to-indigo-700"
             >
               Xem sản phẩm của tôi

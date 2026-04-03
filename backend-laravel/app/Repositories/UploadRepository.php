@@ -9,6 +9,8 @@ use App\Models\ProductTag;
 use App\Models\User;
 use App\Repositories\MajorRepository;
 
+use function Symfony\Component\Clock\now;
+
 class UploadRepository extends BaseRepository
 {
 
@@ -30,12 +32,14 @@ class UploadRepository extends BaseRepository
      */
     public function upload(array $data, array $uploadedImages, array $uploadedFiles, array $tagIds): Product
     {
+        $thumbnail = $uploadedImages[0];
+        $otherImages = array_slice($uploadedImages, 1);
 
         // 1 Tạo product chính
         $product = Product::create([
             'title' => $data['title'],
             'description' => $data['description'],
-            'thumbnail' => json_encode($uploadedImages), // lưu mảng ID ảnh
+            'thumbnail' => $thumbnail,
             'github_link' => $data['github_link'] ?? null,
             'demo_link' => $data['demo_link'] ?? null,
             'status' => 'pending',
@@ -44,8 +48,10 @@ class UploadRepository extends BaseRepository
             'major_id' => $data['major_id'],
             'files' => json_encode($uploadedFiles), // lưu mảng ID file
             'tags' => json_encode($tagIds), // lưu mảng ID tag
-            'approved_by' => $idTeacher ?? null,
+            'approved_by' => null,
+            'submitted_at' => now()->format('Y-m-d')
         ]);
+
 
         // 2 Lưu ProductFiles
         foreach ($uploadedFiles as $fileId) {
@@ -56,10 +62,10 @@ class UploadRepository extends BaseRepository
         }
 
         // 3 Lưu ProductImages
-        foreach ($uploadedImages as $imageId) {
+        foreach ($otherImages as $imageUrl) {
             ProductImage::create([
                 'product_id' => $product->product_id,
-                'image_url' => $imageId,
+                'image_url' => $imageUrl,
             ]);
         }
 
