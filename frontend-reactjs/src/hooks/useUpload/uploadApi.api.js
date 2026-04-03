@@ -8,13 +8,13 @@ export const uploadApi = {
     console.log("Upload formData:", formData);
 
     try {
-      const token = getToken(); // lấy token Bearer
+      const token = getToken();
       const res = await axios.post(`${API_URL}/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Accept: "application/json", // ⚠️ QUAN TRỌNG
+          Accept: "application/json",
 
-          Authorization: token ? `Bearer ${token}` : "", // gắn Bearer token
+          Authorization: token ? `Bearer ${token}` : "",
         },
       });
       return res.data;

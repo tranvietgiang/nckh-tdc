@@ -36,9 +36,8 @@ class UploadController extends Controller
         ]);
     }
 
-    public function upload2(UploadRequest $request)
+    public function upload(UploadRequest $request)
     {
-
         try {
             $product = $this->upload_service->upload($request->validated());
 

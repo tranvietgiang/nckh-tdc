@@ -30,16 +30,8 @@ class UploadRepository extends BaseRepository
      */
     public function upload(array $data, array $uploadedImages, array $uploadedFiles, array $tagIds): Product
     {
-        // 1️⃣ Lấy teacher theo major
-        $nameMajor = $this->major_repository->getNameById($this->getCurrentUserId());
 
-        $idTeacher = Product::query()
-            ->join('users', 'products.user_id', '=', 'users.user_id')
-            ->where('major_id', $nameMajor)
-            ->where('users.role', 'teacher')
-            ->value('user_id');
-
-        // 2️⃣ Tạo product chính
+        // 1 Tạo product chính
         $product = Product::create([
             'title' => $data['title'],
             'description' => $data['description'],
@@ -55,7 +47,7 @@ class UploadRepository extends BaseRepository
             'approved_by' => $idTeacher ?? null,
         ]);
 
-        // 3️⃣ Lưu ProductFiles
+        // 2 Lưu ProductFiles
         foreach ($uploadedFiles as $fileId) {
             ProductFile::create([
                 'product_id' => $product->product_id,
@@ -63,15 +55,15 @@ class UploadRepository extends BaseRepository
             ]);
         }
 
-        // 4️⃣ Lưu ProductImages
+        // 3 Lưu ProductImages
         foreach ($uploadedImages as $imageId) {
             ProductImage::create([
                 'product_id' => $product->product_id,
-                'image_id' => $imageId,
+                'image_url' => $imageId,
             ]);
         }
 
-        // 5️⃣ Lưu ProductTags
+        // 4 Lưu ProductTags
         foreach ($tagIds as $tagId) {
             ProductTag::create([
                 'product_id' => $product->product_id,
