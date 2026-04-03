@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   initialFormData,
   validateUploadStep,
 } from "../utils/validateUploadStep";
-import useUploadProduct from "../../../hooks/useUpload/useUploadProduct";
+import { uploadApi } from "../../../hooks/useUpload/uploadApi.api";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 export default function useUploadProductForm() {
   const [formData, setFormData] = useState(initialFormData);
@@ -21,7 +22,7 @@ export default function useUploadProductForm() {
   const [touchedSteps, setTouchedSteps] = useState({});
   const [openViewDraft, setOpenViewDraft] = useState(false);
   const [drafts, setDrafts] = useState([]);
-  const { isUploadingProduct, uploadProduct } = useUploadProduct();
+  const { user } = useContext(AuthContext);
 
   const steps = [
     { id: 1, name: "Thông tin cơ bản", icon: "📋" },
@@ -200,8 +201,6 @@ export default function useUploadProductForm() {
     setLoading(true);
     setSubmitStatus(null);
 
-    if (isUploadingProduct) return;
-
     try {
       const payload = new FormData();
 
@@ -210,7 +209,7 @@ export default function useUploadProductForm() {
       payload.append("content", formData.content || "");
       payload.append("github_link", formData.github_link || "");
       payload.append("demo_link", formData.demo_link || "");
-      payload.append("major_id", formData.major_id);
+      payload.append("major_id", user.major_id);
       payload.append("cate_id", formData.cate_id);
 
       console.log(payload);
@@ -234,7 +233,7 @@ export default function useUploadProductForm() {
       });
 
       // hàm upload api
-      const res = await uploadProduct(payload);
+      const res = await uploadApi.uploadProduct(payload);
       console.log(res);
 
       // if (!res.ok) {
@@ -261,11 +260,29 @@ export default function useUploadProductForm() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  const handleSaveDraft = () => {
+  const toBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+  };
+
+  const handleSaveDraft = async () => {
+    const imagesBase64 = await Promise.all(
+      images.map(async (img) => ({
+        id: img.id,
+        url: await toBase64(img.file), // 🔥 convert
+        name: img.name,
+        size: img.size,
+      })),
+    );
+
     const draftData = {
-      id: Date.now(), // 🔥 quan trọng
+      id: Date.now(),
       formData,
-      images,
+      images: imagesBase64, // ✅ đã safe
       files,
       tags,
       currentStep,
@@ -282,32 +299,6 @@ export default function useUploadProductForm() {
     toast.success("Đã lưu nháp!");
   };
 
-  useEffect(() => {
-    const drafts = localStorage.getItem("product_drafts"); // ✅ đúng key
-
-    if (drafts) {
-      try {
-        const parsed = JSON.parse(drafts);
-
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const latestDraft = parsed[0]; // lấy bản mới nhất
-
-          setFormData((prev) => ({
-            ...prev,
-            ...latestDraft.formData,
-          }));
-
-          setImages(latestDraft.images ?? []);
-          setFiles(latestDraft.files ?? []);
-          setTags(latestDraft.tags ?? []);
-          setCurrentStep(latestDraft.currentStep ?? 1);
-        }
-      } catch (err) {
-        console.error("Lỗi parse draft:", err);
-      }
-    }
-  }, []);
-
   const handleViewDraft = () => {
     const stored = JSON.parse(localStorage.getItem("product_drafts")) || [];
 
@@ -317,12 +308,22 @@ export default function useUploadProductForm() {
 
   const handleLoadDraft = (draft) => {
     setFormData(draft.formData || {});
-    setImages(draft.images || []);
+
+    // 🔥 convert lại format images
+    const loadedImages = (draft.images || []).map((img, index) => ({
+      id: img.id || Date.now() + index,
+      file: null, // ❗ không có file nữa
+      url: img.url, // ✅ base64 vẫn hiển thị được
+      name: img.name,
+      size: img.size,
+    }));
+
+    setImages(loadedImages);
     setFiles(draft.files || []);
     setTags(draft.tags || []);
     setCurrentStep(draft.currentStep || 1);
 
-    setOpenViewDraft(false); // đóng modal
+    setOpenViewDraft(false);
     toast.success("Đã load bản nháp!");
   };
 
