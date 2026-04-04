@@ -188,10 +188,7 @@ const StudentScreen = () => {
             >
               <div className="relative h-48">
                 <img
-                  src={
-                    item.thumbnail ||
-                    "https://via.placeholder.com/400x300?text=No+Image"
-                  }
+                  src={`http://localhost:8000/storage/${item.thumbnail}`}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />

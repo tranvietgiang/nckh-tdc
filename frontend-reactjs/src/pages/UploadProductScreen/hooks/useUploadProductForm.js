@@ -6,7 +6,7 @@ import {
 import { uploadApi } from "../../../hooks/useUpload/uploadApi.api";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../../contexts/AuthContext";
-
+// import { useNavigate } from "react-router-dom";
 export default function useUploadProductForm() {
   const [formData, setFormData] = useState(initialFormData);
   const [tags, setTags] = useState([]);
@@ -23,7 +23,7 @@ export default function useUploadProductForm() {
   const [openViewDraft, setOpenViewDraft] = useState(false);
   const [drafts, setDrafts] = useState([]);
   const { user } = useContext(AuthContext);
-
+  // const navigate = useNavigate();
   const steps = [
     { id: 1, name: "Thông tin cơ bản", icon: "📋" },
     { id: 2, name: "Hình ảnh & Files", icon: "🖼️" },
@@ -241,6 +241,7 @@ export default function useUploadProductForm() {
       // }
 
       setSubmitStatus("success");
+      // navigate();
     } catch (error) {
       console.error(error);
       setSubmitStatus("error");

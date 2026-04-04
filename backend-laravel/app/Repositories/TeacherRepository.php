@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class TeacherRepository extends BaseRepository
 {
-
     // trả về kết quả sau khi đếm được dựa vào id người dùng
     public function productStatistic(): ?int
     {
