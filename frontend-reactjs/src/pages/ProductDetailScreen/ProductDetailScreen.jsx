@@ -14,18 +14,18 @@ const ProductDetailScreen = () => {
 
   console.log("id:", id);
   // console.log("product:", product);
-  const getImage = (path) => {
-    if (!path) return "";
+  // const getImage = (path) => {
+  //   if (!path) return "";
 
-    // Nếu path là object, lấy image_url
-    if (typeof path === "object" && path.image_url) {
-      path = path.image_url;
-    }
+  //   // Nếu path là object, lấy image_url
+  //   if (typeof path === "object" && path.image_url) {
+  //     path = path.image_url;
+  //   }
 
-    if (path.startsWith("http")) return path;
+  //   if (path.startsWith("http")) return path;
 
-    return `http://localhost:8000/storage/${path}`;
-  };
+  //   return `http://localhost:8000/storage/${path}`;
+  // };
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -107,7 +107,7 @@ const ProductDetailScreen = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={getImage(selectedImage)}
+              src={selectedImage}
               alt="Product"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />
@@ -317,7 +317,7 @@ const ProductDetailScreen = () => {
 
               <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
                 <img
-                  src={getImage(product.thumbnail)}
+                  src={product.thumbnail}
                   alt={product.title}
                   className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
                   onClick={() => setSelectedImage(product.thumbnail)}
@@ -329,11 +329,11 @@ const ProductDetailScreen = () => {
                   {product.images.map((img, index) => (
                     <button
                       key={img.product_image_id || index}
-                      onClick={() => setSelectedImage(img)}
+                      onClick={() => setSelectedImage(img.image_url)}
                       className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition"
                     >
                       <img
-                        src={getImage(img.image_url)}
+                        src={img.image_url}
                         alt=""
                         className="w-full h-full object-cover"
                       />

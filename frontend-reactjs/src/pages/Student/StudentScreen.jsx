@@ -188,7 +188,7 @@ const StudentScreen = () => {
             >
               <div className="relative h-48">
                 <img
-                  src={`http://localhost:8000/storage/${item.thumbnail}`}
+                  src={item.thumbnail}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />
