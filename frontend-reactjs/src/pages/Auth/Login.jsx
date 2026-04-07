@@ -6,7 +6,7 @@ import { ROLE } from "../../utils/constants";
 import { toast } from "react-toastify";
 import { validateLogin } from "./validateLogin";
 import { FaUser, FaLock } from "react-icons/fa";
-import ValidateUrl from "../../common/validateUrl";
+
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
