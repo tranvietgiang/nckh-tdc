@@ -36,7 +36,7 @@ class AuthService
         // tạo token
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // RateLimiter::clear($key); // đúng → reset
+        // RateLimiter::clear($key); // đúng → reset12
 
         return [
             'success' => true,
