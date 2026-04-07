@@ -1,7 +1,7 @@
 import { useState, useContext, useRef } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import useClickOutside from "../../hooks/useClickOutside";
+import useClickOutside from "../hooks/useClickOutside";
 
 function UserDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);

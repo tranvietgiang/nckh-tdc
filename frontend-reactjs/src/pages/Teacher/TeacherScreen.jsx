@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import UserDropdown from "../../components/common/UserDropdown";
+import UserDropdown from "../../common/UserDropdown";
 import useTitle from "../../hooks/useTitle";
 import { AuthContext } from "../../contexts/AuthContext";
 import useMajorName from "../../hooks/useMajorName";

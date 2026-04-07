@@ -6,7 +6,8 @@ import {
   setToken,
   setUser,
   clearAuth,
-  removeToken,removeUser
+  removeToken,
+  removeUser,
 } from "../utils/storage";
 import authApi from "../api/auth.api";
 
@@ -49,28 +50,28 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (data) => {
-  try {
-    const res = await authApi.login(data);
+    try {
+      const res = await authApi.login(data);
 
-    if (!res || !res.token || !res.user) {
-      throw new Error("Sai tài khoản hoặc mật khẩu!");
+      if (!res || !res.token || !res.user) {
+        throw new Error("Sai tài khoản hoặc mật khẩu!");
+      }
+
+      setToken(res.token);
+      setTokenState(res.token);
+
+      setUser(res.user);
+      setUserState(res.user);
+
+      return res;
+    } catch (error) {
+      removeToken();
+      removeUser();
+      setTokenState(null);
+      setUserState(null);
+      throw error;
     }
-
-    setToken(res.token);
-    setTokenState(res.token);
-
-    setUser(res.user);
-    setUserState(res.user);
-
-    return res;
-  } catch (error) {
-    removeToken();
-    removeUser();
-    setTokenState(null);
-    setUserState(null);
-    throw error;
-  }
-};
+  };
   const logout = async () => {
     try {
       await authApi.logout();
