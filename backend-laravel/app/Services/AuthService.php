@@ -9,12 +9,7 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class AuthService
 {
-    protected $userRepository;
-
-    public function __construct(UserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
+    public function __construct(protected UserRepository $userRepository) {}
 
     public function login(array $data)
     {
@@ -37,10 +32,8 @@ class AuthService
         // tạo token
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // 🔑 Laravel session + remember me
-        $remember = $data['remember_token'] ?? false; // frontend gửi remember checkbox
-        Auth::login($user, $remember); // tự set session + cookie remember_token nếu $remember = true
-        // RateLimiter::clear($key); // đúng → reset
+        // RateLimiter::clear($key); // đúng → reset12
+
 
         return [
             'success' => true,
