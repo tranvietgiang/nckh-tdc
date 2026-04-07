@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthService
 {
@@ -34,6 +35,8 @@ class AuthService
 
         // tạo token
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // RateLimiter::clear($key); // đúng → reset
 
         return [
             'success' => true,
