@@ -186,7 +186,10 @@ const StudentScreen = () => {
               key={item.product_id}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
             >
-              <div className="relative h-48">
+              <div
+                onClick={() => handleViewDetail(item.product_id)}
+                className="relative h-48 cursor-pointer"
+              >
                 <img
                   src={item.thumbnail}
                   alt={item.title}
