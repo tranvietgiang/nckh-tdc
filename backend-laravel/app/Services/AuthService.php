@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
 
 class AuthService
 {
@@ -17,7 +16,7 @@ class AuthService
 
     public function login(array $data)
     {
-        $user = $this->userRepository->findById($data['username']);
+        $user = $this->userRepository->findByUsername($data['username']);
 
         if (!$user) {
             return [
@@ -35,8 +34,6 @@ class AuthService
 
         // tạo token
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        // RateLimiter::clear($key); // đúng → reset
 
         return [
             'success' => true,

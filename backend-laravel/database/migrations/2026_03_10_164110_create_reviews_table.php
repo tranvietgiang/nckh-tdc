@@ -19,9 +19,9 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
 
-            $table->string('teacher_id', 15);
+            $table->string('lecturer_id', 15);
 
-            $table->foreign('teacher_id')
+            $table->foreign('lecturer_id')
                 ->references('user_id')
                 ->on('users')
                 ->onDelete('cascade');

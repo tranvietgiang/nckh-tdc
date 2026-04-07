@@ -1,28 +1,22 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Auth/Login";
-import GuestRoute from "./guest.route";
-import RoleRoutes from "./protected.routes";
-import VisitorScreen from "../pages/VisitorScreen/VisitorScreen";
-import NotFoundPage from "../pages/NotFoundScreen/NotFoundScreen";
+import Dashboard from "../pages/Admin/Dashboard";
+import ProtectedRoute from "./protected.route";
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/login" element={<Login />} />
+
         <Route
-          path="/login"
+          path="/"
           element={
-            <GuestRoute>
-              <Login />
-            </GuestRoute>
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
           }
         />
-
-        <Route path="/nckh-visitor" element={<VisitorScreen />} />
-
-        <Route path="/404" element={<NotFoundPage />} />
-
-        <Route path="/*" element={<RoleRoutes />} />
       </Routes>
     </BrowserRouter>
   );

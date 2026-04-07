@@ -1,32 +1,24 @@
+// src/api/axiosClient.js
 import axios from "axios";
 import { getToken, clearAuth } from "../utils/storage";
 
-// Hàm tạo axios client
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  withCredentials: true, // nếu dùng Laravel Sanctum
 });
 
-// Request interceptor
+// Gắn token tự động
 axiosClient.interceptors.request.use((config) => {
   const token = getToken();
-
-  if (token) {
-    // Nếu token có → dùng Bearer token (API token)
-    config.headers.Authorization = `Bearer ${token}`;
-    config.withCredentials = false; // không dùng cookie
-  } else {
-    // Nếu không token → SPA cookie/session
-    config.withCredentials = true;
-  }
-
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Response interceptor
+// Bắt lỗi 401 → logout
 axiosClient.interceptors.response.use(
   (res) => res.data,
   (error) => {
@@ -35,7 +27,7 @@ axiosClient.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosClient;
