@@ -41,8 +41,8 @@ class UploadService extends BaseRepository
                 // check AI bằng URL thật
                 $result = $this->Check_ai_image->checkImage($url);
 
-                if (($result['results'][0]['flagged'] ?? false)) {
-                    throw new \Exception("Ảnh #" . ($index + 1) . " vi phạm nội dung");
+                if (($result['safe'] ?? true) === false) {
+                    throw new \Exception("Ảnh vi phạm");
                 }
 
                 $uploadedImages[] = $url;

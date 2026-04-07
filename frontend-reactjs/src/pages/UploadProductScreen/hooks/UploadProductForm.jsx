@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import useCategory from "../../../hooks/useCategory";
 import { confirmToast } from "../../../components/common/confirmToast";
+import useMajorName from "../../../hooks/useMajorName";
+import { AuthContext } from "../../../contexts/AuthContext";
+
 const UploadProductForm = ({
   formData,
   handleChange,
   handleSubmit,
   errors,
   currentStep,
-  majorName,
+
   handleSelectCategory,
   handleImageUpload,
   images,
@@ -45,6 +48,9 @@ const UploadProductForm = ({
 }) => {
   const { categories, isLoadingCategories, categoryError } = useCategory();
   const [confirmed, setConfirmed] = useState(false);
+  const { user } = useContext(AuthContext);
+
+  const { majorName } = useMajorName(user?.major_id);
 
   return (
     <>
@@ -131,9 +137,9 @@ const UploadProductForm = ({
                       </div>
 
                       <div>
-                        <p className="text-sm text-gray-500">Ngành đã chọn</p>
+                        <p className="text-sm text-gray-500">Ngành</p>
                         <p className="font-medium text-gray-800">
-                          {majorName || "Chưa chọn chuyên ngành"}
+                          {majorName || "Lỗi"}
                         </p>
                       </div>
                     </div>

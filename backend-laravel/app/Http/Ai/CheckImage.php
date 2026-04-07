@@ -2,21 +2,38 @@
 
 namespace App\Http\Ai;
 
-use Illuminate\Support\Facades\Http;
-
+use OpenAI\Client;
 
 class CheckImage
 {
+    protected $client;
+
+    public function __construct()
+    {
+        $this->client = \OpenAI::client(config('services.openai.key'));
+    }
 
     public function checkImage($imageUrl)
     {
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-        ])->post('https://api.openai.com/v1/moderations', [
-            'model' => 'omni-moderation-latest',
-            'input' => $imageUrl
+        $response = $this->client->responses()->create([
+            'model' => 'gpt-4.1-mini',
+            'input' => [
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'input_text',
+                            'text' => 'Kiểm tra ảnh này có nội dung nhạy cảm không. Trả về JSON: {"safe": true/false, "reason": ""}'
+                        ],
+                        [
+                            'type' => 'input_image',
+                            'image_url' => $imageUrl
+                        ]
+                    ]
+                ]
+            ]
         ]);
 
-        return $response->json();
+        return $response->output[0]->content[0]->text;
     }
 }

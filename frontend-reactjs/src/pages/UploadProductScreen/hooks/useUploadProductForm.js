@@ -23,6 +23,8 @@ export default function useUploadProductForm() {
   const [openViewDraft, setOpenViewDraft] = useState(false);
   const [drafts, setDrafts] = useState([]);
   const { user } = useContext(AuthContext);
+
+  // console.log(majorName);
   // const navigate = useNavigate();
   const steps = [
     { id: 1, name: "Thông tin cơ bản", icon: "📋" },

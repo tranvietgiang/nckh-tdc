@@ -8,6 +8,7 @@ import useUploadProductForm from "./hooks/useUploadProductForm";
 import { useNavigate } from "react-router-dom";
 // import useBlockNavigation from "../../hooks/useBlockNavigation";
 import UploadProductForm from "./hooks/UploadProductForm";
+import useTitle from "../../hooks/useTitle";
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -16,6 +17,8 @@ const UploadProductScreen = () => {
   const navigate = useNavigate();
   const { upload_count, upload_loading, upload_error } =
     useUploadPublishedCount();
+
+  useTitle("Trang đăng sản phẩm");
 
   const {
     formData,
