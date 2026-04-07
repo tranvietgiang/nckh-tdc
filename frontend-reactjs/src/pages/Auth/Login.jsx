@@ -4,9 +4,9 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { ROLE } from "../../utils/constants";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { validateLogin } from "./validateLogin";
 import { FaUser, FaLock } from "react-icons/fa";
+// import ValidateUrl from "../../common/validateUrl";
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
@@ -22,11 +22,9 @@ export default function Login() {
     document.title = "Đăng nhập";
 
     const savedUser = localStorage.getItem("savedUser");
-    const savedPass = localStorage.getItem("savedPass");
 
-    if (savedUser && savedPass) {
+    if (savedUser) {
       setUsername(savedUser);
-      setPassword(savedPass);
       setRemember(true);
     }
   }, []);
@@ -46,17 +44,23 @@ export default function Login() {
       return;
     }
     try {
-      const res = await login({
-        username,
-        password,
-      });
+      const res = await login(
+        {
+          username,
+          password,
+        },
+        { withCredentials: true },
+      );
 
       if (remember) {
         localStorage.setItem("savedUser", username);
-        localStorage.setItem("savedPass", password);
       } else {
         localStorage.removeItem("savedUser");
-        localStorage.removeItem("savedPass");
+      }
+
+      if (res.success) {
+        localStorage.setItem("remember_token", res.token); // token SPA
+        // cookie remember_token đã được Laravel set → tự login khi reload
       }
 
       toast.dismiss();
@@ -144,7 +148,25 @@ export default function Login() {
             {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
           </button>
         </div>
+        <div className="flex items-center justify-between mb-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-600">Ghi nhớ đăng nhập</span>
+          </label>
 
+          {/* Optional: Thêm link quên mật khẩu nếu cần */}
+          <a
+            href="#"
+            className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Quên mật khẩu?
+          </a>
+        </div>
         {/* Button */}
         <button
           type="submit"
