@@ -31,4 +31,6 @@ class AuthController extends Controller
             'message' => 'Đăng xuất thành công!'
         ]);
     }
+
+    public function me() {}
 }

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import UserDropdown from "../components/common/UserDropdown";
+import UserDropdown from "../common/UserDropdown";
 import useClickOutside from "../hooks/useClickOutside";
 
 const menuItems = [

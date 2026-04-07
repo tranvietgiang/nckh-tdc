@@ -4,6 +4,7 @@ import { getToken, clearAuth } from "../utils/storage";
 // Hàm tạo axios client
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, // 🔥 QUAN TRỌNG NHẤT
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",

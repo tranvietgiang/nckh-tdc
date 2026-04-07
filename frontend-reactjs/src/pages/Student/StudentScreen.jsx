@@ -1,6 +1,6 @@
 import React, { useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import UserDropdown from "../../components/common/UserDropdown";
+import UserDropdown from "../../common/UserDropdown";
 import { AuthContext } from "../../contexts/AuthContext";
 import useTitle from "../../hooks/useTitle";
 import useMajorName from "../../hooks/useMajorName";

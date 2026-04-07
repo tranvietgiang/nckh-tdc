@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\UploadController;
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
 
+Route::get('/me', [AuthController::class, 'me']); // trả user từ cookie
 // đăng xuất
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 

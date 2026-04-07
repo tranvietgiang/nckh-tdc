@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -36,6 +37,9 @@ class AuthService
         // tạo token
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // 🔑 Laravel session + remember me
+        $remember = $data['remember_token'] ?? false; // frontend gửi remember checkbox
+        Auth::login($user, $remember); // tự set session + cookie remember_token nếu $remember = true
         // RateLimiter::clear($key); // đúng → reset
 
         return [
