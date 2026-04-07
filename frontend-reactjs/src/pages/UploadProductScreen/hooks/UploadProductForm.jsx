@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import useCategory from "../../../hooks/useCategory";
-import { confirmToast } from "../../../components/common/confirmToast";
+import { confirmToast } from "../../../common/confirmToast";
 import useMajorName from "../../../hooks/useMajorName";
 import { AuthContext } from "../../../contexts/AuthContext";
 
