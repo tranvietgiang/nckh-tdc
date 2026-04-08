@@ -211,7 +211,10 @@ class ProductRepository extends BaseRepository
 
                 'approved_user.name as approved_by_fullname',
                 'student.name as student_name',
-                'student.email as student_email'
+                'student.email as student_email',
+                'student.role as student_role',
+                'student.class as student_class',
+                'student.user_id as student_id',
             )
 
             ->where('products.product_id', $productId)
@@ -260,8 +263,25 @@ class ProductRepository extends BaseRepository
             )
             ->get();
 
+        $author = [
+            'name'  => $product->student_name,
+            'email' => $product->student_email,
+            'role' => $product->student_role,
+            'class' => $product->student_class,
+            'mssv' => $product->student_id
+        ];
+
+        unset(
+            $product->student_name,
+            $product->student_email,
+            $product->student_role,
+            $product->student_class,
+            $product->student_id,
+        );
+
         return [
             'product' => $product,
+            'author'  => $author,
             'images'  => $images,
             'files'   => $files,
             'tags'    => $tags,

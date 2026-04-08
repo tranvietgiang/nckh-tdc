@@ -181,7 +181,11 @@ const TeacherProductDetailScreen = () => {
 
   // Lấy danh sách ảnh từ product.images
   const images = product.images || [];
+  const productData = product?.product || [];
 
+  console.log(product);
+
+  // console.log(productData);
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Modal phóng to ảnh */}
@@ -273,24 +277,29 @@ const TeacherProductDetailScreen = () => {
         {/* Product Title & Status */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
           <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                {product.title}
-              </h1>
-              <p className="text-gray-600">{product.description}</p>
-              <div className="flex items-center gap-3 mt-3">
-                <span className="text-sm text-gray-500">
-                  Mã sản phẩm: {product.product_id}
-                </span>
-                <span className="text-sm text-gray-500">
-                  Ngày đăng: {formatDate(product.created_at)}
-                </span>
+            <div className="flex-1">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {productData?.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {product.description}
+                  </p>
+                </div>
+
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(productData?.status)}`}
+                >
+                  {getStatusText(productData?.status)}
+                </div>
               </div>
-            </div>
-            <div
-              className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(product.status)}`}
-            >
-              {getStatusText(product.status)}
+
+              <p className="text-gray-600 mb-3">{productData?.description}</p>
+
+              <div className="flex items-center gap-4 text-sm text-gray-500">
+                <span>Ngày đăng: {formatDate(productData?.created_at)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -389,37 +398,37 @@ const TeacherProductDetailScreen = () => {
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Chuyên ngành</span>
                 <span className="font-medium text-gray-900">
-                  {product.major_name || product.major?.major_name || "—"}
+                  {productData.major_name || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Mã chuyên ngành</span>
                 <span className="font-medium text-gray-900">
-                  {product.major_code || product.major?.major_code || "—"}
+                  {productData.major_code || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Danh mục</span>
                 <span className="font-medium text-gray-900">
-                  {product.category_name || product.category?.name || "—"}
+                  {productData.category_name || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Tác giả</span>
                 <span className="font-medium text-gray-900">
-                  {product.student_name || product.author?.fullname || "—"}
+                  {product.author?.name || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Email tác giả</span>
                 <span className="font-medium text-gray-900">
-                  {product.student_email || product.author?.email || "—"}
+                  {product.author?.email || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Mã số sinh viên</span>
                 <span className="font-medium text-gray-900">
-                  {product.user_id || "—"}
+                  {product.author?.mssv || "—"}
                 </span>
               </div>
             </div>
@@ -455,15 +464,15 @@ const TeacherProductDetailScreen = () => {
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Ngày duyệt</span>
                 <span className="font-medium text-gray-900">
-                  {formatDate(product.approved_at)}
+                  {formatDate(productData.approved_at)}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Trạng thái</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(productData.status)}`}
                 >
-                  {getStatusText(product.status)}
+                  {getStatusText(productData.status)}
                 </span>
               </div>
             </div>
@@ -471,7 +480,7 @@ const TeacherProductDetailScreen = () => {
         </div>
 
         {/* Links */}
-        {(product.github_link || product.demo_link) && (
+        {productData?.demo_link && (
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <svg
@@ -490,9 +499,9 @@ const TeacherProductDetailScreen = () => {
               Liên kết
             </h2>
             <div className="space-y-3">
-              {product.github_link && (
+              {productData?.github_link && (
                 <a
-                  href={product.github_link}
+                  href={productData?.github_link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
@@ -523,9 +532,9 @@ const TeacherProductDetailScreen = () => {
                 </a>
               )}
 
-              {product.demo_link && (
+              {productData?.demo_link && (
                 <a
-                  href={product.demo_link}
+                  href={productData?.demo_link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
@@ -550,7 +559,7 @@ const TeacherProductDetailScreen = () => {
                     />
                   </svg>
                   <span className="flex-1 text-sm text-gray-700">
-                    {product.demo_link}
+                    {productData.demo_link}222
                   </span>
                   <svg
                     className="w-5 h-5 text-gray-400"
@@ -774,7 +783,7 @@ const TeacherProductDetailScreen = () => {
         </div>
 
         {/* Action Buttons */}
-        {product.status === "pending" && (
+        {productData.status === "pending" && (
           <div className="sticky bottom-4 bg-white rounded-2xl shadow-lg p-4 border border-gray-200">
             <div className="flex gap-3 justify-end">
               <button
