@@ -6,6 +6,7 @@ import useMajorName from "../../hooks/useMajorName";
 import useTeacherStatistic from "../../hooks/useTeacher/useTeacherStatistic";
 import useTeacherPendingApproval from "../../hooks/useTeacher/useTeacherPendingApproval";
 
+import { useViewDetail } from "../../common/useViewDetail";
 const TeacherScreen = () => {
   const [filter, setFilter] = useState("pending");
   const [previewImage, setPreviewImage] = useState(null);
@@ -16,6 +17,7 @@ const TeacherScreen = () => {
   const { majorName } = useMajorName(user?.major_id);
   const { teacherStatistic } = useTeacherStatistic();
   const { ProductsData, loading, error } = useTeacherPendingApproval();
+  const handleViewDetail = useViewDetail();
 
   const teacher = {
     name: user?.name ?? "",
@@ -218,7 +220,10 @@ const TeacherScreen = () => {
                         <button className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition">
                           Từ chối
                         </button>
-                        <button className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition">
+                        <button
+                          onClick={() => handleViewDetail(product.product_id)}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition"
+                        >
                           Xem chi tiết
                         </button>
                       </div>
