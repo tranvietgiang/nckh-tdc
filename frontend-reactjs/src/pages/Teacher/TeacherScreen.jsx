@@ -17,7 +17,8 @@ const TeacherScreen = () => {
   const { majorName } = useMajorName(user?.major_id);
   const { teacherStatistic } = useTeacherStatistic();
   const { ProductsData, loading, error } = useTeacherPendingApproval();
-  const handleViewDetail = useViewDetail();
+
+  const handleViewDetail = useViewDetail("product-detail-teacher");
 
   const teacher = {
     name: user?.name ?? "",

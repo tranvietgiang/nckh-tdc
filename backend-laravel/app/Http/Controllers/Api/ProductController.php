@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
+use App\Http\Requests\ProductViewRequest;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
 
@@ -32,6 +34,14 @@ class ProductController extends Controller
     public function productAll()
     {
         $result = $this->productService->getAllProductsByUserId();
+        return response()->json(
+            $result
+        );
+    }
+
+    public function productViewIdTeacher(ProductViewRequest $p_rq)
+    {
+        $result = $this->productService->productViewIdTeacher($p_rq->product_id);
         return response()->json(
             $result
         );
