@@ -7,6 +7,7 @@ import ProductDetailScreen from "../pages/ProductDetailScreen/ProductDetailScree
 import NotFoundScreen from "../pages/NotFoundScreen/NotFoundScreen";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
+import TeacherProductDetailScreen from "../pages/ProductDetailScreen/TeacherProductDetailScreen";
 
 function RoleRoutes() {
   return (
@@ -55,6 +56,16 @@ function RoleRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/product-detail-teacher"
+        element={
+          <ProtectedRoute allowedRoles={[ROLE.TEACHER]}>
+            <TeacherProductDetailScreen />
+          </ProtectedRoute>
+        }
+      />
+
       {/* 404 Page - luôn đặt ở cuối cùng */}
       <Route path="/not-found" element={<NotFoundScreen />} />
       <Route path="*" element={<Navigate to="/login" replace />} />

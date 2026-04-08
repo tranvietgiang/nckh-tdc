@@ -13,6 +13,7 @@ const ProductDetailScreen = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   console.log("id:", id);
+
   // console.log("product:", product);
   // const getImage = (path) => {
   //   if (!path) return "";
@@ -26,6 +27,7 @@ const ProductDetailScreen = () => {
 
   //   return `http://localhost:8000/storage/${path}`;
   // };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

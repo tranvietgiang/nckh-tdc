@@ -44,23 +44,15 @@ export default function Login() {
       return;
     }
     try {
-      const res = await login(
-        {
-          username,
-          password,
-        },
-        { withCredentials: true },
-      );
+      const res = await login({
+        username,
+        password,
+      });
 
       if (remember) {
         localStorage.setItem("savedUser", username);
       } else {
         localStorage.removeItem("savedUser");
-      }
-
-      if (res.success) {
-        localStorage.setItem("remember_token", res.token); // token SPA
-        // cookie remember_token đã được Laravel set → tự login khi reload
       }
 
       toast.dismiss();
