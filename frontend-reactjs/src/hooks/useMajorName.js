@@ -7,14 +7,15 @@ export default function useMajorName(majorId) {
   useEffect(() => {
     if (!majorId) return;
 
+    // const majorName = localStorage.getItem("major_name");
+
     const fetchMajor = async () => {
       try {
-
         const res = await majorApi.getById(majorId);
         setMajorName(res.major_name);
       } catch (err) {
         console.error(err);
-      } 
+      }
     };
 
     fetchMajor();

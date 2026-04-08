@@ -1,7 +1,7 @@
 import { useState, useContext, useRef } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import useClickOutside from "../../hooks/useClickOutside";
+import useClickOutside from "../hooks/useClickOutside";
 
 function UserDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -13,10 +13,19 @@ function UserDropdown() {
     setShowDropdown(false);
   });
 
+  const [loadingLogout, setLoadingLogout] = useState(false);
+
   const handleLogout = async () => {
-    await logout();
-    setShowDropdown(false);
-    navigate("/login", { replace: true });
+    try {
+      setLoadingLogout(true);
+      await logout();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingLogout(false);
+      setShowDropdown(false);
+    }
   };
 
   const handleProfile = () => {
@@ -100,6 +109,7 @@ function UserDropdown() {
 
             <button
               onClick={handleLogout}
+              disabled={loadingLogout}
               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
             >
               <svg
@@ -115,7 +125,7 @@ function UserDropdown() {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              Đăng xuất
+              {loadingLogout ? "Đang đăng xuất..." : "Đăng xuất"}
             </button>
           </div>
         </div>

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { productApi } from "../api";
+import { productApi } from "../../api";
 import { useNavigate } from "react-router-dom";
 
-export default function useProductDetail(productId) {
+export default function useProductDetailTeacher(productId) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!productId) {
       setLoading(false);
@@ -16,9 +17,11 @@ export default function useProductDetail(productId) {
       try {
         setLoading(true);
         setError(null);
-        const res = await productApi.getProductById(productId);
+        const res = await productApi.getProductByIdTeacher(productId);
 
         setProduct(res);
+
+        console.log(res);
       } catch (err) {
         if (
           err.response?.status === 404 ||

@@ -19,7 +19,7 @@ export const getUser = () => {
 
   try {
     return JSON.parse(user);
-  } catch  {
+  } catch {
     sessionStorage.removeItem(USER_KEY);
     return null;
   }

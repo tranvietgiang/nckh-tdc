@@ -3,12 +3,11 @@
 namespace App\Repositories;
 
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 class TeacherRepository extends BaseRepository
 {
-
     // trả về kết quả sau khi đếm được dựa vào id người dùng
     public function productStatistic(): ?int
     {
@@ -30,11 +29,16 @@ class TeacherRepository extends BaseRepository
     {
         $idUser = $this->getCurrentUserId();
 
+        $idMajor = User::query()
+            ->join('majors', 'users.major_id', '=', 'majors.major_id')
+            ->where('users.user_id', $idUser)
+            ->value('majors.major_id');
+
         return Product::query()
             ->leftJoin('majors', 'products.major_id', '=', 'majors.major_id')
             ->leftJoin('users', 'products.user_id', '=', 'users.user_id')
             ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
-            ->where('products.approved_by', $idUser)
+            ->where('products.major_id', $idMajor)
             ->select(
                 'products.product_id',
                 'products.title',
@@ -57,6 +61,7 @@ class TeacherRepository extends BaseRepository
                 'users.email as student_email',
                 'users.class as student_class',
             )
+            ->orderBy('products.created_at', 'desc')
             ->get();
     }
 }

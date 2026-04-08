@@ -3,16 +3,13 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthService
 {
-    protected $userRepository;
-
-    public function __construct(UserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
+    public function __construct(protected UserRepository $userRepository) {}
 
     public function login(array $data)
     {
@@ -34,6 +31,9 @@ class AuthService
 
         // tạo token
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // RateLimiter::clear($key); // đúng → reset12
+
 
         return [
             'success' => true,

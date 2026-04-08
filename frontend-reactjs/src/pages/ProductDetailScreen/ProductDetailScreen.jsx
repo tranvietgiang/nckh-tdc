@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import useProductDetail from "../../hooks/useProductDetail";
+import useProductDetail from "../../hooks/useProduct/useProductDetail";
 import useTitle from "../../hooks/useTitle";
 const ProductDetailScreen = () => {
   useTitle("Trang xem chi tiết");
@@ -13,7 +13,20 @@ const ProductDetailScreen = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   console.log("id:", id);
+
   // console.log("product:", product);
+  // const getImage = (path) => {
+  //   if (!path) return "";
+
+  //   // Nếu path là object, lấy image_url
+  //   if (typeof path === "object" && path.image_url) {
+  //     path = path.image_url;
+  //   }
+
+  //   if (path.startsWith("http")) return path;
+
+  //   return `http://localhost:8000/storage/${path}`;
+  // };
 
   if (loading) {
     return (
@@ -96,7 +109,7 @@ const ProductDetailScreen = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <img
-              src={selectedImage?.image_url}
+              src={selectedImage}
               alt="Product"
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />
@@ -306,14 +319,10 @@ const ProductDetailScreen = () => {
 
               <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
                 <img
-                  src={product.images?.[0]?.image_url || product.thumbnail}
+                  src={product.thumbnail}
                   alt={product.title}
                   className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
-                  onClick={() =>
-                    setSelectedImage(
-                      product.images?.[0] || { image_url: product.thumbnail },
-                    )
-                  }
+                  onClick={() => setSelectedImage(product.thumbnail)}
                 />
               </div>
 
@@ -322,7 +331,7 @@ const ProductDetailScreen = () => {
                   {product.images.map((img, index) => (
                     <button
                       key={img.product_image_id || index}
-                      onClick={() => setSelectedImage(img)}
+                      onClick={() => setSelectedImage(img.image_url)}
                       className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition"
                     >
                       <img
