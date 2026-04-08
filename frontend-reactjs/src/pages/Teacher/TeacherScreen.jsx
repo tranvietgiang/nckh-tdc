@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import UserDropdown from "../../common/UserDropdown";
 import useTitle from "../../hooks/useTitle";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -7,11 +8,13 @@ import useTeacherStatistic from "../../hooks/useTeacher/useTeacherStatistic";
 import useTeacherPendingApproval from "../../hooks/useTeacher/useTeacherPendingApproval";
 
 import { useViewDetail } from "../../common/useViewDetail";
+import { confirmToast } from "../../common/ConfirmToast";
 const TeacherScreen = () => {
   const [filter, setFilter] = useState("pending");
   const [previewImage, setPreviewImage] = useState(null);
-
   useTitle("Trang chủ giáo viên");
+
+  const navigate = useNavigate();
 
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
@@ -31,6 +34,26 @@ const TeacherScreen = () => {
   const pendingProducts = ProductsData?.pending_result ?? [];
   const approvedProducts = ProductsData?.approved_result ?? [];
   const rejectedProducts = ProductsData?.rejected_result ?? [];
+
+  const handleApprove = () => {
+    confirmToast({
+      message: "Bạn có chắc chắn muốn duyệt sản phẩm này?",
+      onConfirm: async () => {
+        setIsSubmitting(true);
+        try {
+          // Gọi API duyệt sản phẩm
+          // await approveProduct(id);
+          toast.success("✅ Duyệt sản phẩm thành công!");
+          mutate();
+          setTimeout(() => navigate("/teacher/pending-reviews"), 1500);
+        } catch {
+          toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");
+        } finally {
+          setIsSubmitting(false);
+        }
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
