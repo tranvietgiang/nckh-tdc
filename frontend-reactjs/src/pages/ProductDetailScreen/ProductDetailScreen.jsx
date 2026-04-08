@@ -2,31 +2,16 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useProductDetail from "../../hooks/useProduct/useProductDetail";
 import useTitle from "../../hooks/useTitle";
+import useImageViewer from "../../hooks/useImageViewer"; // Import hook
+
 const ProductDetailScreen = () => {
   useTitle("Trang xem chi tiết");
   const { state } = useLocation();
   const id = state?.productId;
 
   const { product, loading, error } = useProductDetail(id);
-
-  const [selectedImage, setSelectedImage] = useState(null);
+  const { openViewer, ImageViewerModal } = useImageViewer(); // Sử dụng hook
   const [activeTab, setActiveTab] = useState("overview");
-
-  console.log("id:", id);
-
-  // console.log("product:", product);
-  // const getImage = (path) => {
-  //   if (!path) return "";
-
-  //   // Nếu path là object, lấy image_url
-  //   if (typeof path === "object" && path.image_url) {
-  //     path = path.image_url;
-  //   }
-
-  //   if (path.startsWith("http")) return path;
-
-  //   return `http://localhost:8000/storage/${path}`;
-  // };
 
   if (loading) {
     return (
@@ -80,42 +65,8 @@ const ProductDetailScreen = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-          <button
-            onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 transition"
-          >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-
-          <div
-            className="relative max-w-7xl max-h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={selectedImage}
-              alt="Product"
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-            />
-          </div>
-        </div>
-      )}
+      {/* Modal phóng to ảnh */}
+      <ImageViewerModal />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
@@ -317,28 +268,62 @@ const ProductDetailScreen = () => {
             <div className="bg-white rounded-2xl shadow-xl p-6">
               <h2 className="text-lg font-semibold mb-4">Hình ảnh sản phẩm</h2>
 
-              <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4">
+              {/* Ảnh chính - có hiệu ứng hover như teacher */}
+              <div
+                className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4 cursor-pointer group relative"
+                onClick={() => openViewer(product.thumbnail)}
+              >
                 <img
                   src={product.thumbnail}
                   alt={product.title}
-                  className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition"
-                  onClick={() => setSelectedImage(product.thumbnail)}
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <svg
+                    className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                    />
+                  </svg>
+                </div>
               </div>
 
+              {/* Danh sách ảnh nhỏ */}
               {product.images?.length > 1 && (
                 <div className="grid grid-cols-5 gap-4">
                   {product.images.map((img, index) => (
                     <button
                       key={img.product_image_id || index}
-                      onClick={() => setSelectedImage(img.image_url)}
-                      className="aspect-square bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition"
+                      onClick={() => openViewer(img.image_url)}
+                      className="group relative aspect-square bg-gray-100 rounded-lg overflow-hidden hover:opacity-80 transition"
                     >
                       <img
                         src={img.image_url}
                         alt=""
                         className="w-full h-full object-cover"
                       />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                        <svg
+                          className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                          />
+                        </svg>
+                      </div>
                     </button>
                   ))}
                 </div>
