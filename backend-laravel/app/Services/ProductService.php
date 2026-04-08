@@ -24,7 +24,15 @@ class ProductService extends BaseRepository
 
     public function getAllProductsByUserId(): Collection
     {
-
         return $this->productRepository->productAllById();
+    }
+
+    public function productViewIdTeacher($productId): ?array
+    {
+        if (!$this->productRepository->productExists($productId)) {
+            return  null;
+        };
+
+        return $this->productRepository->productViewIdTeacher($productId);
     }
 }

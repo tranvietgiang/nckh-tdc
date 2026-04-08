@@ -188,4 +188,116 @@ class ProductRepository extends BaseRepository
             ->orderByDesc('products.created_at') // 🔥 dùng cái này cho chắc
             ->get();
     }
+
+    public function productViewIdTeacher($productId)
+    {
+        $product = DB::table('products')
+            ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
+            ->join('majors', 'products.major_id', '=', 'majors.major_id')
+            ->leftJoin('users as approved_user', 'products.approved_by', '=', 'approved_user.user_id')
+            ->leftJoin('users as student', 'products.user_id', '=', 'student.user_id')
+
+            // 👇 JOIN ảnh (lấy 1 ảnh làm thumbnail)
+            ->leftJoin('product_images as pi', function ($join) {
+                $join->on('products.product_id', '=', 'pi.product_id');
+            })
+
+            ->select(
+                'products.*',
+                'majors.major_name',
+                'majors.major_code',
+                'categories.category_name',
+                'categories.description as category_description',
+
+                'approved_user.name as approved_by_fullname',
+                'student.name as student_name',
+                'student.email as student_email'
+            )
+
+            ->where('products.product_id', $productId)
+            ->where('student.role', 'student')
+            ->whereIn('products.status', ['pending', 'rejected', 'approved'])
+
+            ->groupBy(
+                'products.product_id',
+                'majors.major_name',
+                'majors.major_code',
+                'categories.category_name',
+                'categories.description',
+                'approved_user.name',
+                'student.name',
+                'student.email'
+            )
+
+            ->first();
+
+        if (!$product) {
+            return null;
+        }
+
+        $images = DB::table('product_images')
+            ->where('product_id', $productId)
+            ->get();
+
+        $files = DB::table('product_files')
+            ->where('product_id', $productId)
+            ->get();
+
+        $tags = DB::table('product_tags')
+            ->join('tags', 'product_tags.tag_id', '=', 'tags.tag_id')
+            ->where('product_tags.product_id', $productId)
+            ->select('tags.tag_id', 'tags.tag_name')
+            ->get();
+
+        $reviews = DB::table('reviews')
+            ->leftJoin('users as teacher', 'reviews.teacher_id', '=', 'teacher.user_id')
+            ->where('reviews.product_id', $productId)
+            ->select(
+                'reviews.review_id',
+                'reviews.comment',
+                'reviews.created_at',
+                'teacher.name as teacher_name'
+            )
+            ->get();
+
+        return [
+            'product' => $product,
+            'images'  => $images,
+            'files'   => $files,
+            'tags'    => $tags,
+            'reviews' => $reviews,
+        ];
+    }
+
+    // Duyệt sản phẩm
+    public function approveProduct($productId, $teacherId)
+    {
+        return DB::table('products')
+            ->where('product_id', $productId)
+            ->update([
+                'status' => 'approved',
+                'approved_by' => $teacherId,
+                'approved_at' => now(),
+            ]);
+    }
+
+    // Từ chối sản phẩm
+    public function rejectProduct($productId, $teacherId, $feedback)
+    {
+        DB::table('products')
+            ->where('product_id', $productId)
+            ->update([
+                'status' => 'rejected',
+                'approved_by' => $teacherId,
+                'approved_at' => now(),
+            ]);
+
+        DB::table('reviews')->insert([
+            'product_id' => $productId,
+            'teacher_id' => $teacherId,
+            'comment' => $feedback,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
 }
