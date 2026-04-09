@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
 import useImageViewer from "../../hooks/useImageViewer";
@@ -6,8 +6,14 @@ import useTitle from "../../hooks/useTitle";
 import { confirmToast } from "../../common/ConfirmToast";
 import { toast } from "react-toastify";
 import useBackToPage from "../../hooks/useBackToPage";
+import { formatDate } from "../../common/formatDate";
+import { getStatusColor } from "../../common/getStatusColor";
+import { getStatusText } from "../../common/getStatusText";
+import { useHandleApprove } from "../../common/teacher/handleApprove";
+import { useHandleSubmitReview } from "../../common/teacher/handleSubmitReview";
+import { useSubmitRejection } from "../../common/teacher/submitRejection";
+import { AuthContext } from "../../contexts/AuthContext";
 
-// import useImageViewer from "./hooks/useImageViewer";
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
   const navigate = useNavigate();
@@ -22,103 +28,33 @@ const TeacherProductDetailScreen = () => {
   const [feedback, setFeedback] = useState("");
   const [reviewComment, setReviewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleApprove = () => {
-    confirmToast({
-      message: "Bạn có chắc chắn muốn duyệt sản phẩm này?",
-      onConfirm: async () => {
-        setIsSubmitting(true);
-        try {
-          // Gọi API duyệt sản phẩm
-          // await approveProduct(id);
-          toast.success("✅ Duyệt sản phẩm thành công!");
-          mutate();
-          setTimeout(() => navigate("/teacher/pending-reviews"), 1500);
-        } catch (error) {
-          toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");
-        } finally {
-          setIsSubmitting(false);
-        }
-      },
-    });
-  };
+  const { user } = useContext(AuthContext);
 
   const handleReject = () => setShowFeedbackModal(true);
 
-  const submitRejection = async () => {
-    if (!feedback.trim()) {
-      toast.warning("Vui lòng nhập lý do từ chối!");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // Gọi API từ chối sản phẩm với feedback
-      // await rejectProduct(id, { feedback });
-      toast.success("Đã gửi phản hồi từ chối!");
-      setShowFeedbackModal(false);
-      setFeedback("");
-      mutate();
-      setTimeout(() => navigate("/teacher/pending-reviews"), 1500);
-    } catch (error) {
-      toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSubmitReview = async () => {
-    if (!reviewComment.trim()) {
-      toast.warning("Vui lòng nhập nhận xét!");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // Gọi API gửi nhận xét
-      // await submitReview(id, { comment: reviewComment });
-      toast.success("✅ Đã gửi nhận xét thành công!");
-      setReviewComment("");
-      mutate();
-    } catch (error) {
-      toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return "Chưa có";
-    return new Date(dateString).toLocaleDateString("vi-VN");
-  };
-
-  // Get status color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "approved":
-        return "bg-green-100 text-green-800";
-      case "rejected":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getStatusText = (status) => {
-    switch (status) {
-      case "pending":
-        return "Chờ duyệt";
-      case "approved":
-        return "Đã duyệt";
-      case "rejected":
-        return "Từ chối";
-      default:
-        return status;
-    }
-  };
+  const handleApprove = useHandleApprove(
+    confirmToast,
+    setIsSubmitting,
+    toast,
+    mutate,
+    navigate,
+  );
+  const handleSubmitReview = useHandleSubmitReview(
+    confirmToast,
+    setIsSubmitting,
+    toast,
+    mutate,
+    navigate,
+  );
+  const submitRejection = useSubmitRejection(
+    feedback,
+    setIsSubmitting,
+    toast,
+    setShowFeedbackModal,
+    setFeedback,
+    mutate,
+    navigate,
+  );
 
   if (loading) {
     return (
@@ -181,7 +117,11 @@ const TeacherProductDetailScreen = () => {
 
   // Lấy danh sách ảnh từ product.images
   const images = product.images || [];
+  const productData = product?.product || {};
 
+  console.log(product);
+
+  // console.log(productData);
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Modal phóng to ảnh */}
@@ -273,24 +213,26 @@ const TeacherProductDetailScreen = () => {
         {/* Product Title & Status */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
           <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                {product.title}
-              </h1>
-              <p className="text-gray-600">{product.description}</p>
-              <div className="flex items-center gap-3 mt-3">
-                <span className="text-sm text-gray-500">
-                  Mã sản phẩm: {product.product_id}
-                </span>
-                <span className="text-sm text-gray-500">
-                  Ngày đăng: {formatDate(product.created_at)}
-                </span>
+            <div className="flex-1">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {productData?.title}
+                  </h3>
+                </div>
+
+                <div
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(productData?.status)}`}
+                >
+                  {getStatusText(productData?.status)}
+                </div>
               </div>
-            </div>
-            <div
-              className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(product.status)}`}
-            >
-              {getStatusText(product.status)}
+
+              <p className="text-gray-600 mb-3">{productData?.description}</p>
+
+              <div className="flex items-center gap-4 text-sm text-gray-500">
+                <span>Ngày đăng: {formatDate(productData?.created_at)}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -305,13 +247,11 @@ const TeacherProductDetailScreen = () => {
             {/* Ảnh chính - click để phóng to */}
             <div
               className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4 cursor-pointer relative group"
-              onClick={() =>
-                openViewer(product.product?.thumbnail || images[0]?.image_url)
-              }
+              onClick={() => openViewer(productData?.thumbnail)}
             >
               <img
-                src={product.product?.thumbnail || images[0]?.image_url}
-                alt={product.title}
+                src={productData?.thumbnail}
+                alt={productData?.title}
                 className="w-full h-full object-contain duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -389,37 +329,37 @@ const TeacherProductDetailScreen = () => {
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Chuyên ngành</span>
                 <span className="font-medium text-gray-900">
-                  {product.major_name || product.major?.major_name || "—"}
+                  {productData.major_name || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Mã chuyên ngành</span>
                 <span className="font-medium text-gray-900">
-                  {product.major_code || product.major?.major_code || "—"}
+                  {productData.major_code || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Danh mục</span>
                 <span className="font-medium text-gray-900">
-                  {product.category_name || product.category?.name || "—"}
+                  {productData.category_name || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Tác giả</span>
                 <span className="font-medium text-gray-900">
-                  {product.student_name || product.author?.fullname || "—"}
+                  {product.author?.name || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Email tác giả</span>
                 <span className="font-medium text-gray-900">
-                  {product.student_email || product.author?.email || "—"}
+                  {product.author?.email || "—"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Mã số sinh viên</span>
                 <span className="font-medium text-gray-900">
-                  {product.user_id || "—"}
+                  {product.author?.mssv || "—"}
                 </span>
               </div>
             </div>
@@ -447,23 +387,21 @@ const TeacherProductDetailScreen = () => {
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Người duyệt</span>
                 <span className="font-medium text-gray-900">
-                  {product.approved_by_fullname ||
-                    product.approved_by_user?.fullname ||
-                    "Chưa duyệt"}
+                  {user?.name || "lỗi"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Ngày duyệt</span>
                 <span className="font-medium text-gray-900">
-                  {formatDate(product.approved_at)}
+                  {formatDate(productData?.approved_at)}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Trạng thái</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(product.status)}`}
+                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(productData.status)}`}
                 >
-                  {getStatusText(product.status)}
+                  {getStatusText(productData?.status)}
                 </span>
               </div>
             </div>
@@ -471,7 +409,7 @@ const TeacherProductDetailScreen = () => {
         </div>
 
         {/* Links */}
-        {(product.github_link || product.demo_link) && (
+        {productData?.demo_link && (
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <svg
@@ -490,9 +428,9 @@ const TeacherProductDetailScreen = () => {
               Liên kết
             </h2>
             <div className="space-y-3">
-              {product.github_link && (
+              {productData?.github_link && (
                 <a
-                  href={product.github_link}
+                  href={productData?.github_link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
@@ -505,7 +443,7 @@ const TeacherProductDetailScreen = () => {
                     <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
                   </svg>
                   <span className="flex-1 text-sm text-gray-700">
-                    {product.github_link}
+                    {productData?.github_link}
                   </span>
                   <svg
                     className="w-5 h-5 text-gray-400"
@@ -523,9 +461,9 @@ const TeacherProductDetailScreen = () => {
                 </a>
               )}
 
-              {product.demo_link && (
+              {productData?.demo_link && (
                 <a
-                  href={product.demo_link}
+                  href={productData?.demo_link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
@@ -550,7 +488,7 @@ const TeacherProductDetailScreen = () => {
                     />
                   </svg>
                   <span className="flex-1 text-sm text-gray-700">
-                    {product.demo_link}
+                    {productData?.demo_link}222
                   </span>
                   <svg
                     className="w-5 h-5 text-gray-400"
@@ -774,7 +712,7 @@ const TeacherProductDetailScreen = () => {
         </div>
 
         {/* Action Buttons */}
-        {product.status === "pending" && (
+        {productData.status === "pending" && (
           <div className="sticky bottom-4 bg-white rounded-2xl shadow-lg p-4 border border-gray-200">
             <div className="flex gap-3 justify-end">
               <button
