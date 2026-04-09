@@ -92,23 +92,23 @@ const StudentScreen = () => {
     navigate("/edit-product", { state: { product } });
   };
 
-  const handleDelete = async (productId, productTitle) => {
-    const confirmed = await confirmToast({
-      title: "Xóa sản phẩm",
-      message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
-      confirmText: "Xóa",
-      cancelText: "Hủy",
-      type: "danger",
-    });
-    if (confirmed) {
-      try {
-        await deleteProduct(productId);
-        refetch();
-      } catch (err) {
-        console.error("Delete failed", err);
-      }
-    }
-  };
+  // const handleDelete = async (productId, productTitle) => {
+  //   const confirmed = await confirmToast({
+  //     title: "Xóa sản phẩm",
+  //     message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
+  //     confirmText: "Xóa",
+  //     cancelText: "Hủy",
+  //     type: "danger",
+  //   });
+  //   if (confirmed) {
+  //     try {
+  //       await deleteProduct(productId);
+  //       refetch();
+  //     } catch (err) {
+  //       console.error("Delete failed", err);
+  //     }
+  //   }
+  // };
 
   if (loading) return <p className="p-6">Đang tải...</p>;
   if (error) return <p className="p-6 text-red-500">Có lỗi xảy ra</p>;
@@ -380,7 +380,7 @@ const StudentScreen = () => {
                       Sửa
                     </button>
                     <button
-                      onClick={() => handleDelete(item.product_id, item.title)}
+                      // onClick={() => handleDelete(item.product_id, item.title)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-50 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
                     >
                       <svg
