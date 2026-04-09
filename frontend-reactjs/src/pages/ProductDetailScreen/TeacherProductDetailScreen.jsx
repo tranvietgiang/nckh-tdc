@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
 import useImageViewer from "../../hooks/useImageViewer";
@@ -12,6 +12,7 @@ import { getStatusText } from "../../common/getStatusText";
 import { useHandleApprove } from "../../common/teacher/handleApprove";
 import { useHandleSubmitReview } from "../../common/teacher/handleSubmitReview";
 import { useSubmitRejection } from "../../common/teacher/submitRejection";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
@@ -27,6 +28,7 @@ const TeacherProductDetailScreen = () => {
   const [feedback, setFeedback] = useState("");
   const [reviewComment, setReviewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useContext(AuthContext);
 
   const handleReject = () => setShowFeedbackModal(true);
 
@@ -385,15 +387,13 @@ const TeacherProductDetailScreen = () => {
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Người duyệt</span>
                 <span className="font-medium text-gray-900">
-                  {product.approved_by_fullname ||
-                    product.approved_by_user?.fullname ||
-                    "Chưa duyệt"}
+                  {user?.name || "lỗi"}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-gray-500">Ngày duyệt</span>
                 <span className="font-medium text-gray-900">
-                  {formatDate(productData.approved_at)}
+                  {formatDate(productData?.approved_at)}
                 </span>
               </div>
               <div className="flex justify-between py-2 border-b">
@@ -401,7 +401,7 @@ const TeacherProductDetailScreen = () => {
                 <span
                   className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(productData.status)}`}
                 >
-                  {getStatusText(productData.status)}
+                  {getStatusText(productData?.status)}
                 </span>
               </div>
             </div>
@@ -488,7 +488,7 @@ const TeacherProductDetailScreen = () => {
                     />
                   </svg>
                   <span className="flex-1 text-sm text-gray-700">
-                    {productData.demo_link}222
+                    {productData?.demo_link}222
                   </span>
                   <svg
                     className="w-5 h-5 text-gray-400"
