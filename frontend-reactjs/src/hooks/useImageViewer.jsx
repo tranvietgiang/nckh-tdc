@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 const useImageViewer = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -26,7 +27,6 @@ const useImageViewer = () => {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen]);
 
-  // Trả về JSX như một function
   const ImageViewerModal = () => {
     if (!isOpen || !selectedImage) return null;
 
@@ -35,38 +35,39 @@ const useImageViewer = () => {
         className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
         onClick={closeViewer}
       >
+        {/* Close button */}
         <button
           onClick={closeViewer}
           className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/20 hover:bg-black/40 rounded-full p-2 transition z-10"
         >
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          ✕
         </button>
 
+        {/* Content */}
         <div
           className="relative max-w-7xl max-h-[90vh]"
           onClick={(e) => e.stopPropagation()}
         >
-          <img
-            src={selectedImage}
-            alt="Phóng to"
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-          />
+          <TransformWrapper
+            initialScale={1}
+            minScale={0.5}
+            maxScale={5}
+            wheel={{ step: 0.2 }}
+            doubleClick={{ mode: "zoomIn" }}
+          >
+            <TransformComponent>
+              <img
+                src={selectedImage}
+                alt="Phóng to"
+                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-grab"
+              />
+            </TransformComponent>
+          </TransformWrapper>
         </div>
 
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur text-white px-4 py-2 rounded-full text-sm">
-          Click bất kỳ đâu để đóng • ESC
+        {/* Hint */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur text-white px-4 py-2 rounded-full text-sm">
+          Scroll để zoom • Kéo để di chuyển • ESC để đóng
         </div>
       </div>
     );
