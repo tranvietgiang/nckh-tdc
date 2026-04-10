@@ -49,4 +49,19 @@ class TeacherController extends Controller
             'teacher_data_result' => true
         ]);
     }
+
+    public function teacherApprove($product_id)
+    {
+        try {
+            $teacher_approve = $this->teacherService->teacherApprove($product_id);
+
+            return response()->json(
+                $teacher_approve
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
 }

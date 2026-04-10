@@ -6,8 +6,9 @@ import useTitle from "../../hooks/useTitle";
 import useMajorName from "../../hooks/useMajorName";
 import useProductAll from "../../hooks/useProduct/useProductAll";
 import { mapCurrentStudent } from "../../utils/userMapper";
+
 // import { deleteProduct } from "../../services/productService"; // bỏ comment
-import { confirmToast } from "../../common/ConfirmToast";
+// import { confirmToast } from "../../common/ConfirmToast";
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
