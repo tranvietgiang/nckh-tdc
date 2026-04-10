@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, Fragment } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
 import useImageViewer from "../../hooks/useImageViewer";
@@ -14,6 +14,7 @@ import { useHandleSubmitReview } from "../../common/teacher/handleSubmitReview";
 import { useSubmitRejection } from "../../common/teacher/submitRejection";
 import { AuthContext } from "../../contexts/AuthContext";
 import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
+import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
 
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
@@ -31,8 +32,12 @@ const TeacherProductDetailScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useContext(AuthContext);
 
+  const [reviewLimit, setReviewLimit] = useState(3); // ban đầu hiển thị 3
+
   const { teacherApprove, loading_approve, error_approve } =
     useTeacherApprove();
+
+  const { teacherReject, loading_reject, error_reject } = useTeacherReject();
 
   // Hook duyệt sản phẩm (có thể đã quản lý isSubmitting bên trong)
   const handleApproveOriginal = useHandleApprove(
@@ -59,8 +64,8 @@ const TeacherProductDetailScreen = () => {
     toast,
     setShowFeedbackModal,
     setFeedback,
-    mutate,
     navigate,
+    teacherReject,
   );
 
   // Bọc lại để đảm bảo loading tắt dù có lỗi
@@ -89,15 +94,13 @@ const TeacherProductDetailScreen = () => {
   const submitRejection = async () => {
     setIsSubmitting(true);
     try {
-      await submitRejectionOriginal();
+      await submitRejectionOriginal(id);
     } catch (err) {
       console.error(err);
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const handleReject = () => setShowFeedbackModal(true);
 
   if (loading) {
     return (
@@ -166,9 +169,22 @@ const TeacherProductDetailScreen = () => {
     );
   }
 
+  if (error_reject) {
+    return (
+      <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg">
+        {error_reject}
+      </div>
+    );
+  }
+
   const images = product.images || [];
   const productData = product?.product || {};
+  // Trong component TeacherProductDetailScreen, sau các useState khác
 
+  const reviews = product?.reviews || [];
+  const displayedReviews = reviews.slice(0, reviewLimit);
+
+  const handleReject = () => setShowFeedbackModal(true);
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <ImageViewerModal />
@@ -681,42 +697,73 @@ const TeacherProductDetailScreen = () => {
             </div>
           </div>
 
-          {product.reviews && product.reviews.length > 0 ? (
+          {reviews?.length > 0 ? (
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-px flex-1 bg-gray-200"></div>
                 <span className="text-xs text-gray-400">
-                  {product.reviews.length} nhận xét
+                  {reviews.length} nhận xét
                 </span>
                 <div className="h-px flex-1 bg-gray-200"></div>
               </div>
+
               <div className="space-y-4">
-                {product.reviews.map((review) => (
-                  <div key={review.review_id} className="flex gap-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                        {review.teacher?.fullname?.charAt(0) || "G"}
+                {displayedReviews.map((review, idx) => (
+                  <React.Fragment key={review.review_id}>
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                          {review.teacher?.fullname?.charAt(0) || "G"}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="bg-gray-50 rounded-xl p-3">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="font-medium text-gray-900 text-sm">
-                            {review.teacher?.fullname ||
-                              review.teacher_name ||
-                              "Giảng viên"}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {formatDate(review.created_at)}
+
+                      <div className="flex-1">
+                        <div className="bg-gray-50 rounded-xl p-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="font-medium text-gray-900 text-sm">
+                              {review.teacher?.fullname ||
+                                review.teacher_name ||
+                                "Giảng viên"}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {formatDate(review.created_at)}
+                            </p>
+                          </div>
+
+                          <p className="text-gray-700 text-sm">
+                            {review.comment}
                           </p>
                         </div>
-                        <p className="text-gray-700 text-sm">
-                          {review.comment}
-                        </p>
                       </div>
                     </div>
-                  </div>
+
+                    {(idx + 1) % 3 === 0 &&
+                      idx !== displayedReviews.length - 1 && (
+                        <hr className="my-4 border-t border-dashed border-gray-300" />
+                      )}
+                  </React.Fragment>
                 ))}
+              </div>
+
+              {/* Buttons */}
+              <div className="text-center mt-4 flex gap-3 justify-center">
+                {reviewLimit < reviews.length && (
+                  <button
+                    onClick={() => setReviewLimit((prev) => prev + 3)}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                  >
+                    Xem thêm
+                  </button>
+                )}
+
+                {reviewLimit > 3 && (
+                  <button
+                    onClick={() => setReviewLimit(3)}
+                    className="text-gray-500 hover:text-gray-700 text-sm font-medium flex items-center gap-1"
+                  >
+                    Thu gọn
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -748,10 +795,10 @@ const TeacherProductDetailScreen = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleReject}
-                disabled={isSubmitting}
+                disabled={loading_reject || isSubmitting}
                 className="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium shadow-md disabled:opacity-50"
               >
-                Từ chối
+                {loading_reject ? "Đang từ chối..." : "Từ chối"}
               </button>
               <button
                 onClick={handleApprove}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\TeacherService;
+use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
@@ -52,11 +53,28 @@ class TeacherController extends Controller
 
     public function teacherApprove($product_id)
     {
+        $status = 'approved';
         try {
-            $teacher_approve = $this->teacherService->teacherApprove($product_id);
+            $teacher_approve = $this->teacherService->updateStatus($product_id, $status);
 
             return response()->json(
                 $teacher_approve
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    public function teacherReject(Request $request)
+    {
+        $status = 'rejected';
+        try {
+            $teacher_reject = $this->teacherService->updateStatus($request->product_id, $status, $request->feedback);
+
+            return response()->json(
+                $teacher_reject
             );
         } catch (\Exception $e) {
             return response()->json([

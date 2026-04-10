@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Product;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -63,12 +64,5 @@ class TeacherRepository extends BaseRepository
             )
             ->orderBy('products.created_at', 'desc')
             ->get();
-    }
-
-    public function findForApprove($productId, $majorId): ?Product
-    {
-        return Product::where('product_id', $productId)
-            ->where('major_id', $majorId)
-            ->first();
     }
 }

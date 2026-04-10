@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Repositories\Traits\HasCurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductRepository extends BaseRepository
 {
@@ -18,20 +19,6 @@ class ProductRepository extends BaseRepository
     // tìm một sản phẩm bằng id chi tiết
     public function findProductById(int $productId): ?array
     {
-        // return Product::join('users', "products.user_id", '=', "users.user_id")
-        //     ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
-        //     ->join('majors', 'products.major_id', '=', 'majors.major_id')
-        //     ->join('product_images', 'products.product_id', '=', 'product_images.product_id')
-        //     ->join('product_files', 'products.product_id', '=', 'product_files.product_id')
-        //     ->join('product_tags', 'products.product_id', '=', 'product_tags.product_id')
-        //     ->join('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-        //     ->join('users', 'products.approved_by', '=', 'users.teacher_id')
-        //     ->join('reviews', 'products.approved_by', '=', 'reviews.teacher_id')
-        //     ->select()
-        //     ->where('products.user_id', $userId)
-        //     ->where("products.product_id", $productId)
-        //     ->first(); code cũ sai
-
         $userId = $this->getCurrentUserId();
         $product = DB::table('products')
             ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
@@ -290,34 +277,17 @@ class ProductRepository extends BaseRepository
     }
 
     // Duyệt sản phẩm
-    public function approveProduct($productId, $teacherId)
+    public function update(Product $product, array $data): bool
     {
-        return DB::table('products')
-            ->where('product_id', $productId)
-            ->update([
-                'status' => 'approved',
-                'approved_by' => $teacherId,
-                'approved_at' => now(),
-            ]);
+        return $product->update($data);
     }
 
-    // Từ chối sản phẩm
-    public function rejectProduct($productId, $teacherId, $feedback)
-    {
-        DB::table('products')
-            ->where('product_id', $productId)
-            ->update([
-                'status' => 'rejected',
-                'approved_by' => $teacherId,
-                'approved_at' => now(),
-            ]);
 
-        DB::table('reviews')->insert([
-            'product_id' => $productId,
-            'teacher_id' => $teacherId,
-            'comment' => $feedback,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+
+    public function findByIdPAndIdMajor($productId, $majorId): ?Product
+    {
+        return Product::where('product_id', $productId)
+            ->where('major_id', $majorId)
+            ->first();
     }
 }

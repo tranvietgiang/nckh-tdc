@@ -6,6 +6,7 @@ use App\Repositories\BaseRepository;
 use App\Repositories\ProductRepository;
 use App\Repositories\TeacherRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\ReviewRepository;
 use Illuminate\Support\Collection;
 use App\Repositories\common\CommonRepository as RepositoriesCommonRepository;
 use Carbon\Carbon;
@@ -14,9 +15,10 @@ class TeacherService extends BaseRepository
 {
     public function __construct(
         protected TeacherRepository $teacherRepository,
-        protected ProductRepository $product_repository,
+        protected ProductRepository $product_repo,
         protected UserRepository $user_repository,
-        protected RepositoriesCommonRepository $common_repository
+        protected RepositoriesCommonRepository $common_repository,
+        protected ReviewRepository $review_repo
     ) {}
 
     public function teacherStatistic(): ?array
@@ -48,38 +50,61 @@ class TeacherService extends BaseRepository
             'rejected_result' => $products->where('status', 'rejected')->values(),
         ]);
     }
-    public function teacherApprove($product_id): array
+
+    public function updateStatus($product_id, $status, $feedback = null): array
     {
         $productId = (int) $product_id;
+        $userId = $this->getCurrentUserId();
 
-        $product = $this->teacherRepository->findForApprove(
+        $product = $this->product_repo->findByIdPAndIdMajor(
             $productId,
             $this->common_repository->getMajorId()
         );
 
         if (!$product) {
             return [
-                'teacher_approve_result' => false,
-                'message_teacher_approve_result' => 'Sản phẩm không tồn tại!'
+                'result' => false,
+                'message' => 'Sản phẩm không tồn tại!'
             ];
         }
 
         if ($product->status !== 'pending') {
             return [
-                'teacher_approve_result' => false,
-                'message_teacher_approve_result' => 'Sản phẩm không chờ duyệt!'
+                'result' => false,
+                'message' => 'Sản phẩm không chờ duyệt!'
             ];
         }
 
-        $product->update([
-            'status' => 'approved',
-            'approved_by' => $this->getCurrentUserId(),
-            'approved_at' => Carbon::now()
-        ]);
+        // 👉 xử lý theo status
+        if ($status === 'approved') {
+            $data = [
+                'status' => 'approved',
+                'approved_by' => $userId,
+                'approved_at' => now(),
+            ];
+        } else if ($status === 'rejected') {
+            $data = [
+                'status' => 'rejected',
+                'approved_by' => null,
+            ];
+        }
+
+        $this->product_repo->update($product, $data);
+
+        // 👉 nếu reject thì lưu feedback
+        if ($status === 'rejected' && $feedback) {
+            $this->review_repo->create([
+                'product_id' => $productId,
+                'teacher_id' => $userId,
+                'comment' => $feedback
+            ]);
+        }
 
         return [
-            'teacher_approve_result' => true,
-            'message_teacher_approve_result' => 'Duyệt thành công!',
+            'result' => true,
+            'message' => $status === 'approved'
+                ? 'Duyệt thành công!'
+                : 'Từ chối thành công!',
             'data' => $product
         ];
     }

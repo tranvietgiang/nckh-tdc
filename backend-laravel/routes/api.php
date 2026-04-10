@@ -43,7 +43,7 @@ Route::get('/products', [ProductController::class, 'productAll'])->middleware('a
 Route::middleware('auth:sanctum')->prefix('teacher')->group(function () {
     Route::get('/product/{product_id}', [ProductController::class, 'productViewIdTeacher']);
     Route::post('/product/{product_id}/approve', [TeacherController::class, 'teacherApprove']);
-    Route::post('/product/{product_id}/reject', [ProductController::class, 'teacherReject']);
+    Route::post('/product/reject', [TeacherController::class, 'teacherReject']);
 });
 /*
 |--------------------------------------------------------------------------
