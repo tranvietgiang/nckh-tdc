@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext } from "react";
 import UserDropdown from "../../common/UserDropdown";
 import useTitle from "../../hooks/useTitle";
 import { AuthContext } from "../../contexts/AuthContext";
