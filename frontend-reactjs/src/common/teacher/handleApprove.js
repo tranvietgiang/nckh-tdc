@@ -2,26 +2,31 @@ export const useHandleApprove = (
   confirmToast,
   setIsSubmitting,
   toast,
-  mutate,
   navigate,
+  teacherApprove,
 ) => {
-  const handleApprove = () => {
+  return (productId) => {
     confirmToast({
       message: "Bạn có chắc chắn muốn duyệt sản phẩm này?",
       onConfirm: async () => {
         setIsSubmitting(true);
+
         try {
-          toast.success("✅ Duyệt sản phẩm thành công!");
-          mutate();
-          setTimeout(() => navigate("/teacher/pending-reviews"), 1500);
-        } catch {
+          await teacherApprove(productId);
+
+          toast.success("Duyệt sản phẩm thành công", {
+            autoClose: 1500,
+            onClose: () => {
+              navigate("/nckh-teacher");
+            },
+          });
+        } catch (err) {
           toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");
+          console.error(err);
         } finally {
           setIsSubmitting(false);
         }
       },
     });
   };
-
-  return handleApprove;
 };

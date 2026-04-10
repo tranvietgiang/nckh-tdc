@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { productApi } from "../../api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function useProductDetail(productId) {
   const [product, setProduct] = useState(null);
@@ -12,11 +13,17 @@ export default function useProductDetail(productId) {
       setLoading(false);
       return;
     }
+    const toastId = "product-detail-toast-sv";
+
     const fetchProductDetail = async () => {
       try {
         setLoading(true);
         setError(null);
         const res = await productApi.getProductById(productId);
+
+        toast.success("Tải dữ liệu chi tiết sản phẩm thành công", {
+          toastId,
+        });
 
         setProduct(res);
       } catch (err) {
@@ -38,6 +45,10 @@ export default function useProductDetail(productId) {
     };
 
     fetchProductDetail();
+    // 👇 cleanup khi đổi route / unmount
+    return () => {
+      toast.dismiss(toastId);
+    };
   }, [productId, navigate]);
 
   return {

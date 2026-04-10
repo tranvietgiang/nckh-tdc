@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class ProductRepository extends BaseRepository
 {
     // kiểm tra sản phẩm có tồn tại bằng id
-    public function productExists(int $productId): ?bool
+    public function productExists(int $productId): bool
     {
         return Product::where("product_id", $productId)->exists();
     }

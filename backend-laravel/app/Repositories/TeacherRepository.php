@@ -64,4 +64,11 @@ class TeacherRepository extends BaseRepository
             ->orderBy('products.created_at', 'desc')
             ->get();
     }
+
+    public function findForApprove($productId, $majorId): ?Product
+    {
+        return Product::where('product_id', $productId)
+            ->where('major_id', $majorId)
+            ->first();
+    }
 }

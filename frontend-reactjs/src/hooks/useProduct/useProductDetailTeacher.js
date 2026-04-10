@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { productApi } from "../../api";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function useProductDetailTeacher(productId) {
   const [product, setProduct] = useState(null);
@@ -9,19 +10,22 @@ export default function useProductDetailTeacher(productId) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!productId) {
-      setLoading(false);
-      return;
-    }
+    if (!productId) return;
+
+    const toastId = "product-detail-toast";
+
     const fetchProductDetail = async () => {
       try {
         setLoading(true);
         setError(null);
+
         const res = await productApi.getProductByIdTeacher(productId);
 
-        setProduct(res);
+        toast.success("Tải dữ liệu chi tiết sản phẩm thành công", {
+          toastId,
+        });
 
-        console.log(res);
+        setProduct(res);
       } catch (err) {
         if (
           err.response?.status === 404 ||
@@ -33,19 +37,18 @@ export default function useProductDetailTeacher(productId) {
         } else {
           setError("Không tải được chi tiết sản phẩm");
         }
-        setError(err);
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProductDetail();
+
+    // 👇 cleanup khi đổi route / unmount
+    return () => {
+      toast.dismiss(toastId);
+    };
   }, [productId, navigate]);
 
-  return {
-    product,
-    loading,
-    error,
-  };
+  return { product, loading, error };
 }

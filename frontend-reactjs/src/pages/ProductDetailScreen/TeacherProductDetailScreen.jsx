@@ -13,6 +13,7 @@ import { useHandleApprove } from "../../common/teacher/handleApprove";
 import { useHandleSubmitReview } from "../../common/teacher/handleSubmitReview";
 import { useSubmitRejection } from "../../common/teacher/submitRejection";
 import { AuthContext } from "../../contexts/AuthContext";
+import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
 
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
@@ -30,23 +31,29 @@ const TeacherProductDetailScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const handleReject = () => setShowFeedbackModal(true);
+  const { teacherApprove, loading_approve, error_approve } =
+    useTeacherApprove();
 
-  const handleApprove = useHandleApprove(
+  // Hook duyệt sản phẩm (có thể đã quản lý isSubmitting bên trong)
+  const handleApproveOriginal = useHandleApprove(
+    confirmToast,
+    setIsSubmitting,
+    toast,
+    navigate,
+    teacherApprove,
+  );
+
+  // Hook gửi nhận xét
+  const handleSubmitReviewOriginal = useHandleSubmitReview(
     confirmToast,
     setIsSubmitting,
     toast,
     mutate,
     navigate,
   );
-  const handleSubmitReview = useHandleSubmitReview(
-    confirmToast,
-    setIsSubmitting,
-    toast,
-    mutate,
-    navigate,
-  );
-  const submitRejection = useSubmitRejection(
+
+  // Hook từ chối
+  const submitRejectionOriginal = useSubmitRejection(
     feedback,
     setIsSubmitting,
     toast,
@@ -55,6 +62,42 @@ const TeacherProductDetailScreen = () => {
     mutate,
     navigate,
   );
+
+  // Bọc lại để đảm bảo loading tắt dù có lỗi
+  const handleApprove = async () => {
+    setIsSubmitting(true);
+    try {
+      await handleApproveOriginal(id);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    setIsSubmitting(true);
+    try {
+      await handleSubmitReviewOriginal();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const submitRejection = async () => {
+    setIsSubmitting(true);
+    try {
+      await submitRejectionOriginal();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReject = () => setShowFeedbackModal(true);
 
   if (loading) {
     return (
@@ -115,16 +158,19 @@ const TeacherProductDetailScreen = () => {
     );
   }
 
-  // Lấy danh sách ảnh từ product.images
+  if (error_approve) {
+    return (
+      <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg">
+        {error_approve}
+      </div>
+    );
+  }
+
   const images = product.images || [];
   const productData = product?.product || {};
 
-  console.log(product);
-
-  // console.log(productData);
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      {/* Modal phóng to ảnh */}
       <ImageViewerModal />
 
       {/* Modal từ chối */}
@@ -151,11 +197,9 @@ const TeacherProductDetailScreen = () => {
                 Từ chối sản phẩm
               </h3>
             </div>
-
             <p className="text-gray-600 text-sm mb-4">
               Vui lòng nhập lý do từ chối để sinh viên biết và chỉnh sửa.
             </p>
-
             <textarea
               rows={5}
               value={feedback}
@@ -163,7 +207,6 @@ const TeacherProductDetailScreen = () => {
               placeholder="Nhập lý do từ chối sản phẩm..."
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
             />
-
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowFeedbackModal(false)}
@@ -220,16 +263,13 @@ const TeacherProductDetailScreen = () => {
                     {productData?.title}
                   </h3>
                 </div>
-
                 <div
                   className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(productData?.status)}`}
                 >
                   {getStatusText(productData?.status)}
                 </div>
               </div>
-
               <p className="text-gray-600 mb-3">{productData?.description}</p>
-
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span>Ngày đăng: {formatDate(productData?.created_at)}</span>
               </div>
@@ -243,8 +283,6 @@ const TeacherProductDetailScreen = () => {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Hình ảnh sản phẩm
             </h2>
-
-            {/* Ảnh chính - click để phóng to */}
             <div
               className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4 cursor-pointer relative group"
               onClick={() => openViewer(productData?.thumbnail)}
@@ -270,8 +308,6 @@ const TeacherProductDetailScreen = () => {
                 </svg>
               </div>
             </div>
-
-            {/* Danh sách ảnh nhỏ - click để phóng to */}
             <div className="grid grid-cols-5 gap-3">
               {images.map((img) => (
                 <button
@@ -307,7 +343,6 @@ const TeacherProductDetailScreen = () => {
 
         {/* Thông tin chi tiết */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Thông tin cơ bản */}
           <div className="bg-white rounded-2xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <svg
@@ -365,7 +400,6 @@ const TeacherProductDetailScreen = () => {
             </div>
           </div>
 
-          {/* Thông tin duyệt */}
           <div className="bg-white rounded-2xl shadow-sm p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <svg
@@ -460,7 +494,6 @@ const TeacherProductDetailScreen = () => {
                   </svg>
                 </a>
               )}
-
               {productData?.demo_link && (
                 <a
                   href={productData?.demo_link}
@@ -488,7 +521,7 @@ const TeacherProductDetailScreen = () => {
                     />
                   </svg>
                   <span className="flex-1 text-sm text-gray-700">
-                    {productData?.demo_link}222
+                    {productData?.demo_link}
                   </span>
                   <svg
                     className="w-5 h-5 text-gray-400"
@@ -509,7 +542,7 @@ const TeacherProductDetailScreen = () => {
           </div>
         )}
 
-        {/* Files đính kèm */}
+        {/* Files */}
         {product.files && product.files.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -597,7 +630,7 @@ const TeacherProductDetailScreen = () => {
           </div>
         )}
 
-        {/* Nhận xét từ giảng viên */}
+        {/* Nhận xét */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <svg
@@ -616,7 +649,6 @@ const TeacherProductDetailScreen = () => {
             Nhận xét từ giảng viên
           </h2>
 
-          {/* Form thêm nhận xét */}
           <div className="bg-gray-50 rounded-xl p-4 mb-6">
             <textarea
               rows={3}
@@ -649,7 +681,6 @@ const TeacherProductDetailScreen = () => {
             </div>
           </div>
 
-          {/* Danh sách nhận xét */}
           {product.reviews && product.reviews.length > 0 ? (
             <div>
               <div className="flex items-center gap-2 mb-4">
@@ -724,15 +755,25 @@ const TeacherProductDetailScreen = () => {
               </button>
               <button
                 onClick={handleApprove}
-                disabled={isSubmitting}
+                disabled={isSubmitting || loading_approve}
                 className="px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium shadow-md disabled:opacity-50"
               >
-                Duyệt sản phẩm
+                {loading_approve ? "Đang duyệt..." : "Duyệt sản phẩm"}
               </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* OVERLAY LOADING TOÀN MÀN HÌNH */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-6 shadow-xl flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-700 font-medium">Đang xử lý...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
