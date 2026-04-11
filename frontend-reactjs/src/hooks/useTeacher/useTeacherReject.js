@@ -2,18 +2,18 @@ import { useState } from "react";
 import { teacherApi } from "../../api";
 import { toast } from "react-toastify";
 
-export default function useTeacherApprove() {
-  const [loading_approve, setLoading] = useState(false);
-  const [error_approve, setError] = useState(null);
+export default function useTeacherReject() {
+  const [loading_reject, setLoading] = useState(false);
+  const [error_reject, setError] = useState(null);
 
-  const teacherApprove = async (productId) => {
+  const teacherReject = async (data) => {
     setLoading(true);
     setError(null);
 
     try {
-      const res = await teacherApi.approve(productId);
-      console.log(res);
+      const res = await teacherApi.reject(data);
 
+      console.log(res);
       if (!res.result) {
         toast.error(res?.message);
         return;
@@ -21,7 +21,7 @@ export default function useTeacherApprove() {
 
       return res;
     } catch (err) {
-      toast.error("Không duyệt được sản phẩm");
+      toast.error("Không từ chối được sản phẩm");
       console.error(err);
       return null;
     } finally {
@@ -30,8 +30,8 @@ export default function useTeacherApprove() {
   };
 
   return {
-    loading_approve,
-    error_approve,
-    teacherApprove,
+    loading_reject,
+    error_reject,
+    teacherReject,
   };
 }

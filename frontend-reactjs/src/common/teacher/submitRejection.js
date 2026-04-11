@@ -4,24 +4,36 @@ export const useSubmitRejection = (
   toast,
   setShowFeedbackModal,
   setFeedback,
-  mutate,
   navigate,
+  teacherReject,
 ) => {
-  const submitRejection = () => {
+  const submitRejection = async (id) => {
     if (!feedback.trim()) {
       toast.warning("Vui lòng nhập lý do từ chối!");
       return;
     }
 
     setIsSubmitting(true);
+
     try {
-      // Gọi API từ chối sản phẩm với feedback
-      // await rejectProduct(id, { feedback });
-      toast.success("Đã gửi phản hồi từ chối!");
+      const res = await teacherReject({
+        product_id: id,
+        feedback,
+      });
+
+      console.log("hi", res);
+
       setShowFeedbackModal(false);
       setFeedback("");
-      mutate();
-      setTimeout(() => navigate("/teacher/pending-reviews"), 1500);
+
+      if (res?.result) {
+        toast.success("Đã gửi phản hồi từ chối!", {
+          autoClose: 1500,
+          onClose: () => {
+            navigate("/nckh-teacher");
+          },
+        });
+      }
     } catch (error) {
       console.error(error);
       toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");

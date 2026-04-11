@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Repositories\Traits\HasCurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductRepository extends BaseRepository
 {
@@ -18,20 +19,6 @@ class ProductRepository extends BaseRepository
     // tìm một sản phẩm bằng id chi tiết
     public function findProductById(int $productId): ?array
     {
-        // return Product::join('users', "products.user_id", '=', "users.user_id")
-        //     ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
-        //     ->join('majors', 'products.major_id', '=', 'majors.major_id')
-        //     ->join('product_images', 'products.product_id', '=', 'product_images.product_id')
-        //     ->join('product_files', 'products.product_id', '=', 'product_files.product_id')
-        //     ->join('product_tags', 'products.product_id', '=', 'product_tags.product_id')
-        //     ->join('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-        //     ->join('users', 'products.approved_by', '=', 'users.teacher_id')
-        //     ->join('reviews', 'products.approved_by', '=', 'reviews.teacher_id')
-        //     ->select()
-        //     ->where('products.user_id', $userId)
-        //     ->where("products.product_id", $productId)
-        //     ->first(); code cũ sai
-
         $userId = $this->getCurrentUserId();
         $product = DB::table('products')
             ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
@@ -171,7 +158,6 @@ class ProductRepository extends BaseRepository
         return Product::query()
             ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
             ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-            ->leftJoin('reviews', 'products.product_id', '=', 'reviews.product_id')
             ->where('products.user_id', $userId)
             ->select(
                 'products.product_id',
@@ -183,9 +169,14 @@ class ProductRepository extends BaseRepository
                 'products.submitted_at',
                 DB::raw('COALESCE(product_statistics.views, 0) as views'),
                 DB::raw('COALESCE(product_statistics.likes, 0) as likes'),
-                'reviews.comment as feedback'
+
+                // 👉 lấy 1 comment mới nhất
+                DB::raw('(SELECT comment FROM reviews 
+                      WHERE reviews.product_id = products.product_id 
+                      ORDER BY reviews.created_at DESC 
+                      LIMIT 1) as feedback')
             )
-            ->orderByDesc('products.created_at') // 🔥 dùng cái này cho chắc
+            ->orderByDesc('products.created_at')
             ->get();
     }
 
@@ -290,34 +281,17 @@ class ProductRepository extends BaseRepository
     }
 
     // Duyệt sản phẩm
-    public function approveProduct($productId, $teacherId)
+    public function update(Product $product, array $data): bool
     {
-        return DB::table('products')
-            ->where('product_id', $productId)
-            ->update([
-                'status' => 'approved',
-                'approved_by' => $teacherId,
-                'approved_at' => now(),
-            ]);
+        return $product->update($data);
     }
 
-    // Từ chối sản phẩm
-    public function rejectProduct($productId, $teacherId, $feedback)
-    {
-        DB::table('products')
-            ->where('product_id', $productId)
-            ->update([
-                'status' => 'rejected',
-                'approved_by' => $teacherId,
-                'approved_at' => now(),
-            ]);
 
-        DB::table('reviews')->insert([
-            'product_id' => $productId,
-            'teacher_id' => $teacherId,
-            'comment' => $feedback,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+
+    public function findByIdPAndIdMajor($productId, $majorId): ?Product
+    {
+        return Product::where('product_id', $productId)
+            ->where('major_id', $majorId)
+            ->first();
     }
 }

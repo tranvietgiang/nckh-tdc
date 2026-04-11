@@ -5,6 +5,7 @@ const teacherApi = {
   getData: () => axiosClient.get("/teacher"),
   approve: (productId) =>
     axiosClient.post(`/teacher/product/${productId}/approve`),
+  reject: (data) => axiosClient.post("/teacher/product/reject", data),
 };
 
 export default teacherApi;
