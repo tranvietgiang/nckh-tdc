@@ -158,7 +158,6 @@ class ProductRepository extends BaseRepository
         return Product::query()
             ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
             ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-            ->leftJoin('reviews', 'products.product_id', '=', 'reviews.product_id')
             ->where('products.user_id', $userId)
             ->select(
                 'products.product_id',
@@ -170,9 +169,14 @@ class ProductRepository extends BaseRepository
                 'products.submitted_at',
                 DB::raw('COALESCE(product_statistics.views, 0) as views'),
                 DB::raw('COALESCE(product_statistics.likes, 0) as likes'),
-                'reviews.comment as feedback'
+
+                // 👉 lấy 1 comment mới nhất
+                DB::raw('(SELECT comment FROM reviews 
+                      WHERE reviews.product_id = products.product_id 
+                      ORDER BY reviews.created_at DESC 
+                      LIMIT 1) as feedback')
             )
-            ->orderByDesc('products.created_at') // 🔥 dùng cái này cho chắc
+            ->orderByDesc('products.created_at')
             ->get();
     }
 

@@ -15,6 +15,7 @@ import { useSubmitRejection } from "../../common/teacher/submitRejection";
 import { AuthContext } from "../../contexts/AuthContext";
 import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
 import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
+import useReviewToggle from "../../common/useReviewToggle";
 
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
@@ -32,7 +33,7 @@ const TeacherProductDetailScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const [reviewLimit, setReviewLimit] = useState(3); // ban đầu hiển thị 3
+  // const [reviewLimit, setReviewLimit] = useState(3); // ban đầu hiển thị 3
 
   const { teacherApprove, loading_approve, error_approve } =
     useTeacherApprove();
@@ -101,6 +102,8 @@ const TeacherProductDetailScreen = () => {
       setIsSubmitting(false);
     }
   };
+  const { getDisplayed, canShowMore, canCollapse, showMore, collapse } =
+    useReviewToggle(3);
 
   if (loading) {
     return (
@@ -182,7 +185,8 @@ const TeacherProductDetailScreen = () => {
   // Trong component TeacherProductDetailScreen, sau các useState khác
 
   const reviews = product?.reviews || [];
-  const displayedReviews = reviews.slice(0, reviewLimit);
+
+  const displayedReviews = getDisplayed(reviews);
 
   const handleReject = () => setShowFeedbackModal(true);
   return (
@@ -745,21 +749,20 @@ const TeacherProductDetailScreen = () => {
                 ))}
               </div>
 
-              {/* Buttons */}
-              <div className="text-center mt-4 flex gap-3 justify-center">
-                {reviewLimit < reviews.length && (
+              <div className="flex justify-center gap-4 mt-4">
+                {canShowMore && (
                   <button
-                    onClick={() => setReviewLimit((prev) => prev + 3)}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                    onClick={showMore}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                   >
                     Xem thêm
                   </button>
                 )}
 
-                {reviewLimit > 3 && (
+                {canCollapse && (
                   <button
-                    onClick={() => setReviewLimit(3)}
-                    className="text-gray-500 hover:text-gray-700 text-sm font-medium flex items-center gap-1"
+                    onClick={collapse}
+                    className="text-gray-500 hover:text-gray-700 text-sm font-medium"
                   >
                     Thu gọn
                   </button>
