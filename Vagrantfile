@@ -14,8 +14,8 @@ Vagrant.configure("2") do |config|
   # 👉 TỐI ƯU VirtualBox
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false          # ❌ tắt GUI (rất quan trọng)
-    vb.memory = "4096"      # ✅ RAM (có thể tăng 8192 nếu thích)
-    vb.cpus = 2             # ✅ CPU
+    vb.memory = "8192"      # ✅ RAM 
+    vb.cpus = 4             # ✅ CPU
   end
 
   # 👉 Provision (chỉ chạy lần đầu)
