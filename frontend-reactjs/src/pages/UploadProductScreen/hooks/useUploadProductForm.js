@@ -21,6 +21,7 @@ export default function useUploadProductForm() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
   const [openViewDraft, setOpenViewDraft] = useState(false);
+  const [statusApi, setStatusApi] = useState({});
   const [drafts, setDrafts] = useState([]);
   const { user } = useContext(AuthContext);
 
@@ -236,16 +237,19 @@ export default function useUploadProductForm() {
 
       // hàm upload api
       const res = await uploadApi.uploadProduct(payload);
-      console.log(res);
 
-      // if (!res.ok) {
-      //   throw new Error("Upload thất bại");
-      // }
+      if (!res.success) {
+        setSubmitStatus("error"); // 👈 bật popup lỗi
+        setStatusApi(res.error); // 👈 lưu data backend
+        return;
+      }
 
       setSubmitStatus("success");
-      // navigate();
+      setStatusApi(null); // reset nếu thành công
     } catch (error) {
-      console.error(error);
+      console.error("error:", error);
+      setStatusApi(error);
+      console.log(error);
       setSubmitStatus("error");
     } finally {
       setLoading(false);
@@ -348,6 +352,7 @@ export default function useUploadProductForm() {
   return {
     formData,
     setFormData,
+    statusApi,
     tags,
     setTags,
     tagInput,
