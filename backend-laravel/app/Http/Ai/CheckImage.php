@@ -2,8 +2,6 @@
 
 namespace App\Http\Ai;
 
-use OpenAI\Client;
-
 class CheckImage
 {
     protected $client;
@@ -13,27 +11,28 @@ class CheckImage
         $this->client = \OpenAI::client(config('services.openai.key'));
     }
 
-    public function checkImage($imageUrl)
+    public function checkNSFW($file)
     {
+        $imageData = base64_encode(file_get_contents($file->getRealPath()));
+
         $response = $this->client->responses()->create([
-            'model' => 'gpt-4.1-mini',
-            'input' => [
-                [
-                    'role' => 'user',
-                    'content' => [
-                        [
-                            'type' => 'input_text',
-                            'text' => 'Kiểm tra ảnh này có nội dung nhạy cảm không. Trả về JSON: {"safe": true/false, "reason": ""}'
-                        ],
-                        [
-                            'type' => 'input_image',
-                            'image_url' => $imageUrl
-                        ]
+            'model' => 'gpt-4.1-nano',
+            'max_output_tokens' => 20,
+            'input' => [[
+                'role' => 'user',
+                'content' => [
+                    [
+                        'type' => 'input_text',
+                        'text' => 'Is this image 18+? Return JSON only: {"nsfw": true/false}'
+                    ],
+                    [
+                        'type' => 'input_image',
+                        'image_url' => "data:image/jpeg;base64,$imageData"
                     ]
                 ]
-            ]
+            ]]
         ]);
 
-        return $response->output[0]->content[0]->text;
+        return json_decode($response->output[0]->content[0]->text, true);
     }
 }
