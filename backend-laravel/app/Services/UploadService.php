@@ -7,6 +7,7 @@ use App\Repositories\UploadRepository;
 use App\Http\Ai\CheckImage;
 use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
+use Illuminate\Support\Facades\Log;
 
 class UploadService extends BaseRepository
 {
@@ -32,25 +33,38 @@ class UploadService extends BaseRepository
 
             $cloudinary = new CloudinaryService();
 
-            foreach ($data['images'] as $image) {
+            foreach ($data['images'] as $index => $image) {
 
-                // check AI trước
                 $result = $this->Check_ai_image->checkNSFW($image);
 
-                if (($result['nsfw'] ?? false) === true) {
-                    throw new \Exception("Ảnh vi phạm nội dung 18+");
+                Log::info([
+                    'index' => $index,
+                    'nsfw' => $result['nsfw'],
+                    'score' => $result['score'] ?? null,
+                    'suggestive' => $result['suggestive'] ?? null,
+                ]);
+
+                if (!empty($result['nsfw'])) {
+                    DB::rollBack();
+
+                    return [
+                        'error' => true,
+                        // 'message' => 'Ảnh thứ ' . ($index + 1) . ' vi phạm nội dung',
+                        'message' => 'Ảnh vi phạm nội dung',
+                        'detail' => $result
+                    ];
                 }
-
-                // sau khi pass mới upload
-                $url = $cloudinary->upload($image);
-
-                $uploadedImages[] = $url;
             }
 
             if (!empty($data['files'])) {
                 foreach ($data['files'] as $file) {
                     $uploadedFiles[] = $file->store('uploads/files', 'public');
                 }
+            }
+
+            foreach ($data['images'] as $image) {
+                $url = $cloudinary->upload($image);
+                $uploadedImages[] = $url;
             }
 
             $dbData = [

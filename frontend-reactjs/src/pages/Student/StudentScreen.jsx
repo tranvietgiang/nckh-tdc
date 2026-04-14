@@ -114,7 +114,7 @@ const StudentScreen = () => {
   if (loading) return <p className="p-6">Đang tải...</p>;
   if (error) return <p className="p-6 text-red-500">Có lỗi xảy ra</p>;
 
-  console.log(products.status);
+  // console.log(products.status);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -363,7 +363,6 @@ const StudentScreen = () => {
                     Xem chi tiết
                   </button>
 
-                  {console.log(stats.approved)}
                   {item.status === "approved" ? (
                     ""
                   ) : (
