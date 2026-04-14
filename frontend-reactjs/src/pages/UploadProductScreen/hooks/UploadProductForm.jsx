@@ -3,6 +3,7 @@ import useCategory from "../../../hooks/useCategory";
 import { confirmToast } from "../../../common/confirmToast";
 import useMajorName from "../../../hooks/useMajorName";
 import { AuthContext } from "../../../contexts/AuthContext";
+import LoadingSpinner from "../../../components/LoadingOverlay";
 
 const UploadProductForm = ({
   formData,
@@ -52,8 +53,47 @@ const UploadProductForm = ({
 
   const { majorName } = useMajorName(user?.major_id);
 
+  // State cho loading upload ảnh
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+
+  // Wrap handleImageUpload để hiển thị loading
+  const handleImageUploadWithLoading = async (e) => {
+    setUploadingImage(true);
+    try {
+      await handleImageUpload(e);
+    } catch (error) {
+      console.error("Upload image error:", error);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  // Wrap handleFileUpload để hiển thị loading
+  const handleFileUploadWithLoading = async (e) => {
+    setUploadingFile(true);
+    try {
+      await handleFileUpload(e);
+    } catch (error) {
+      console.error("Upload file error:", error);
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
   return (
     <>
+      {/* Loading overlay khi upload ảnh hoặc file */}
+      {(uploadingImage || uploadingFile) && (
+        <LoadingSpinner
+          fullScreen={true}
+          message={
+            uploadingImage ? "Đang tải ảnh lên..." : "Đang tải file lên..."
+          }
+          size="md"
+        />
+      )}
+
       <div>
         <form
           onKeyDown={(e) => {
@@ -66,6 +106,7 @@ const UploadProductForm = ({
           }}
           className="space-y-6"
         >
+          {/* Step 1: Thông tin cơ bản */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 1
@@ -146,9 +187,16 @@ const UploadProductForm = ({
                   </div>
                 </div>
 
-                {/*  select category */}
+                {/* select category */}
                 {isLoadingCategories ? (
-                  <p className="text-sm text-gray-500">Đang tải danh mục...</p>
+                  <div className="flex items-center justify-center p-4">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                      <p className="text-sm text-gray-500">
+                        Đang tải danh mục...
+                      </p>
+                    </div>
+                  </div>
                 ) : categoryError ? (
                   <p className="text-sm text-red-500">Lỗi tải danh mục</p>
                 ) : (
@@ -213,6 +261,7 @@ const UploadProductForm = ({
             </div>
           </div>
 
+          {/* Step 2: Hình ảnh & Files */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 2
@@ -237,32 +286,41 @@ const UploadProductForm = ({
                     type="file"
                     multiple
                     accept="image/*"
-                    onChange={handleImageUpload}
+                    onChange={handleImageUploadWithLoading}
                     className="hidden"
                     id="image-upload"
+                    disabled={uploadingImage}
                   />
                   <label
                     htmlFor="image-upload"
-                    className="group relative block w-full cursor-pointer rounded-2xl border-2 border-dashed border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 p-12 transition-all hover:from-purple-100 hover:to-pink-100"
+                    className={`group relative block w-full cursor-pointer rounded-2xl border-2 border-dashed border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 p-12 transition-all hover:from-purple-100 hover:to-pink-100 ${
+                      uploadingImage ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   >
                     <div className="text-center">
                       <div className="mb-4 inline-flex rounded-full bg-white p-4 shadow-lg transition-transform group-hover:scale-110">
-                        <svg
-                          className="h-8 w-8 text-purple-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
+                        {uploadingImage ? (
+                          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <svg
+                            className="h-8 w-8 text-purple-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        )}
                       </div>
                       <p className="mb-2 text-lg font-medium text-gray-700">
-                        Kéo thả hoặc click để tải ảnh lên
+                        {uploadingImage
+                          ? "Đang tải ảnh lên..."
+                          : "Kéo thả hoặc click để tải ảnh lên"}
                       </p>
                       <p className="text-sm text-gray-500">
                         Hỗ trợ: JPG, PNG, GIF • Tối đa 10 ảnh • Mỗi ảnh ≤ 5MB
@@ -283,7 +341,6 @@ const UploadProductForm = ({
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                       {images.map((image, index) => (
                         <div key={image.id} className="relative">
-                          {/* KHUNG ẢNH */}
                           <div className="group relative">
                             <div
                               className={`aspect-square cursor-pointer overflow-hidden rounded-xl border-4 transition-all ${
@@ -300,9 +357,7 @@ const UploadProductForm = ({
                               />
                             </div>
 
-                            {/* OVERLAY CHỈ PHỦ ẢNH */}
                             <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                              {/* NÚT PHÓNG TO */}
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -315,7 +370,6 @@ const UploadProductForm = ({
                                 🔍
                               </button>
 
-                              {/* NÚT XOÁ (ICON RÕ HƠN) */}
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -329,7 +383,6 @@ const UploadProductForm = ({
                               </button>
                             </div>
 
-                            {/* ICON ẢNH ĐẠI DIỆN */}
                             {index === thumbnailIndex && (
                               <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-sm font-bold text-white shadow-lg">
                                 👑
@@ -337,7 +390,6 @@ const UploadProductForm = ({
                             )}
                           </div>
 
-                          {/* NÚT KHÔNG BỊ CHE */}
                           <div className="mt-2 flex gap-2">
                             <button
                               type="button"
@@ -377,32 +429,41 @@ const UploadProductForm = ({
                   <input
                     type="file"
                     multiple
-                    onChange={handleFileUpload}
+                    onChange={handleFileUploadWithLoading}
                     className="hidden"
                     id="file-upload"
+                    disabled={uploadingFile}
                   />
                   <label
                     htmlFor="file-upload"
-                    className="group relative block w-full cursor-pointer rounded-2xl border-2 border-dashed border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50 p-8 transition-all hover:from-indigo-100 hover:to-blue-100"
+                    className={`group relative block w-full cursor-pointer rounded-2xl border-2 border-dashed border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50 p-8 transition-all hover:from-indigo-100 hover:to-blue-100 ${
+                      uploadingFile ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   >
                     <div className="text-center">
                       <div className="mb-3 inline-flex rounded-full bg-white p-3 shadow-lg transition-transform group-hover:scale-110">
-                        <svg
-                          className="h-6 w-6 text-indigo-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 106.364 6.364l6.364-6.364"
-                          />
-                        </svg>
+                        {uploadingFile ? (
+                          <div className="w-6 h-6 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <svg
+                            className="h-6 w-6 text-indigo-500"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 106.364 6.364l6.364-6.364"
+                            />
+                          </svg>
+                        )}
                       </div>
                       <p className="mb-1 text-base font-medium text-gray-700">
-                        Tải lên báo cáo, source code, tài liệu
+                        {uploadingFile
+                          ? "Đang tải file lên..."
+                          : "Tải lên báo cáo, source code, tài liệu"}
                       </p>
                       <p className="text-sm text-gray-500">
                         PDF, DOC, ZIP, RAR • Tối đa 5 files • Mỗi file ≤ 50MB
@@ -468,6 +529,7 @@ const UploadProductForm = ({
             </div>
           </div>
 
+          {/* Step 3: Tags & Liên kết - giữ nguyên */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 3
@@ -475,6 +537,7 @@ const UploadProductForm = ({
                 : "hidden scale-95 opacity-50"
             }`}
           >
+            {/* ... phần này giữ nguyên code cũ ... */}
             <div className="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-4">
               <h2 className="flex items-center gap-2 text-xl font-semibold text-white">
                 <span>🔗</span> Tags & Liên kết
@@ -482,6 +545,7 @@ const UploadProductForm = ({
             </div>
 
             <div className="space-y-6 p-6">
+              {/* Tags input */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Công nghệ sử dụng
@@ -578,6 +642,7 @@ const UploadProductForm = ({
             </div>
           </div>
 
+          {/* Navigation buttons - giữ nguyên */}
           <div className="flex items-center justify-between gap-4">
             <button
               type="button"
@@ -642,25 +707,7 @@ const UploadProductForm = ({
                 >
                   {loading ? (
                     <>
-                      <svg
-                        className="h-5 w-5 animate-spin"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
+                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       Đang gửi...
                     </>
                   ) : (
@@ -685,6 +732,8 @@ const UploadProductForm = ({
               )}
             </div>
           </div>
+
+          {/* Warning messages - giữ nguyên */}
           {currentStep === 3 && !isAllStepsCompleted() && (
             <p className="mt-2 text-sm text-red-600">
               ⚠️ Vui lòng hoàn thành bước 1 và 2 trước khi gửi duyệt
@@ -719,7 +768,7 @@ const UploadProductForm = ({
           </div>
         </form>
 
-        {/* screen view draft */}
+        {/* screen view draft - giữ nguyên */}
         {openViewDraft && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="w-full max-w-lg rounded-xl bg-white p-6">
@@ -731,11 +780,10 @@ const UploadProductForm = ({
                 <div className="space-y-3 max-h-80 overflow-y-auto">
                   {drafts.map((draft) => (
                     <div
-                      key={draft.id} // ✅ đặt đúng chỗ
+                      key={draft.id}
                       className="flex items-center justify-between gap-2 cursor-pointer rounded-lg border p-3 hover:bg-gray-50"
                       onClick={() => handleLoadDraft(draft)}
                     >
-                      {/* INFO */}
                       <div>
                         <p className="font-medium">
                           {draft.formData?.title || "Chưa có tiêu đề"}
@@ -745,7 +793,6 @@ const UploadProductForm = ({
                         </p>
                       </div>
 
-                      {/* DELETE */}
                       <button
                         type="button"
                         onClick={(e) => {

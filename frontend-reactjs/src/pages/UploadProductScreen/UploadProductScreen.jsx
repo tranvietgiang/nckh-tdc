@@ -176,7 +176,6 @@ const UploadProductScreen = () => {
         </div>
       )}
 
-      {console.log(statusApi)}
       {submitStatus === statusApi?.status && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fadeIn">
           <div className="w-full max-w-md animate-scaleIn rounded-2xl bg-white p-6">

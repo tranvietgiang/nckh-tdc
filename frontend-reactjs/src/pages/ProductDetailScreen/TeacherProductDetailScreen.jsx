@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
 import useImageViewer from "../../hooks/useImageViewer";
 import useTitle from "../../hooks/useTitle";
-import { confirmToast } from "../../common/ConfirmToast";
+
 import { toast } from "react-toastify";
 import useBackToPage from "../../hooks/useBackToPage";
 import { formatDate } from "../../common/formatDate";
@@ -16,7 +16,8 @@ import { AuthContext } from "../../contexts/AuthContext";
 import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
 import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
 import useReviewToggle from "../../common/useReviewToggle";
-
+import LoadingSpinner from "../../components/LoadingOverlay";
+import { confirmToast } from "../../common/ConfirmToast";
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
   const navigate = useNavigate();
@@ -816,13 +817,9 @@ const TeacherProductDetailScreen = () => {
       </div>
 
       {/* OVERLAY LOADING TOÀN MÀN HÌNH */}
+      {/* Sử dụng LoadingSpinner fullScreen cho isSubmitting */}
       {isSubmitting && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-6 shadow-xl flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-700 font-medium">Đang xử lý...</p>
-          </div>
-        </div>
+        <LoadingSpinner fullScreen={true} message="Đang xử lý..." size="md" />
       )}
     </div>
   );
