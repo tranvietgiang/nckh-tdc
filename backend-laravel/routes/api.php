@@ -40,6 +40,11 @@ Route::get('/major/{id}', [MajorController::class, 'majorName'])->middleware('au
 Route::get('/product/{id}', [ProductController::class, 'productViewId'])->middleware('auth:sanctum');
 Route::get('/products', [ProductController::class, 'productAll'])->middleware('auth:sanctum');
 
+Route::middleware('auth:sanctum')->prefix('teacher')->group(function () {
+    Route::get('/product/{product_id}', [ProductController::class, 'productViewIdTeacher']);
+    Route::post('/product/{product_id}/approve', [TeacherController::class, 'teacherApprove']);
+    Route::post('/product/reject', [TeacherController::class, 'teacherReject']);
+});
 /*
 |--------------------------------------------------------------------------
 | Teacher ROUTES

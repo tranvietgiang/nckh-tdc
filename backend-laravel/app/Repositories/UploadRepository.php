@@ -8,6 +8,7 @@ use App\Models\ProductImage;
 use App\Models\ProductTag;
 use App\Models\User;
 use App\Repositories\MajorRepository;
+use Carbon\Carbon;
 
 use function Symfony\Component\Clock\now;
 
@@ -49,7 +50,7 @@ class UploadRepository extends BaseRepository
             'files' => json_encode($uploadedFiles), // lưu mảng ID file
             'tags' => json_encode($tagIds), // lưu mảng ID tag
             'approved_by' => null,
-            'submitted_at' => now()->format('Y-m-d')
+            'submitted_at' => Carbon::now()
         ]);
 
 

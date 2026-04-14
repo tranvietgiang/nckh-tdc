@@ -6,11 +6,12 @@ use App\Models\Product;
 use App\Repositories\Traits\HasCurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProductRepository extends BaseRepository
 {
     // kiểm tra sản phẩm có tồn tại bằng id
-    public function productExists(int $productId): ?bool
+    public function productExists(int $productId): bool
     {
         return Product::where("product_id", $productId)->exists();
     }
@@ -18,20 +19,6 @@ class ProductRepository extends BaseRepository
     // tìm một sản phẩm bằng id chi tiết
     public function findProductById(int $productId): ?array
     {
-        // return Product::join('users', "products.user_id", '=', "users.user_id")
-        //     ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
-        //     ->join('majors', 'products.major_id', '=', 'majors.major_id')
-        //     ->join('product_images', 'products.product_id', '=', 'product_images.product_id')
-        //     ->join('product_files', 'products.product_id', '=', 'product_files.product_id')
-        //     ->join('product_tags', 'products.product_id', '=', 'product_tags.product_id')
-        //     ->join('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-        //     ->join('users', 'products.approved_by', '=', 'users.teacher_id')
-        //     ->join('reviews', 'products.approved_by', '=', 'reviews.teacher_id')
-        //     ->select()
-        //     ->where('products.user_id', $userId)
-        //     ->where("products.product_id", $productId)
-        //     ->first(); code cũ sai
-
         $userId = $this->getCurrentUserId();
         $product = DB::table('products')
             ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
@@ -171,7 +158,6 @@ class ProductRepository extends BaseRepository
         return Product::query()
             ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
             ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-            ->leftJoin('reviews', 'products.product_id', '=', 'reviews.product_id')
             ->where('products.user_id', $userId)
             ->select(
                 'products.product_id',
@@ -183,9 +169,129 @@ class ProductRepository extends BaseRepository
                 'products.submitted_at',
                 DB::raw('COALESCE(product_statistics.views, 0) as views'),
                 DB::raw('COALESCE(product_statistics.likes, 0) as likes'),
-                'reviews.comment as feedback'
+
+                // 👉 lấy 1 comment mới nhất
+                DB::raw('(SELECT comment FROM reviews 
+                      WHERE reviews.product_id = products.product_id 
+                      ORDER BY reviews.created_at DESC 
+                      LIMIT 1) as feedback')
             )
-            ->orderByDesc('products.created_at') // 🔥 dùng cái này cho chắc
+            ->orderByDesc('products.created_at')
             ->get();
+    }
+
+    public function productViewIdTeacher($productId)
+    {
+        $product = DB::table('products')
+            ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
+            ->join('majors', 'products.major_id', '=', 'majors.major_id')
+            ->leftJoin('users as approved_user', 'products.approved_by', '=', 'approved_user.user_id')
+            ->leftJoin('users as student', 'products.user_id', '=', 'student.user_id')
+
+            // 👇 JOIN ảnh (lấy 1 ảnh làm thumbnail)
+            ->leftJoin('product_images as pi', function ($join) {
+                $join->on('products.product_id', '=', 'pi.product_id');
+            })
+
+            ->select(
+                'products.*',
+                'majors.major_name',
+                'majors.major_code',
+                'categories.category_name',
+                'categories.description as category_description',
+
+                'approved_user.name as approved_by_fullname',
+                'student.name as student_name',
+                'student.email as student_email',
+                'student.role as student_role',
+                'student.class as student_class',
+                'student.user_id as student_id',
+            )
+
+            ->where('products.product_id', $productId)
+            ->where('student.role', 'student')
+            ->whereIn('products.status', ['pending', 'rejected', 'approved'])
+
+            ->groupBy(
+                'products.product_id',
+                'majors.major_name',
+                'majors.major_code',
+                'categories.category_name',
+                'categories.description',
+                'approved_user.name',
+                'student.name',
+                'student.email'
+            )
+
+            ->first();
+
+        if (!$product) {
+            return null;
+        }
+
+        $images = DB::table('product_images')
+            ->where('product_id', $productId)
+            ->get();
+
+        $files = DB::table('product_files')
+            ->where('product_id', $productId)
+            ->get();
+
+        $tags = DB::table('product_tags')
+            ->join('tags', 'product_tags.tag_id', '=', 'tags.tag_id')
+            ->where('product_tags.product_id', $productId)
+            ->select('tags.tag_id', 'tags.tag_name')
+            ->get();
+
+        $reviews = DB::table('reviews')
+            ->leftJoin('users as teacher', 'reviews.teacher_id', '=', 'teacher.user_id')
+            ->where('reviews.product_id', $productId)
+            ->select(
+                'reviews.review_id',
+                'reviews.comment',
+                'reviews.created_at',
+                'teacher.name as teacher_name'
+            )
+            ->get();
+
+        $author = [
+            'name'  => $product->student_name,
+            'email' => $product->student_email,
+            'role' => $product->student_role,
+            'class' => $product->student_class,
+            'mssv' => $product->student_id
+        ];
+
+        unset(
+            $product->student_name,
+            $product->student_email,
+            $product->student_role,
+            $product->student_class,
+            $product->student_id,
+        );
+
+        return [
+            'product' => $product,
+            'author'  => $author,
+            'images'  => $images,
+            'files'   => $files,
+            'tags'    => $tags,
+            'reviews' => $reviews,
+        ];
+    }
+
+    // Duyệt sản phẩm
+    public function update(Product $product, array $data): bool
+    {
+        return $product->update($data);
+    }
+
+
+
+    public function findByIdPAndIdMajor($productId, $majorId): ?Product
+    {
+        return Product::where('product_id', $productId)
+            ->where('major_id', $majorId)
+            ->first();
     }
 }

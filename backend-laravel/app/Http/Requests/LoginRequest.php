@@ -24,7 +24,6 @@ class LoginRequest extends FormRequest
         return [
             'username' => 'required|string',
             'password' => 'required|string',
-            'remember_token' => 'required|string'
         ];
     }
 }
