@@ -1,14 +1,14 @@
 import React, { useState, useContext, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserDropdown from "../../common/UserDropdown";
+import UserDropdown from "../../shared/UserDropdown";
 import { AuthContext } from "../../contexts/AuthContext";
-import useTitle from "../../hooks/useTitle";
-import useMajorName from "../../hooks/useMajorName";
+import useTitle from "../../hooks/common/useTitle";
+import useMajorName from "../../hooks/common/useMajorName";
 import useProductAll from "../../hooks/useProduct/useProductAll";
 import { mapCurrentStudent } from "../../utils/userMapper";
 import { STATUS } from "../../utils/constants";
-import { deleteProduct } from "../../hooks/useProduct/useDeleteProduct"; // bỏ comment
-import { confirmToast } from "../../common/ConfirmToast";
+// import deleteProduct from "../../hooks/useProduct/useDeleteProduct"; // bỏ comment
+// import { confirmToast } from "../../components/common/ConfirmToast";
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -93,23 +93,23 @@ const StudentScreen = () => {
     navigate("/edit-product", { state: { product } });
   };
 
-  const handleDelete = async (productId, productTitle) => {
-    const confirmed = await confirmToast({
-      title: "Xóa sản phẩm",
-      message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
-      confirmText: "Xóa",
-      cancelText: "Hủy",
-      type: "danger",
-    });
-    if (confirmed) {
-      try {
-        await deleteProduct(productId);
-        window.location.reload();
-      } catch (err) {
-        console.error("Delete failed", err);
-      }
-    }
-  };
+  // const handleDelete = async (productId, productTitle) => {
+  //   const confirmed = await confirmToast({
+  //     title: "Xóa sản phẩm",
+  //     message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
+  //     confirmText: "Xóa",
+  //     cancelText: "Hủy",
+  //     type: "danger",
+  //   });
+  //   if (confirmed) {
+  //     try {
+  //       await deleteProduct(productId);
+  //       window.location.reload();
+  //     } catch (err) {
+  //       console.error("Delete failed", err);
+  //     }
+  //   }
+  // };
 
   if (loading) return <p className="p-6">Đang tải...</p>;
   if (error) return <p className="p-6 text-red-500">Có lỗi xảy ra</p>;

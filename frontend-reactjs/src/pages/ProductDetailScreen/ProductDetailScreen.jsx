@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useProductDetail from "../../hooks/useProduct/useProductDetail";
-import useTitle from "../../hooks/useTitle";
-import useImageViewer from "../../hooks/useImageViewer"; // Import hook
+import useTitle from "../../hooks/common/useTitle";
+import useImageViewer from "../../shared/useImageViewer"; // Import hook
 
 const ProductDetailScreen = () => {
   useTitle("Trang xem chi tiết");

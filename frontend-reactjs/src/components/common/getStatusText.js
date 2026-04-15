@@ -1,10 +1,11 @@
+import { STATUS } from "../../utils/constants";
 export const getStatusText = (status) => {
   switch (status) {
-    case "pending":
+    case STATUS.PENDING:
       return "Chờ duyệt";
-    case "approved":
+    case STATUS.APPROVED:
       return "Đã duyệt";
-    case "rejected":
+    case STATUS.REJECTED:
       return "Từ chối";
     default:
       return status;

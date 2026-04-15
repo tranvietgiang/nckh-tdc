@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import useTitle from "../hooks/useTitle";
-import { formatDate } from "../common/formatDate";
+import useTitle from "../hooks/common/useTitle";
+import { formatDate } from "../utils/formatDate";
 import { toast } from "react-toastify";
 import { ROLE } from "../utils/constants";
-import BackButton from "../components/BackButton";
+import BackButton from "../components/common/BackButton";
 
 const ProfileScreen = () => {
   useTitle("Hồ sơ cá nhân");

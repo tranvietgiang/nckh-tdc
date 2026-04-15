@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { majorApi } from "../api";
+import { majorApi } from "../../api";
 
 export default function useMajorName(majorId) {
   const [majorName, setMajorName] = useState("");
 
   useEffect(() => {
     if (!majorId) return;
-
-    // const majorName = localStorage.getItem("major_name");
 
     const fetchMajor = async () => {
       try {
