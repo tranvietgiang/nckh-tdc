@@ -6,9 +6,9 @@ import useTitle from "../../hooks/useTitle";
 import useMajorName from "../../hooks/useMajorName";
 import useProductAll from "../../hooks/useProduct/useProductAll";
 import { mapCurrentStudent } from "../../utils/userMapper";
-
-// import { deleteProduct } from "../../services/productService"; // bỏ comment
-// import { confirmToast } from "../../common/ConfirmToast";
+import { STATUS } from "../../utils/constants";
+import { deleteProduct } from "../../hooks/useProduct/useDeleteProduct"; // bỏ comment
+import { confirmToast } from "../../common/ConfirmToast";
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -32,12 +32,12 @@ const StudentScreen = () => {
 
   const filteredProducts = useMemo(() => {
     switch (activeTab) {
-      case "pending":
-        return myProducts.filter((p) => p.status === "pending");
-      case "approved":
-        return myProducts.filter((p) => p.status === "approved");
-      case "rejected":
-        return myProducts.filter((p) => p.status === "rejected");
+      case STATUS.PENDING:
+        return myProducts.filter((p) => p.status === STATUS.PENDING);
+      case STATUS.APPROVED:
+        return myProducts.filter((p) => p.status === STATUS.APPROVED);
+      case STATUS.REJECTED:
+        return myProducts.filter((p) => p.status === STATUS.REJECTED);
       default:
         return myProducts;
     }
@@ -46,9 +46,9 @@ const StudentScreen = () => {
   const stats = useMemo(() => {
     return {
       total: myProducts.length,
-      approved: myProducts.filter((p) => p.status === "approved").length,
-      pending: myProducts.filter((p) => p.status === "pending").length,
-      rejected: myProducts.filter((p) => p.status === "rejected").length,
+      approved: myProducts.filter((p) => p.status === STATUS.APPROVED).length,
+      pending: myProducts.filter((p) => p.status === STATUS.PENDING).length,
+      rejected: myProducts.filter((p) => p.status === STATUS.REJECTED).length,
     };
   }, [myProducts]);
 
@@ -93,23 +93,23 @@ const StudentScreen = () => {
     navigate("/edit-product", { state: { product } });
   };
 
-  // const handleDelete = async (productId, productTitle) => {
-  //   const confirmed = await confirmToast({
-  //     title: "Xóa sản phẩm",
-  //     message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
-  //     confirmText: "Xóa",
-  //     cancelText: "Hủy",
-  //     type: "danger",
-  //   });
-  //   if (confirmed) {
-  //     try {
-  //       await deleteProduct(productId);
-  //       refetch();
-  //     } catch (err) {
-  //       console.error("Delete failed", err);
-  //     }
-  //   }
-  // };
+  const handleDelete = async (productId, productTitle) => {
+    const confirmed = await confirmToast({
+      title: "Xóa sản phẩm",
+      message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
+      confirmText: "Xóa",
+      cancelText: "Hủy",
+      type: "danger",
+    });
+    if (confirmed) {
+      try {
+        await deleteProduct(productId);
+        window.location.reload();
+      } catch (err) {
+        console.error("Delete failed", err);
+      }
+    }
+  };
 
   if (loading) return <p className="p-6">Đang tải...</p>;
   if (error) return <p className="p-6 text-red-500">Có lỗi xảy ra</p>;
@@ -197,9 +197,9 @@ const StudentScreen = () => {
               Tất cả ({stats.total})
             </button>
             <button
-              onClick={() => setActiveTab("pending")}
+              onClick={() => setActiveTab(STATUS.PENDING)}
               className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
-                activeTab === "pending"
+                activeTab === STATUS.PENDING
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
@@ -207,9 +207,9 @@ const StudentScreen = () => {
               Chờ duyệt ({stats.pending})
             </button>
             <button
-              onClick={() => setActiveTab("approved")}
+              onClick={() => setActiveTab(STATUS.APPROVED)}
               className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
-                activeTab === "approved"
+                activeTab === STATUS.APPROVED
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
@@ -217,9 +217,9 @@ const StudentScreen = () => {
               Đã duyệt ({stats.approved})
             </button>
             <button
-              onClick={() => setActiveTab("rejected")}
+              onClick={() => setActiveTab(STATUS.REJECTED)}
               className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
-                activeTab === "rejected"
+                activeTab === STATUS.REJECTED
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
@@ -257,9 +257,9 @@ const StudentScreen = () => {
                           : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {item.status === "approved"
+                    {item.status === STATUS.APPROVED
                       ? "Đã duyệt"
-                      : item.status === "pending"
+                      : item.status === STATUS.PENDING
                         ? "Chờ duyệt"
                         : "Từ chối"}
                   </span>
@@ -363,10 +363,8 @@ const StudentScreen = () => {
                     Xem chi tiết
                   </button>
 
-                  {item.status === "approved" ? (
-                    ""
-                  ) : (
-                    <div className="flex gap-2">
+                  <div className="flex gap-2">
+                    {item.status === STATUS.PENDING && (
                       <button
                         onClick={() => handleEdit(item)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
@@ -386,6 +384,8 @@ const StudentScreen = () => {
                         </svg>
                         Sửa
                       </button>
+                    )}
+                    {item.status !== STATUS.APPROVED && (
                       <button
                         // onClick={() => handleDelete(item.product_id, item.title)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-50 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
@@ -405,8 +405,8 @@ const StudentScreen = () => {
                         </svg>
                         Xóa
                       </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
