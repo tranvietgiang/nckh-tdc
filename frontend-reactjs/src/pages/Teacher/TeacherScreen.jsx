@@ -282,28 +282,24 @@ const TeacherScreen = () => {
       value: teacher.totalProducts,
       color: "purple",
       detail: "Tất cả sản phẩm đã được gửi lên hệ thống",
-      icon: "📊",
     },
     {
       label: "Chờ duyệt",
       value: pendingProducts.length,
       color: "yellow",
       detail: "Sản phẩm đang chờ giảng viên duyệt",
-      icon: "⏳",
     },
     {
       label: "Đã duyệt",
       value: approvedProducts.length,
       color: "green",
       detail: "Sản phẩm đã được duyệt và công khai",
-      icon: "✅",
     },
     {
       label: "Từ chối",
       value: rejectedProducts.length,
       color: "red",
       detail: "Sản phẩm bị từ chối cần chỉnh sửa",
-      icon: "❌",
     },
   ];
 
