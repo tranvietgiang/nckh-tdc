@@ -57,14 +57,21 @@ class CheckImage
         );
 
         $suggestive = $nudity['suggestive'] ?? 0;
+        $mild = $nudity['mildly_suggestive'] ?? 0;
+        $bikini = $nudity['suggestive_classes']['bikini'] ?? 0;
 
-        // 🔥 CHẶN CẢ BIKINI
-        $isNSFW = $nsfwScore > 0.2 || $suggestive > 0.5;
-        // $result = $response->json();
+        $isNSFW =
+            $nsfwScore > 0.2 ||
+            $suggestive > 0.5 ||
+            $mild > 0.8 ||
+            $bikini > 0.8;
+
         return [
             'nsfw' => $isNSFW,
             'score' => $nsfwScore,
             'suggestive' => $suggestive,
+            'mild' => $mild,
+            'bikini' => $bikini,
         ];
     }
 }
