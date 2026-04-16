@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useTitle from "../../hooks/useTitle";
+// import useTitle from '../../../../../../../../../'
 
 import AdminLayout from "../../layouts/AdminLayout";
 
@@ -11,7 +11,7 @@ import SettingScreen from "./screens/SettingsScreen";
 
 const AdminScreen = () => {
   const [activeSection, setActiveSection] = useState("dashboard");
-  useTitle("Trang admin");
+  // useTitle("Trang admin");
 
   const menuMap = {
     dashboard: {

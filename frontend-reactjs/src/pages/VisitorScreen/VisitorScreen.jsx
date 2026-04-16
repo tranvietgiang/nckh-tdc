@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import useTitle from "../../hooks/useTitle";
+import useTitle from "../../hooks/common/useTitle";
 
 const VisitorScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,8 +88,7 @@ const VisitorScreen = () => {
     {
       id: 6,
       title: "App Chat Real-time - Chatty",
-      description:
-        "Ứng dụng chat realtime với gửi ảnh, video và gọi video.",
+      description: "Ứng dụng chat realtime với gửi ảnh, video và gọi video.",
       thumbnail:
         "https://images.unsplash.com/photo-1611606063065-ee7946f0787a?w=400",
       studentName: "Hoàng Văn Minh",
@@ -155,10 +154,7 @@ const VisitorScreen = () => {
         {/* Top bar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           {/* Logo + Brand */}
-          <Link
-            to="/nckh-visitor"
-            className="flex items-center gap-3 group"
-          >
+          <Link to="/nckh-visitor" className="flex items-center gap-3 group">
             <img
               src="/Images/logo-tdc-orginal.webp"
               alt="TDC"
@@ -166,9 +162,7 @@ const VisitorScreen = () => {
             />
             <div className="hidden sm:block">
               <p className="text-sm text-blue-100">Khoa Công Nghệ Thông Tin</p>
-              <h2 className="text-lg font-bold leading-tight">
-                TDC Showcase
-              </h2>
+              <h2 className="text-lg font-bold leading-tight">TDC Showcase</h2>
             </div>
           </Link>
 

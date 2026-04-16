@@ -1,9 +1,9 @@
 import React from "react";
-
+import { ROLE } from "../../../../../utils/constants";
 const UserStats = ({ users }) => {
   const totalUsers = users.length;
-  const totalStudents = users.filter((u) => u.role === "student").length;
-  const totalTeachers = users.filter((u) => u.role === "teacher").length;
+  const totalStudents = users.filter((u) => u.role === ROLE.STUDENT).length;
+  const totalTeachers = users.filter((u) => u.role === ROLE.TEACHER).length;
 
   return (
     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">

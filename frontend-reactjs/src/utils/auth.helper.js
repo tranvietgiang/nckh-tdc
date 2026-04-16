@@ -1,4 +1,4 @@
-import { getUser, getToken } from "../utils/storage";
+import { getUser, getToken } from "./storage";
 
 export const isLoggedIn = () => {
   const user = getUser();

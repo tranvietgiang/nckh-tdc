@@ -7,6 +7,7 @@ use App\Repositories\UploadRepository;
 use App\Http\Ai\CheckImage;
 use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
+use Illuminate\Support\Facades\Log;
 
 class UploadService extends BaseRepository
 {
@@ -29,33 +30,43 @@ class UploadService extends BaseRepository
         DB::beginTransaction();
 
         try {
-            // 🔥 Khởi tạo 1 lần (KHÔNG để trong loop)
+
             $cloudinary = new CloudinaryService();
 
-            // 🔥 Upload + check AI
             foreach ($data['images'] as $index => $image) {
 
-                // upload cloudinary
-                $url = $cloudinary->upload($image);
+                $result = $this->Check_ai_image->checkNSFW($image);
 
-                // check AI bằng URL thật
-                $result = $this->Check_ai_image->checkImage($url);
+                Log::info([
+                    'index' => $index,
+                    'nsfw' => $result['nsfw'],
+                    'score' => $result['score'] ?? null,
+                    'suggestive' => $result['suggestive'] ?? null,
+                ]);
 
-                if (($result['safe'] ?? true) === false) {
-                    throw new \Exception("Ảnh vi phạm");
+                if (!empty($result['nsfw'])) {
+                    DB::rollBack();
+
+                    return [
+                        'error' => true,
+                        // 'message' => 'Ảnh thứ ' . ($index + 1) . ' vi phạm nội dung',
+                        'message' => 'Ảnh vi phạm nội dung',
+                        'detail' => $result
+                    ];
                 }
-
-                $uploadedImages[] = $url;
             }
 
-            // 🔥 Upload files (giữ nguyên local nếu bạn muốn)
             if (!empty($data['files'])) {
                 foreach ($data['files'] as $file) {
                     $uploadedFiles[] = $file->store('uploads/files', 'public');
                 }
             }
 
-            // 🔥 Data DB
+            foreach ($data['images'] as $image) {
+                $url = $cloudinary->upload($image);
+                $uploadedImages[] = $url;
+            }
+
             $dbData = [
                 'title' => $data['title'],
                 'description' => $data['description'],
@@ -66,7 +77,6 @@ class UploadService extends BaseRepository
                 'demo_link' => $data['demo_link'] ?? null,
             ];
 
-            // 🔥 Lưu DB
             $product = $this->upload_repository->upload(
                 $dbData,
                 $uploadedImages,
@@ -74,16 +84,15 @@ class UploadService extends BaseRepository
                 $tagIds
             );
 
-            // 🔥 Trả URL luôn (KHÔNG dùng Storage nữa)
             $product->thumbnail = $uploadedImages[0] ?? null;
             $product->images = $uploadedImages;
 
             DB::commit();
+
             return $product;
         } catch (\Exception $e) {
-            DB::rollBack();
 
-            // ❗ Cloudinary không cần delete ở đây (muốn thì làm nâng cao sau)
+            DB::rollBack();
 
             throw $e;
         }

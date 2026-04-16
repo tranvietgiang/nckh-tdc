@@ -1,15 +1,15 @@
 import React, { useState, useContext } from "react";
-import UserDropdown from "../../common/UserDropdown";
-import useTitle from "../../hooks/useTitle";
+import UserDropdown from "../../shared/UserDropdown";
+import useTitle from "../../hooks/common/useTitle";
 import { AuthContext } from "../../contexts/AuthContext";
-import useMajorName from "../../hooks/useMajorName";
+import useMajorName from "../../hooks/common/useMajorName";
 import useTeacherStatistic from "../../hooks/useTeacher/useTeacherStatistic";
 import useTeacherPendingApproval from "../../hooks/useTeacher/useTeacherPendingApproval";
-import { useViewDetail } from "../../common/useViewDetail";
-import useImageViewer from "../../hooks/useImageViewer";
-import { getStatusColor } from "../../common/getStatusColor";
-import { getStatusText } from "../../common/getStatusText";
-import { formatDate } from "../../common/formatDate";
+import { useViewDetail } from "../../hooks/common/useViewDetail";
+import useImageViewer from "../../hooks/common/useImageViewer";
+import { getStatusColor } from "../../components/common/getStatusColor";
+import { getStatusText } from "../../components/common/getStatusText";
+import { formatDate } from "../../utils/formatDate";
 
 // ========== Extracted components ==========
 const ProductCard = ({ product, type, onViewDetail, onOpenImageViewer }) => {
@@ -282,28 +282,24 @@ const TeacherScreen = () => {
       value: teacher.totalProducts,
       color: "purple",
       detail: "Tất cả sản phẩm đã được gửi lên hệ thống",
-      icon: "📊",
     },
     {
       label: "Chờ duyệt",
       value: pendingProducts.length,
       color: "yellow",
       detail: "Sản phẩm đang chờ giảng viên duyệt",
-      icon: "⏳",
     },
     {
       label: "Đã duyệt",
       value: approvedProducts.length,
       color: "green",
       detail: "Sản phẩm đã được duyệt và công khai",
-      icon: "✅",
     },
     {
       label: "Từ chối",
       value: rejectedProducts.length,
       color: "red",
       detail: "Sản phẩm bị từ chối cần chỉnh sửa",
-      icon: "❌",
     },
   ];
 

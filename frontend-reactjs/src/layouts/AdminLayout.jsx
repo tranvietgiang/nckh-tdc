@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import UserDropdown from "../common/UserDropdown";
-import useClickOutside from "../hooks/useClickOutside";
+import UserDropdown from "../shared/UserDropdown";
+import useClickOutside from "../hooks/common/useClickOutside";
 
 const menuItems = [
   { key: "dashboard", label: "Dashboard", icon: "📊" },

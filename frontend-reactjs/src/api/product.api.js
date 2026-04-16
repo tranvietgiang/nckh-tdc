@@ -8,6 +8,7 @@ const productApi = {
     axiosClient.get(`/teacher/products/${id}/reject`),
   getProductApproveTeacher: (id) =>
     axiosClient.get(`/teacher/products/${id}/approve`),
+  deleteProduct: (id) => axiosClient.post(`/student/delete`, id),
 };
 
 export default productApi;

@@ -1,14 +1,14 @@
 import React, { useContext } from "react";
-import useBackToPage from "../../hooks/useBackToPage";
+import useBackToPage from "../../utils/backToPage";
 import { AuthContext } from "../../contexts/AuthContext";
 import { mapCurrentStudent } from "../../utils/userMapper";
-import useMajorName from "../../hooks/useMajorName";
+import useMajorName from "../../hooks/common/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
 import { useNavigate } from "react-router-dom";
-// import useBlockNavigation from "../../hooks/useBlockNavigation";
+// import useBlockNavigation from "../../hooks/common/useBlockNavigation";
 import UploadProductForm from "./hooks/UploadProductForm";
-import useTitle from "../../hooks/useTitle";
+import useTitle from "../../hooks/common/useTitle";
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -35,6 +35,7 @@ const UploadProductScreen = () => {
     selectedImage,
     submitStatus,
     steps,
+    statusApi,
     isStepValid,
     isAllStepsCompleted,
     handleNextStep,
@@ -175,7 +176,7 @@ const UploadProductScreen = () => {
         </div>
       )}
 
-      {submitStatus === "error" && (
+      {submitStatus === statusApi?.status && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fadeIn">
           <div className="w-full max-w-md animate-scaleIn rounded-2xl bg-white p-6">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
@@ -199,8 +200,8 @@ const UploadProductScreen = () => {
             </h3>
 
             <p className="mb-6 text-center text-gray-600">
-              Có lỗi xảy ra khi gửi sản phẩm. Kiểm tra lại API hoặc dữ liệu rồi
-              thử lại.
+              {statusApi?.message ||
+                "Có lỗi xảy ra khi gửi sản phẩm. Kiểm tra lại API hoặc dữ liệu rồi thử lại"}
             </p>
 
             <button

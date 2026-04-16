@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
+import { AuthContext } from "../../contexts/AuthContext";
 
 function ValidateUrl({ children }) {
   const { token, loading } = useContext(AuthContext);
