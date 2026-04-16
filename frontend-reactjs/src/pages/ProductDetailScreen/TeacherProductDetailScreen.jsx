@@ -4,7 +4,6 @@ import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeac
 import useImageViewer from "../../shared/useImageViewer";
 import useTitle from "../../hooks/common/useTitle";
 import { toast } from "react-toastify";
-import useBackToPage from "../../hooks/common/useBackToPage";
 import { formatDate } from "../../utils/formatDate";
 import { getStatusColor } from "../../components/common/getStatusColor";
 import { getStatusText } from "../../components/common/getStatusText";
@@ -17,13 +16,13 @@ import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
 import useReviewToggle from "../../hooks/common/useReviewToggle";
 import LoadingSpinner from "../../components/common/LoadingOverlay";
 import { confirmToast } from "../../components/common/ConfirmToast";
+import BackButton from "../../components/common/BackButton";
 
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
   const navigate = useNavigate();
   const { state } = useLocation();
   const id = state?.productId;
-  const goBack = useBackToPage();
 
   const { product, loading, error, mutate } = useProductDetailTeacher(id);
   const { openViewer, ImageViewerModal } = useImageViewer();
@@ -248,30 +247,8 @@ const TeacherProductDetailScreen = () => {
       )}
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-6">
-          <button
-            onClick={() => {
-              if (loading) return;
-              goBack();
-            }}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Quay lại
-          </button>
+          <BackButton loading={loading} />
         </div>
 
         {/* Product Title & Status */}

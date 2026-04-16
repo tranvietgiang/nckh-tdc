@@ -10,7 +10,7 @@ import useImageViewer from "../../shared/useImageViewer";
 import { getStatusColor } from "../../components/common/getStatusColor";
 import { getStatusText } from "../../components/common/getStatusText";
 import { formatDate } from "../../utils/formatDate";
-
+import HeaderTeacher from "../../layouts/Header";
 // ========== Extracted components ==========
 const ProductCard = ({ product, type, onViewDetail, onOpenImageViewer }) => {
   const statusColor = getStatusColor(type);
