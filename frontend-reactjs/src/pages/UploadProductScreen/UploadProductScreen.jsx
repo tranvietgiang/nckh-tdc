@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import useBackToPage from "../../hooks/common/useBackToPage";
+import useBackToPage from "../../hooks/common/useBackToPage.js";
 import { AuthContext } from "../../contexts/AuthContext";
 import { mapCurrentStudent } from "../../utils/userMapper";
 import useMajorName from "../../hooks/common/useMajorName";
