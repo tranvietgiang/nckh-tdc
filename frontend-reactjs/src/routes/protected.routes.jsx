@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import AdminScreen from "../pages/Admin/AdminScreen";
+import AdminScreen from "../pages/admin/AdminScreen";
 import StudentScreen from "../pages/Student/StudentScreen";
 import TeacherScreen from "../pages/Teacher/TeacherScreen";
 import UploadProductScreen from "../pages/UploadProductScreen/UploadProductScreen";

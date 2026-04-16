@@ -13,7 +13,7 @@ const ProductDetailScreen = () => {
   const { openViewer, ImageViewerModal } = useImageViewer(); // Sử dụng hook
   const [activeTab, setActiveTab] = useState("overview");
   const REJECT = product?.status;
-  console.log(product?.status);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
