@@ -1,13 +1,13 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminScreen from "../pages/admin/AdminScreen";
-import StudentScreen from "../pages/Student/StudentScreen";
-import TeacherScreen from "../pages/Teacher/TeacherScreen";
-import UploadProductScreen from "../pages/UploadProductScreen/UploadProductScreen";
-import ProductDetailScreen from "../pages/ProductDetailScreen/ProductDetailScreen";
-import NotFoundScreen from "../pages/NotFoundScreen/NotFoundScreen";
+import StudentScreen from "../pages/student/StudentScreen";
+import UploadProductScreen from "../pages/uploadProductScreen/UploadProductScreen";
+import ProductDetailScreen from "../pages/productDetailScreen/ProductDetailScreen";
+import NotFoundScreen from "../pages/notFoundScreen/NotFoundScreen";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
-import TeacherProductDetailScreen from "../pages/ProductDetailScreen/TeacherProductDetailScreen";
+import TeacherProductDetailScreen from "../pages/productDetailScreen/TeacherProductDetailScreen";
+import TeacherScreen from "../pages/teacher/TeacherScreen";
 
 function RoleRoutes() {
   return (
