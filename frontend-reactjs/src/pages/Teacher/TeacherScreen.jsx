@@ -6,7 +6,7 @@ import useMajorName from "../../hooks/common/useMajorName";
 import useTeacherStatistic from "../../hooks/useTeacher/useTeacherStatistic";
 import useTeacherPendingApproval from "../../hooks/useTeacher/useTeacherPendingApproval";
 import { useViewDetail } from "../../hooks/common/useViewDetail";
-import useImageViewer from "../../hooks/common/useImageViewer";
+import useImageViewer from "../../shared/useImageViewer";
 import { getStatusColor } from "../../components/common/getStatusColor";
 import { getStatusText } from "../../components/common/getStatusText";
 import { formatDate } from "../../utils/formatDate";

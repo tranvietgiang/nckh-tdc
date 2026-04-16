@@ -12,7 +12,7 @@ function UserDropdown() {
   useClickOutside(dropdownRef, () => {
     setShowDropdown(false);
   });
-  console.log(import.meta.url);
+
   const [loadingLogout, setLoadingLogout] = useState(false);
 
   const handleLogout = async () => {
