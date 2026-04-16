@@ -6,7 +6,6 @@ import useMajorName from "../../hooks/common/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
 import { useNavigate } from "react-router-dom";
-// import useBlockNavigation from "../../hooks/common/useBlockNavigation";
 import UploadProductForm from "./hooks/UploadProductForm";
 import useTitle from "../../hooks/common/useTitle";
 const UploadProductScreen = () => {
