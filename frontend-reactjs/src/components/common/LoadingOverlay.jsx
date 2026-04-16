@@ -1,6 +1,3 @@
-// components/common/LoadingSpinner.jsx
-import React from "react";
-
 const LoadingSpinner = ({
   fullScreen = false,
   message = "Đang xử lý...",

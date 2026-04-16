@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useProductDetail from "../../hooks/useProduct/useProductDetail";
-import useTitle from "../../hooks/useTitle";
-import useImageViewer from "../../hooks/useImageViewer"; // Import hook
+import useTitle from "../../hooks/common/useTitle";
+import useImageViewer from "../../shared/useImageViewer"; // Import hook
 
 const ProductDetailScreen = () => {
   useTitle("Trang xem chi tiết");
@@ -13,7 +13,7 @@ const ProductDetailScreen = () => {
   const { openViewer, ImageViewerModal } = useImageViewer(); // Sử dụng hook
   const [activeTab, setActiveTab] = useState("overview");
   const REJECT = product?.status;
-  console.log(product?.status);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">

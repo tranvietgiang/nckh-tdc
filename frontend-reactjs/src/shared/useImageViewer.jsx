@@ -1,10 +1,8 @@
-import { useState, useEffect } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
+import { useEffect, useState } from "react";
 const useImageViewer = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-
+  const [selectedImage, setSelectedImage] = useState();
+  const [isOpen, setIsOpen] = useState();
   const openViewer = (imageUrl) => {
     setSelectedImage(imageUrl);
     setIsOpen(true);

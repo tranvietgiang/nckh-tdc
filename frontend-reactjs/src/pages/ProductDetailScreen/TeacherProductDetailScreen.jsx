@@ -1,23 +1,23 @@
 import React, { useState, useContext, Fragment } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
-import useImageViewer from "../../hooks/useImageViewer";
-import useTitle from "../../hooks/useTitle";
-
+import useImageViewer from "../../shared/useImageViewer";
+import useTitle from "../../hooks/common/useTitle";
 import { toast } from "react-toastify";
-import useBackToPage from "../../hooks/useBackToPage";
-import { formatDate } from "../../common/formatDate";
-import { getStatusColor } from "../../common/getStatusColor";
-import { getStatusText } from "../../common/getStatusText";
-import { useHandleApprove } from "../../common/teacher/handleApprove";
-import { useHandleSubmitReview } from "../../common/teacher/handleSubmitReview";
-import { useSubmitRejection } from "../../common/teacher/submitRejection";
+import useBackToPage from "../../utils/backToPage";
+import { formatDate } from "../../utils/formatDate";
+import { getStatusColor } from "../../components/common/getStatusColor";
+import { getStatusText } from "../../components/common/getStatusText";
+import { useHandleApprove } from "../../components/teacher/useHandleApprove";
+import { useHandleSubmitReview } from "../../components/teacher/handleSubmitReview";
+import { useSubmitRejection } from "../../components/teacher/submitRejection";
 import { AuthContext } from "../../contexts/AuthContext";
 import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
 import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
-import useReviewToggle from "../../common/useReviewToggle";
-import LoadingSpinner from "../../components/LoadingOverlay";
-import { confirmToast } from "../../common/ConfirmToast";
+import useReviewToggle from "../../hooks/common/useReviewToggle";
+import LoadingSpinner from "../../components/common/LoadingOverlay";
+import { confirmToast } from "../../components/common/ConfirmToast";
+
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
   const navigate = useNavigate();
