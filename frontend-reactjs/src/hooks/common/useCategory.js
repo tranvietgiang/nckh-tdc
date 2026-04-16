@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { categoryApi } from "../api";
+import { categoryApi } from "../../api";
 
 export default function useCategory() {
   const [isLoadingCategories, setLoading] = useState(false);
@@ -13,9 +13,7 @@ export default function useCategory() {
 
       try {
         const res = await categoryApi.getAll();
-
-        // ⚠️ check API của mày ở đây
-        setCategory(res.data); // hoặc res.data.data
+        setCategory(res.data);
       } catch (err) {
         console.error(err);
         setError(err);

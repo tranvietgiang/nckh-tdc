@@ -239,8 +239,8 @@ export default function useUploadProductForm() {
       const res = await uploadApi.uploadProduct(payload);
 
       if (!res.success) {
-        setSubmitStatus("error"); // 👈 bật popup lỗi
-        setStatusApi(res.error); // 👈 lưu data backend
+        setSubmitStatus("error");
+        setStatusApi(res.error);
         return;
       }
 

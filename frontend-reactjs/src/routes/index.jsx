@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "../pages/Auth/Login";
+import Login from "../pages/auth/Login";
 import GuestRoute from "./guest.route";
 import RoleRoutes from "./protected.routes";
-import VisitorScreen from "../pages/VisitorScreen/VisitorScreen";
-import NotFoundPage from "../pages/NotFoundScreen/NotFoundScreen";
+import VisitorScreen from "../pages/visitorScreen/VisitorScreen";
+import NotFoundPage from "../pages/notFoundScreen/NotFoundScreen";
 import Profile from "../layouts/ProfileLayout";
 function AppRoutes() {
   return (

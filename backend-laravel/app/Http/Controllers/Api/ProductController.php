@@ -46,4 +46,12 @@ class ProductController extends Controller
             $result
         );
     }
+
+    public function deleteProductStudent(ProductViewRequest $p_rq)
+    {
+        $result = $this->productService->productViewIdTeacher($p_rq->product_id);
+        return response()->json(
+            $result
+        );
+    }
 }

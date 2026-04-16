@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
-import useBackToPage from "../../hooks/useBackToPage";
+import useBackToPage from "../../hooks/common/useBackToPage";
 import { AuthContext } from "../../contexts/AuthContext";
 import { mapCurrentStudent } from "../../utils/userMapper";
-import useMajorName from "../../hooks/useMajorName";
+import useMajorName from "../../hooks/common/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "./hooks/useUploadProductForm";
 import { useNavigate } from "react-router-dom";
-// import useBlockNavigation from "../../hooks/useBlockNavigation";
 import UploadProductForm from "./hooks/UploadProductForm";
-import useTitle from "../../hooks/useTitle";
+import useTitle from "../../hooks/common/useTitle";
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
   const { user } = useContext(AuthContext);
@@ -176,7 +175,6 @@ const UploadProductScreen = () => {
         </div>
       )}
 
-      {console.log(statusApi)}
       {submitStatus === statusApi?.status && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fadeIn">
           <div className="w-full max-w-md animate-scaleIn rounded-2xl bg-white p-6">
