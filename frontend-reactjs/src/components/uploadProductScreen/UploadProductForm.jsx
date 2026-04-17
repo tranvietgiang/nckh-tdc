@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
-import useCategory from "../../../hooks/common/useCategory";
-import { confirmToast } from "../../../components/common/ConfirmToast";
-import useMajorName from "../../../hooks/common/useMajorName";
-import { AuthContext } from "../../../contexts/AuthContext";
-import LoadingSpinner from "../../../components/common/LoadingOverlay";
+import useCategory from "../../hooks/common/useCategory";
+import { confirmToast } from "../common/ConfirmToast";
+import useMajorName from "../../hooks/common/useMajorName";
+import { AuthContext } from "../../contexts/AuthContext";
+import LoadingSpinner from "../common/LoadingOverlay";
 
 const UploadProductForm = ({
   formData,

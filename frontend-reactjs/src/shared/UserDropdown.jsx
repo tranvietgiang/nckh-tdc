@@ -2,7 +2,7 @@ import { useState, useContext, useRef } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useClickOutside from "../hooks/common/useClickOutside";
-
+import { useRouterProfile } from "../hooks/common/useRouters";
 function UserDropdown() {
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useContext(AuthContext);
@@ -27,10 +27,11 @@ function UserDropdown() {
       setShowDropdown(false);
     }
   };
+  const { goToProfile } = useRouterProfile();
 
   const handleProfile = () => {
     setShowDropdown(false);
-    navigate("/profile");
+    goToProfile("/nckh-profile");
   };
 
   const handleSetting = () => {
