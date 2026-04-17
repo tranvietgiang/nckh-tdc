@@ -35,9 +35,10 @@ return [
         ],
 
     ],
-    // 'openai' => [
-    //     'key' => env('OPENAI_API_KEY'),
-    // ],
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+    ],
+    
     'sightengine' => [
         'user' => env('SIGHTENGINE_USER'),
         'secret' => env('SIGHTENGINE_SECRET'),
