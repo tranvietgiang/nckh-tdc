@@ -2,10 +2,10 @@ import { useEffect, useState, useContext } from "react";
 import {
   initialFormData,
   validateUploadStep,
-} from "../utils/validateUploadStep";
-import { uploadApi } from "../../../hooks/useUpload/uploadApi.api";
+} from "../../utils/uploadProductScreen/validateUploadStep";
+import { uploadApi } from "../useUpload/uploadApi.api";
 import { toast } from "react-toastify";
-import { AuthContext } from "../../../contexts/AuthContext";
+import { AuthContext } from "../../contexts/AuthContext";
 // import { useNavigate } from "react-router-dom";
 export default function useUploadProductForm() {
   const [formData, setFormData] = useState(initialFormData);

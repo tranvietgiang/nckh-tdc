@@ -37,11 +37,17 @@ Route::get('/major/{id}', [MajorController::class, 'majorName'])->middleware('au
 | Product ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/product/{id}', [ProductController::class, 'productViewId'])->middleware('auth:sanctum');
-Route::get('/products', [ProductController::class, 'productAll'])->middleware('auth:sanctum');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/product/{id}', [ProductController::class, 'productViewId']);
+    Route::get('/products', [ProductController::class, 'productAll']);
+});
+
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::post('/delete', [ProductController::class, 'deleteProductStudent']);
 });
+
 Route::middleware('auth:sanctum')->prefix('teacher')->group(function () {
     Route::get('/product/{product_id}', [ProductController::class, 'productViewIdTeacher']);
     Route::post('/product/{product_id}/approve', [TeacherController::class, 'teacherApprove']);

@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import useBackToPage from "../../hooks/common/useBackToPage.js";
+import { useBackToPage } from "../../hooks/common/useRouters";
 import { AuthContext } from "../../contexts/AuthContext";
 import { mapCurrentStudent } from "../../utils/userMapper";
 import useMajorName from "../../hooks/common/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
-import useUploadProductForm from "./hooks/useUploadProductForm";
+import useUploadProductForm from "../../hooks/uploadProductScreen/useUploadProductForm";
 import { useNavigate } from "react-router-dom";
-import UploadProductForm from "./hooks/UploadProductForm";
+import UploadProductForm from "../../components/uploadProductScreen/UploadProductForm";
 import useTitle from "../../hooks/common/useTitle";
 const UploadProductScreen = () => {
   const goBack = useBackToPage();
