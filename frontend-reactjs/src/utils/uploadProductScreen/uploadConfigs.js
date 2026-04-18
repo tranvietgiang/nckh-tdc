@@ -1,0 +1,133 @@
+// // config/productFormConfig.js
+// export const FORM_CONFIGS = {
+//   it: {
+//     name: "Công nghệ thông tin",
+//     step1Title: "📋 Thông tin sản phẩm CNTT",
+//     step1Gradient: "from-blue-600 to-indigo-600",
+//     step2Gradient: "from-purple-600 to-pink-600",
+//     step3Gradient: "from-green-600 to-teal-600",
+//     showDesignType: false,
+//     showTools: false,
+//     showNetworkFields: false,
+//     showAIFields: false,
+//     fileAccept: ".pdf,.doc,.docx,.zip,.rar",
+//     fileMaxSize: 50,
+//     fileTypes: ["PDF", "DOC", "ZIP", "RAR"],
+//     maxFiles: 5,
+//     fileDescription: "PDF, DOC, ZIP, RAR • Tối đa 5 files • Mỗi file ≤ 50MB",
+//     tagPlaceholder: "Nhập công nghệ và nhấn Enter (VD: React, Node.js...)",
+//     tagLabel: "Công nghệ sử dụng",
+//     links: [
+//       {
+//         name: "github_link",
+//         label: "GitHub Link",
+//         placeholder: "https://github.com/username/repo",
+//       },
+//       {
+//         name: "demo_link",
+//         label: "Demo Link",
+//         placeholder: "https://demo.vercel.app",
+//       },
+//     ],
+//   },
+//   graphic: {
+//     name: "Đồ họa",
+//     step1Title: "🎨 Thông tin sản phẩm đồ họa",
+//     step1Gradient: "from-rose-600 to-orange-600",
+//     step2Gradient: "from-purple-600 to-pink-600",
+//     step3Gradient: "from-green-600 to-teal-600",
+//     showDesignType: true,
+//     showTools: true,
+//     showNetworkFields: false,
+//     showAIFields: false,
+//     fileAccept: ".psd,.ai,.fig,.pdf,.mp4",
+//     fileMaxSize: 100,
+//     fileTypes: ["PSD", "AI", "FIG", "PDF", "MP4"],
+//     maxFiles: 5,
+//     fileDescription:
+//       "PSD, AI, FIG, PDF, MP4 • Tối đa 5 files • Mỗi file ≤ 100MB",
+//     tagPlaceholder:
+//       "Nhập phong cách và nhấn Enter (VD: Flat design, 3D, Typography...)",
+//     tagLabel: "Phong cách / kỹ thuật sử dụng",
+//     links: [
+//       {
+//         name: "behance_link",
+//         label: "Behance / Dribbble",
+//         placeholder: "https://behance.net/username",
+//       },
+//       {
+//         name: "drive_link",
+//         label: "Google Drive (file nguồn)",
+//         placeholder: "https://drive.google.com/...",
+//       },
+//     ],
+//   },
+//   network: {
+//     name: "Mạng máy tính",
+//     step1Title: "🌐 Thông tin đồ án mạng",
+//     step1Gradient: "from-cyan-600 to-blue-600",
+//     step2Gradient: "from-teal-600 to-cyan-600",
+//     step3Gradient: "from-indigo-600 to-purple-600",
+//     showDesignType: false,
+//     showTools: false,
+//     showNetworkFields: true,
+//     showAIFields: false,
+//     fileAccept: ".pkt,.pcap,.zip,.pdf,.doc",
+//     fileMaxSize: 100,
+//     fileTypes: ["PKT", "PCAP", "ZIP", "PDF", "DOC"],
+//     maxFiles: 5,
+//     fileDescription: "PKT, PCAP, PDF, DOC • Tối đa 5 files • Mỗi file ≤ 100MB",
+//     tagPlaceholder:
+//       "Nhập giao thức, thiết bị mạng (VD: TCP/IP, Cisco, VLAN...)",
+//     tagLabel: "Giao thức / Thiết bị sử dụng",
+//     links: [
+//       {
+//         name: "cisco_link",
+//         label: "Cisco Packet Tracer File",
+//         placeholder: "https://drive.google.com/...",
+//       },
+//       {
+//         name: "report_link",
+//         label: "Báo cáo chi tiết",
+//         placeholder: "https://docs.google.com/...",
+//       },
+//     ],
+//   },
+//   ai: {
+//     name: "Trí tuệ nhân tạo",
+//     step1Title: "🤖 Thông tin đồ án AI/ML",
+//     step1Gradient: "from-violet-600 to-purple-600",
+//     step2Gradient: "from-fuchsia-600 to-pink-600",
+//     step3Gradient: "from-sky-600 to-blue-600",
+//     showDesignType: false,
+//     showTools: true,
+//     showNetworkFields: false,
+//     showAIFields: true,
+//     fileAccept: ".ipynb,.py,.h5,.pkl,.pdf",
+//     fileMaxSize: 200,
+//     fileTypes: ["IPYNB", "PY", "H5", "PKL", "PDF"],
+//     maxFiles: 10,
+//     fileDescription:
+//       "IPYNB, PY, H5, PKL, PDF • Tối đa 10 files • Mỗi file ≤ 200MB",
+//     tagPlaceholder:
+//       "Nhập thuật toán, thư viện (VD: CNN, LSTM, TensorFlow, PyTorch...)",
+//     tagLabel: "Thuật toán / Thư viện sử dụng",
+//     links: [
+//       {
+//         name: "colab_link",
+//         label: "Google Colab",
+//         placeholder: "https://colab.research.google.com/...",
+//       },
+//       {
+//         name: "github_link",
+//         label: "GitHub (Code)",
+//         placeholder: "https://github.com/username/repo",
+//       },
+//       {
+//         name: "dataset_link",
+//         label: "Dataset",
+//         placeholder: "https://kaggle.com/... or https://drive.google.com/...",
+//       },
+//     ],
+//   },
+// };

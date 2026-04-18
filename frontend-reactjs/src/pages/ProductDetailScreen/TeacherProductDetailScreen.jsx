@@ -39,6 +39,7 @@ const TeacherProductDetailScreen = () => {
     useTeacherApprove();
 
   const { teacherReject, loading_reject, error_reject } = useTeacherReject();
+  console.log("product:", product);
 
   // Hook duyệt sản phẩm (có thể đã quản lý isSubmitting bên trong)
   const handleApproveOriginal = useHandleApprove(
@@ -182,8 +183,6 @@ const TeacherProductDetailScreen = () => {
 
   const images = product.images || [];
   const productData = product?.product || {};
-  // Trong component TeacherProductDetailScreen, sau các useState khác
-
   const reviews = product?.reviews || [];
 
   const displayedReviews = getDisplayed(reviews);
@@ -274,9 +273,8 @@ const TeacherProductDetailScreen = () => {
             </div>
           </div>
         </div>
-
         {/* Gallery ảnh */}
-        {images.length > 0 && (
+        {(productData?.thumbnail || images.length > 0) && (
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Hình ảnh sản phẩm
