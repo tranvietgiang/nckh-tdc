@@ -1,4 +1,4 @@
-export const useSubmitRejection = (
+export const useHandleSubmitRejection = (
   feedback,
   setIsSubmitting,
   toast,

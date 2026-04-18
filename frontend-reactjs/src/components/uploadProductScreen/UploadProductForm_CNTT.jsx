@@ -5,7 +5,7 @@ import useMajorName from "../../hooks/common/useMajorName";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../common/LoadingOverlay";
 
-const UploadProductForm = ({
+const UploadProductForm_CNTT = ({
   formData,
   handleChange,
   handleSubmit,
@@ -855,4 +855,4 @@ const UploadProductForm = ({
   );
 };
 
-export default UploadProductForm;
+export default UploadProductForm_CNTT;

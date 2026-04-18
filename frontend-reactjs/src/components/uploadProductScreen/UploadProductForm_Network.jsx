@@ -63,7 +63,7 @@ const UploadProductForm_Network = ({
     }
   };
 
-  const currentStudent = { major: majorName || "Mạng máy tính" };
+  const currentStudent = { major: majorName };
 
   return (
     <>

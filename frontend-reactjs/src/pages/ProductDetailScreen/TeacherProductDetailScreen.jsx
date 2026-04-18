@@ -1,5 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
 import useImageViewer from "../../shared/useImageViewer";
 import useTitle from "../../hooks/common/useTitle";
@@ -7,13 +9,15 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../utils/formatDate";
 import { getStatusColor } from "../../components/common/getStatusColor";
 import { getStatusText } from "../../components/common/getStatusText";
-import { useHandleApprove } from "../../components/teacher/useHandleApprove";
-import { useHandleSubmitReview } from "../../components/teacher/handleSubmitReview";
-import { useSubmitRejection } from "../../components/teacher/submitRejection";
-import { AuthContext } from "../../contexts/AuthContext";
+
+import { useHandleApprove } from "../../hooks/useTeacher/useHandleApprove";
+import { useHandleSubmitReview } from "../../hooks/useTeacher/useHandleSubmitReview";
+import { useHandleSubmitRejection } from "../../hooks/useTeacher/useHandleSubmitRejection";
+
 import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
 import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
 import useReviewToggle from "../../hooks/common/useReviewToggle";
+
 import LoadingSpinner from "../../components/common/LoadingOverlay";
 import { confirmToast } from "../../components/common/ConfirmToast";
 import BackButton from "../../components/common/BackButton";
@@ -60,7 +64,7 @@ const TeacherProductDetailScreen = () => {
   );
 
   // Hook từ chối
-  const submitRejectionOriginal = useSubmitRejection(
+  const submitRejectionOriginal = useHandleSubmitRejection(
     feedback,
     setIsSubmitting,
     toast,

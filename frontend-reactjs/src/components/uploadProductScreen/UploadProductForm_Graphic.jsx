@@ -4,7 +4,6 @@ import { confirmToast } from "../common/ConfirmToast";
 import useMajorName from "../../hooks/common/useMajorName";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../common/LoadingOverlay";
-// import useUploadGraphicForm from "../../hooks/uploadProductScreen/useUploadGraphicForm";
 const UploadProductForm_Graphic = ({
   formData,
   handleChange,
@@ -63,7 +62,7 @@ const UploadProductForm_Graphic = ({
     }
   };
 
-  const currentStudent = { major: majorName || "Đồ họa" };
+  const currentStudent = { major: majorName };
 
   return (
     <>

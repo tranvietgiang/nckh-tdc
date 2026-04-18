@@ -7,8 +7,6 @@ import useMajorName from "../../hooks/common/useMajorName";
 import useProductAll from "../../hooks/useProduct/useProductAll";
 import { mapCurrentStudent } from "../../utils/userMapper";
 import { STATUS } from "../../utils/constants";
-// import deleteProduct from "../../hooks/useProduct/useDeleteProduct"; // bỏ comment
-// import { confirmToast } from "../../components/common/ConfirmToast";
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -25,6 +23,86 @@ const StudentScreen = () => {
   const { majorName } = useMajorName(user?.major_id);
   const { products, loading, error } = useProductAll();
   const currentStudent = mapCurrentStudent(user, majorName);
+
+  // Lấy màu theo ngành (đồng bộ với upload)
+  const getMajorTheme = () => {
+    const majorId = user?.major_id;
+
+    switch (Number(majorId)) {
+      case 1: // CNTT
+        return {
+          headerGradient: "from-blue-600 to-indigo-600",
+          buttonBg: "bg-blue-600 hover:bg-blue-700",
+          badgeBg: "bg-blue-700",
+          textColor: "text-blue-700",
+          hoverText: "hover:text-blue-700",
+          hoverBg: "hover:bg-blue-50",
+          statIconBg: "bg-blue-500/30",
+          statIconHover: "group-hover:bg-blue-500/40",
+          statText: "text-blue-100",
+          tabActive: "text-blue-600",
+          tabHover: "hover:text-blue-600",
+        };
+      case 2: // Đồ họa
+        return {
+          headerGradient: "from-rose-600 to-orange-600",
+          buttonBg: "bg-rose-600 hover:bg-rose-700",
+          badgeBg: "bg-rose-700",
+          textColor: "text-rose-700",
+          hoverText: "hover:text-rose-700",
+          hoverBg: "hover:bg-rose-50",
+          statIconBg: "bg-rose-500/30",
+          statIconHover: "group-hover:bg-rose-500/40",
+          statText: "text-rose-100",
+          tabActive: "text-rose-600",
+          tabHover: "hover:text-rose-600",
+        };
+      case 3: // Mạng máy tính
+        return {
+          headerGradient: "from-cyan-700 to-blue-800",
+          buttonBg: "bg-cyan-700 hover:bg-cyan-800",
+          badgeBg: "bg-cyan-800",
+          textColor: "text-cyan-700",
+          hoverText: "hover:text-cyan-700",
+          hoverBg: "hover:bg-cyan-50",
+          statIconBg: "bg-cyan-500/30",
+          statIconHover: "group-hover:bg-cyan-500/40",
+          statText: "text-cyan-100",
+          tabActive: "text-cyan-600",
+          tabHover: "hover:text-cyan-600",
+        };
+      case 4: // AI
+        return {
+          headerGradient: "from-purple-700 to-indigo-800",
+          buttonBg: "bg-purple-700 hover:bg-purple-800",
+          badgeBg: "bg-purple-800",
+          textColor: "text-purple-700",
+          hoverText: "hover:text-purple-700",
+          hoverBg: "hover:bg-purple-50",
+          statIconBg: "bg-purple-500/30",
+          statIconHover: "group-hover:bg-purple-500/40",
+          statText: "text-purple-100",
+          tabActive: "text-purple-600",
+          tabHover: "hover:text-purple-600",
+        };
+      default:
+        return {
+          headerGradient: "from-blue-600 to-indigo-600",
+          buttonBg: "bg-blue-600 hover:bg-blue-700",
+          badgeBg: "bg-blue-700",
+          textColor: "text-blue-700",
+          hoverText: "hover:text-blue-700",
+          hoverBg: "hover:bg-blue-50",
+          statIconBg: "bg-blue-500/30",
+          statIconHover: "group-hover:bg-blue-500/40",
+          statText: "text-blue-100",
+          tabActive: "text-blue-600",
+          tabHover: "hover:text-blue-600",
+        };
+    }
+  };
+
+  const theme = getMajorTheme(majorName);
 
   const myProducts = useMemo(() => {
     return Array.isArray(products) ? products : [];
@@ -52,7 +130,6 @@ const StudentScreen = () => {
     };
   }, [myProducts]);
 
-  // Animated stats effect
   useEffect(() => {
     const duration = 800;
     const stepTime = 20;
@@ -93,61 +170,90 @@ const StudentScreen = () => {
     navigate("/edit-product", { state: { product } });
   };
 
-  // const handleDelete = async (productId, productTitle) => {
-  //   const confirmed = await confirmToast({
-  //     title: "Xóa sản phẩm",
-  //     message: `Bạn có chắc chắn muốn xóa sản phẩm "${productTitle}"? Hành động này không thể hoàn tác.`,
-  //     confirmText: "Xóa",
-  //     cancelText: "Hủy",
-  //     type: "danger",
-  //   });
-  //   if (confirmed) {
-  //     try {
-  //       await deleteProduct(productId);
-  //       window.location.reload();
-  //     } catch (err) {
-  //       console.error("Delete failed", err);
-  //     }
-  //   }
-  // };
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case STATUS.APPROVED:
+        return {
+          bg: "bg-emerald-50",
+          text: "text-emerald-700",
+          border: "border-emerald-200",
+          badgeBg: "bg-emerald-100",
+          badgeText: "text-emerald-700",
+          label: "Đã duyệt",
+        };
+      case STATUS.PENDING:
+        return {
+          bg: "bg-amber-50",
+          text: "text-amber-700",
+          border: "border-amber-200",
+          badgeBg: "bg-amber-100",
+          badgeText: "text-amber-700",
+          label: "Chờ duyệt",
+        };
+      case STATUS.REJECTED:
+        return {
+          bg: "bg-rose-50",
+          text: "text-rose-700",
+          border: "border-rose-200",
+          badgeBg: "bg-rose-100",
+          badgeText: "text-rose-700",
+          label: "Từ chối",
+        };
+      default:
+        return {
+          bg: "bg-gray-50",
+          text: "text-gray-700",
+          border: "border-gray-200",
+          badgeBg: "bg-gray-100",
+          badgeText: "text-gray-700",
+          label: "Không xác định",
+        };
+    }
+  };
 
   if (loading) return <p className="p-6">Đang tải...</p>;
   if (error) return <p className="p-6 text-red-500">Có lỗi xảy ra</p>;
 
-  // console.log(products.status);
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header giữ nguyên như cũ */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => navigate("/upload-product")}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+    <div className="min-h-screen bg-slate-50">
+      {/* Header - Màu theo từng ngành */}
+      <div className={`bg-gradient-to-r ${theme.headerGradient} shadow-xl`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center justify-between md:justify-start">
+              <button
+                onClick={() => navigate("/upload-product")}
+                className={`px-5 py-2.5 ${theme.buttonBg} text-white rounded-xl transition-all duration-200 flex items-center gap-2 border border-white/20 shadow-lg hover:shadow-xl hover:scale-105 transform`}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Đăng sản phẩm mới
-            </button>
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                <span className="font-medium">Đăng sản phẩm mới</span>
+              </button>
+              <div className="md:hidden ml-4">
+                <UserDropdown />
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center gap-4">
+              <div className="text-right">
+                <h1 className="text-xl font-bold text-white">
                   {currentStudent.name ?? ""}
                 </h1>
-                <p className="text-gray-600 mt-1">{majorName ?? ""}</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className={`${theme.statText} text-sm mt-0.5`}>
+                  {majorName ?? ""}
+                </p>
+                <p className="text-white/60 text-xs mt-0.5">
                   {currentStudent.email ?? ""}
                 </p>
               </div>
@@ -155,73 +261,179 @@ const StudentScreen = () => {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-4 mt-8">
-            <div className="bg-blue-50 rounded-xl p-4 transition-all duration-300 hover:scale-105">
-              <p className="text-sm text-blue-600 font-medium">Tổng sản phẩm</p>
-              <p className="text-2xl font-bold text-blue-700 mt-1">
-                {animatedStats.total}
-              </p>
-            </div>
-            <div className="bg-yellow-50 rounded-xl p-4 transition-all duration-300 hover:scale-105">
-              <p className="text-sm text-yellow-600 font-medium">Chờ duyệt</p>
-              <p className="text-2xl font-bold text-yellow-700 mt-1">
-                {animatedStats.pending}
-              </p>
-            </div>
-            <div className="bg-green-50 rounded-xl p-4 transition-all duration-300 hover:scale-105">
-              <p className="text-sm text-green-600 font-medium">Đã duyệt</p>
-              <p className="text-2xl font-bold text-green-700 mt-1">
-                {animatedStats.approved}
-              </p>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+            <div
+              onClick={() => setActiveTab("all")}
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-5 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 hover:-translate-y-1 border border-white/20"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`${theme.statText} text-sm font-medium mb-1`}>
+                    Tổng sản phẩm
+                  </p>
+                  <p className="text-3xl font-bold text-white">
+                    {animatedStats.total}
+                  </p>
+                </div>
+                <div
+                  className={`w-12 h-12 ${theme.statIconBg} rounded-2xl flex items-center justify-center ${theme.statIconHover} transition`}
+                >
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-red-50 rounded-xl p-4 transition-all duration-300 hover:scale-105">
-              <p className="text-sm text-red-600 font-medium">Từ chối</p>
-              <p className="text-2xl font-bold text-red-700 mt-1">
-                {animatedStats.rejected}
-              </p>
+            <div
+              onClick={() => setActiveTab(STATUS.PENDING)}
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-5 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 hover:-translate-y-1 border border-white/20"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`${theme.statText} text-sm font-medium mb-1`}>
+                    Chờ duyệt
+                  </p>
+                  <p className="text-3xl font-bold text-white">
+                    {animatedStats.pending}
+                  </p>
+                </div>
+                <div
+                  className={`w-12 h-12 ${theme.statIconBg} rounded-2xl flex items-center justify-center ${theme.statIconHover} transition`}
+                >
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div
+              onClick={() => setActiveTab(STATUS.APPROVED)}
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-5 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 hover:-translate-y-1 border border-white/20"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`${theme.statText} text-sm font-medium mb-1`}>
+                    Đã duyệt
+                  </p>
+                  <p className="text-3xl font-bold text-white">
+                    {animatedStats.approved}
+                  </p>
+                </div>
+                <div
+                  className={`w-12 h-12 ${theme.statIconBg} rounded-2xl flex items-center justify-center ${theme.statIconHover} transition`}
+                >
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div
+              onClick={() => setActiveTab(STATUS.REJECTED)}
+              className="group bg-white/10 backdrop-blur-sm rounded-2xl p-5 hover:bg-white/20 transition-all duration-300 cursor-pointer hover:scale-105 hover:-translate-y-1 border border-white/20"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`${theme.statText} text-sm font-medium mb-1`}>
+                    Từ chối
+                  </p>
+                  <p className="text-3xl font-bold text-white">
+                    {animatedStats.rejected}
+                  </p>
+                </div>
+                <div
+                  className={`w-12 h-12 ${theme.statIconBg} rounded-2xl flex items-center justify-center ${theme.statIconHover} transition`}
+                >
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex space-x-6 mt-8 border-b">
+          <div className="flex flex-wrap gap-1 mt-8 border-b border-white/20">
             <button
               onClick={() => setActiveTab("all")}
-              className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
+              className={`px-5 py-2.5 font-medium text-sm rounded-t-xl transition-all duration-200 ${
                 activeTab === "all"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? `bg-white ${theme.tabActive} shadow-lg`
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Tất cả ({stats.total})
             </button>
             <button
               onClick={() => setActiveTab(STATUS.PENDING)}
-              className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
+              className={`px-5 py-2.5 font-medium text-sm rounded-t-xl transition-all duration-200 ${
                 activeTab === STATUS.PENDING
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? `bg-white ${theme.tabActive} shadow-lg`
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Chờ duyệt ({stats.pending})
             </button>
             <button
               onClick={() => setActiveTab(STATUS.APPROVED)}
-              className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
+              className={`px-5 py-2.5 font-medium text-sm rounded-t-xl transition-all duration-200 ${
                 activeTab === STATUS.APPROVED
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? `bg-white ${theme.tabActive} shadow-lg`
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Đã duyệt ({stats.approved})
             </button>
             <button
               onClick={() => setActiveTab(STATUS.REJECTED)}
-              className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
+              className={`px-5 py-2.5 font-medium text-sm rounded-t-xl transition-all duration-200 ${
                 activeTab === STATUS.REJECTED
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? `bg-white ${theme.tabActive} shadow-lg`
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Từ chối ({stats.rejected})
@@ -230,64 +442,30 @@ const StudentScreen = () => {
         </div>
       </div>
 
-      {/* Product List - CẢI TIẾN NÚT */}
+      {/* Product List */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((item) => (
-            <div
-              key={item.product_id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col"
-            >
+          {filteredProducts.map((item) => {
+            const statusStyle = getStatusStyle(item.status);
+            return (
               <div
-                onClick={() => handleViewDetail(item.product_id)}
-                className="relative h-48 cursor-pointer overflow-hidden"
+                key={item.product_id}
+                className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-slate-300"
               >
-                <img
-                  src={item.thumbnail}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-                <div className="absolute top-3 right-3">
-                  <span
-                    className={`px-3 py-1 text-xs font-medium rounded-full shadow-sm ${
-                      item.status === "approved"
-                        ? "bg-green-100 text-green-800"
-                        : item.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {item.status === STATUS.APPROVED
-                      ? "Đã duyệt"
-                      : item.status === STATUS.PENDING
-                        ? "Chờ duyệt"
-                        : "Từ chối"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-5 flex-1 flex flex-col">
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                  {item.description}
-                </p>
-
-                <div className="flex items-center justify-between text-sm mb-3">
-                  <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
-                    {item.category_name || "Chưa phân loại"}
-                  </span>
-                  <span className="text-gray-500 text-xs">
-                    {item.submitted_at || ""}
-                  </span>
-                </div>
-
-                {item.status === "approved" && (
-                  <div className="flex items-center gap-3 text-gray-500 text-sm mb-3">
-                    <div className="flex items-center gap-1">
+                <div
+                  onClick={() => handleViewDetail(item.product_id)}
+                  className="relative h-44 cursor-pointer overflow-hidden bg-slate-100"
+                >
+                  {item.thumbnail ? (
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
                       <svg
-                        className="w-4 h-4"
+                        className="w-10 h-10 text-slate-300"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -295,130 +473,158 @@ const StudentScreen = () => {
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          strokeWidth={1.5}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                       </svg>
-                      {item.views ?? 0}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        />
-                      </svg>
-                      {item.likes ?? 0}
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                {item.feedback && (
-                  <div className="mt-3 p-3 bg-orange-50 rounded-lg">
-                    <p className="text-xs text-orange-800">
-                      <span className="font-semibold">Phản hồi:</span>{" "}
-                      {item.feedback}
-                    </p>
-                  </div>
-                )}
-
-                {/* ========== CẢI TIẾN NÚT ========== */}
-                <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
-                  <button
-                    onClick={() => handleViewDetail(item.product_id)}
-                    className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors duration-200"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  <div className="absolute top-3 right-3">
+                    <span
+                      className={`px-2.5 py-1 text-xs font-medium rounded-md ${statusStyle.badgeBg} ${statusStyle.badgeText}`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    Xem chi tiết
-                  </button>
+                      {statusStyle.label}
+                    </span>
+                  </div>
 
-                  <div className="flex gap-2">
+                  <div className="absolute bottom-3 left-3">
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-md ${theme.badgeBg} text-white shadow-sm`}
+                    >
+                      {majorName || "CNTT"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  <div className="flex justify-end mb-2">
+                    <span className="text-xs text-slate-400">
+                      {item.submitted_at
+                        ? new Date(item.submitted_at).toLocaleDateString(
+                            "vi-VN",
+                          )
+                        : ""}
+                    </span>
+                  </div>
+
+                  <h3
+                    onClick={() => handleViewDetail(item.product_id)}
+                    className={`font-semibold text-slate-800 mb-2 line-clamp-1 cursor-pointer ${theme.hoverText} transition`}
+                  >
+                    {item.title}
+                  </h3>
+
+                  <p className="text-sm text-slate-500 mb-3 line-clamp-2">
+                    {item.description || "Chưa có mô tả"}
+                  </p>
+
+                  <div className="mb-3">
+                    <span className="inline-block px-2 py-0.5 text-xs rounded-md bg-slate-100 text-slate-600">
+                      {item.category_name || "Sản phẩm"}
+                    </span>
+                  </div>
+
+                  {item.status === "approved" && (
+                    <div className="flex items-center gap-3 text-slate-400 text-xs mb-3">
+                      <span className="flex items-center gap-1">
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                        {item.views ?? 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                        {item.likes ?? 0}
+                      </span>
+                    </div>
+                  )}
+
+                  {item.feedback && (
+                    <div className="mt-3 p-2.5 bg-slate-50 rounded-lg border-l-4 border-slate-300">
+                      <p className="text-xs text-slate-600">
+                        <span className="font-medium">Phản hồi:</span>{" "}
+                        {item.feedback}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex justify-end gap-2">
+                    <button
+                      onClick={() => handleViewDetail(item.product_id)}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-700 ${theme.hoverBg} ${theme.hoverText} transition-all duration-200`}
+                    >
+                      Xem chi tiết
+                    </button>
+
                     {item.status === STATUS.PENDING && (
                       <button
                         onClick={() => handleEdit(item)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-700 ${theme.hoverBg} ${theme.hoverText} transition-all duration-200`}
                       >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                          />
-                        </svg>
                         Sửa
                       </button>
                     )}
+
                     {item.status !== STATUS.APPROVED && (
-                      <button
-                        // onClick={() => handleDelete(item.product_id, item.title)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-50 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
+                      <button className="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-100 text-slate-600 hover:bg-rose-500 hover:text-white transition-all duration-200">
                         Xóa
                       </button>
                     )}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="mt-2 text-sm font-medium text-gray-900">
+          <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-slate-200">
+            <svg
+              className="mx-auto h-12 w-12 text-slate-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-slate-900">
               Chưa có sản phẩm
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-slate-500">
               {activeTab === "pending" &&
                 "Bạn chưa có sản phẩm nào đang chờ duyệt."}
               {activeTab === "approved" &&
@@ -428,6 +634,12 @@ const StudentScreen = () => {
               {activeTab === "all" &&
                 "Bắt đầu bằng cách đăng sản phẩm đầu tiên của bạn."}
             </p>
+            <button
+              onClick={() => navigate("/upload-product")}
+              className={`mt-4 px-4 py-2 ${theme.buttonBg} text-white rounded-lg transition`}
+            >
+              + Đăng sản phẩm
+            </button>
           </div>
         )}
       </div>
