@@ -6,7 +6,7 @@ import useMajorName from "../../hooks/common/useMajorName";
 import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCount";
 import useUploadProductForm from "../../hooks/uploadProductScreen/useUploadCNTTForm";
 import { useNavigate } from "react-router-dom";
-import UploadProductForm from "../../components/uploadProductScreen/UploadProductForm";
+import UploadProductForm_CNTT from "../../components/uploadProductScreen/UploadProductForm_CNTT";
 import useTitle from "../../hooks/common/useTitle";
 const UploadProductScreen = () => {
   const goBack = useBackToPage();

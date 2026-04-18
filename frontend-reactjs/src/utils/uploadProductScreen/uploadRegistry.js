@@ -4,19 +4,19 @@ import useUploadGraphicForm from "../../hooks/uploadProductScreen/useUploadGraph
 import useUploadNetworkForm from "../../hooks/uploadProductScreen/useUploadNetworkForm";
 import useUploadAIForm from "../../hooks/uploadProductScreen/useUploadAIForm";
 
-import UploadProductForm from "../../components/uploadProductScreen/UploadProductForm";
+import UploadProductForm_CNTT from "../../components/uploadProductScreen/UploadProductForm_CNTT";
 import UploadProductForm_Graphic from "../../components/uploadProductScreen/UploadProductForm_Graphic";
 import UploadProductForm_Network from "../../components/uploadProductScreen/UploadProductForm_Network";
 import UploadProductForm_AI from "../../components/uploadProductScreen/UploadProductForm_AI";
 
 export const getUploadResources = (majorId) => {
-  const id = Number(majorId); // 🔥 ép kiểu vì DB thường trả string
+  const id = Number(majorId);
 
   switch (id) {
     case 1:
       return {
         useHook: useUploadProductForm,
-        FormComponent: UploadProductForm,
+        FormComponent: UploadProductForm_CNTT,
         title: "Đăng sản phẩm công nghệ phần mềm",
         description: "Ứng dụng, website, hệ thống thông tin",
         gradient: "from-blue-600 to-indigo-600",
@@ -54,14 +54,6 @@ export const getUploadResources = (majorId) => {
       };
 
     default:
-      // 🔥 fallback để step luôn chạy
-      return {
-        useHook: useUploadProductForm,
-        FormComponent: UploadProductForm,
-        title: "Đăng sản phẩm",
-        description: "Thông tin sản phẩm nghiên cứu",
-        gradient: "from-gray-600 to-gray-800",
-        icon: "📦",
-      };
+      return null;
   }
 };
