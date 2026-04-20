@@ -57,3 +57,63 @@ export const getUploadResources = (majorId) => {
       return null;
   }
 };
+// Hàm lấy theme theo ngành (đồng bộ với StudentScreen)
+export const getMajorTheme = (majorId) => {
+  switch (Number(majorId)) {
+    case 1: // CNTT
+      return {
+        primary: "blue",
+        gradient: "from-blue-600 to-indigo-600",
+        light: "bg-blue-50",
+        text: "text-blue-700",
+        border: "border-blue-200",
+        badge: "bg-blue-100 text-blue-800",
+        button: "bg-blue-600 hover:bg-blue-700",
+        accent: "indigo",
+      };
+    case 2: // Đồ họa
+      return {
+        primary: "rose",
+        gradient: "from-rose-600 to-orange-600",
+        light: "bg-rose-50",
+        text: "text-rose-700",
+        border: "border-rose-200",
+        badge: "bg-rose-100 text-rose-800",
+        button: "bg-rose-600 hover:bg-rose-700",
+        accent: "orange",
+      };
+    case 3: // Network
+      return {
+        primary: "cyan",
+        gradient: "from-cyan-700 to-blue-800",
+        light: "bg-cyan-50",
+        text: "text-cyan-700",
+        border: "border-cyan-200",
+        badge: "bg-cyan-100 text-cyan-800",
+        button: "bg-cyan-700 hover:bg-cyan-800",
+        accent: "blue",
+      };
+    case 4: // AI
+      return {
+        primary: "purple",
+        gradient: "from-purple-700 to-indigo-800",
+        light: "bg-purple-50",
+        text: "text-purple-700",
+        border: "border-purple-200",
+        badge: "bg-purple-100 text-purple-800",
+        button: "bg-purple-700 hover:bg-purple-800",
+        accent: "indigo",
+      };
+    default:
+      return {
+        primary: "blue",
+        gradient: "from-blue-600 to-indigo-600",
+        light: "bg-blue-50",
+        text: "text-blue-700",
+        border: "border-blue-200",
+        badge: "bg-blue-100 text-blue-800",
+        button: "bg-blue-600 hover:bg-blue-700",
+        accent: "indigo",
+      };
+  }
+};
