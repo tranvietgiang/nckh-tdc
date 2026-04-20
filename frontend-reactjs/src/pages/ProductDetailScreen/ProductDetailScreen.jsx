@@ -2,23 +2,29 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useProductDetail from "../../hooks/useProduct/useProductDetail";
 import useTitle from "../../hooks/common/useTitle";
-import useImageViewer from "../../shared/useImageViewer"; // Import hook
-
+import useImageViewer from "../../shared/useImageViewer";
+import { getMajorTheme } from "../../utils/uploadProductScreen/uploadRegistry";
+import { formatDate } from "../../utils/formatDate";
+import { STATUS } from "../../utils/constants";
+import { Icons } from "../../components/common/Icon";
 const ProductDetailScreen = () => {
-  useTitle("Trang xem chi tiết");
+  useTitle("Chi tiết sản phẩm");
   const { state } = useLocation();
   const id = state?.productId;
 
   const { product, loading, error } = useProductDetail(id);
-  const { openViewer, ImageViewerModal } = useImageViewer(); // Sử dụng hook
+  const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
-  const REJECT = product?.status;
+
+  const theme = getMajorTheme(product?.major?.major_id);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div
+            className={`w-16 h-16 border-4 border-${theme.primary}-600 border-t-transparent rounded-full animate-spin mx-auto mb-4`}
+          ></div>
           <p className="text-gray-600">Đang tải thông tin sản phẩm...</p>
         </div>
       </div>
@@ -29,7 +35,12 @@ const ProductDetailScreen = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Có lỗi xảy ra</h2>
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Icons.AlertCircle />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Có lỗi xảy ra
+          </h2>
           <p className="text-gray-600">{error}</p>
         </div>
       </div>
@@ -40,19 +51,7 @@ const ProductDetailScreen = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <svg
-            className="w-16 h-16 text-gray-400 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <Icons.AlertCircle />
           <h2 className="text-xl font-bold text-gray-900 mb-2">
             Không tìm thấy sản phẩm
           </h2>
@@ -65,182 +64,119 @@ const ProductDetailScreen = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      {/* Modal phóng to ảnh */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       <ImageViewerModal />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
         <div className="mb-6">
           <nav className="flex items-center gap-2 text-sm">
             <a
               href="/"
-              className="text-gray-500 hover:text-blue-600 transition"
+              className="text-gray-500 hover:text-gray-700 transition flex items-center gap-1"
             >
-              Trang chủ
+              <Icons.Home />
+              <span>Trang chủ</span>
             </a>
             <span className="text-gray-400">›</span>
             <a
-              href="/products"
-              className="text-gray-500 hover:text-blue-600 transition"
+              href="/student"
+              className="text-gray-500 hover:text-gray-700 transition flex items-center gap-1"
             >
-              Sản phẩm
+              <Icons.Users />
+              <span>Sinh viên</span>
             </a>
             <span className="text-gray-400">›</span>
-            <span className="text-gray-900 font-medium truncate">
+            <span
+              className={`font-medium ${theme.text} truncate flex items-center gap-1`}
+            >
+              <Icons.FileText />
               {product.title}
             </span>
           </nav>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          <div className="p-6">
-            <div className="flex items-start justify-between">
+        {/* Header Card */}
+        <div
+          className={`bg-gradient-to-r ${theme?.gradient} rounded-2xl shadow-xl overflow-hidden mb-6`}
+        >
+          <div className="p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  <h1 className="text-2xl md:text-3xl font-bold text-white">
                     {product.title}
                   </h1>
                   <span
-                    className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      product.status === "approved"
-                        ? "bg-green-100 text-green-800"
-                        : product.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
+                    className={`px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${
+                      product.status === STATUS.APPROVED
+                        ? "bg-green-500 text-white"
+                        : product.status === STATUS.PENDING
+                          ? "bg-yellow-500 text-white"
+                          : "bg-red-500 text-white"
                     }`}
                   >
-                    {product.status === "approved"
-                      ? "Đã duyệt"
-                      : product.status === "pending"
-                        ? "Chờ duyệt"
-                        : "Từ chối"}
+                    {product.status === STATUS.APPROVED ? (
+                      <>
+                        <Icons.CheckCircle /> Đã duyệt
+                      </>
+                    ) : product.status === STATUS.PENDING ? (
+                      <>
+                        <Icons.Clock /> Chờ duyệt
+                      </>
+                    ) : (
+                      <>
+                        <Icons.AlertCircle /> Từ chối
+                      </>
+                    )}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
-                    {product.major?.major_name}
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-white flex items-center gap-1">
+                    <Icons.Briefcase />
+                    {product.major?.major_name || "Chưa có ngành"}
                   </span>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full">
-                    {product.category?.name}
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-white flex items-center gap-1">
+                    <Icons.Grid />
+                    {product.category?.name || "Chưa có danh mục"}
                   </span>
-                  <span className="text-gray-500">
-                    <svg
-                      className="w-4 h-4 inline mr-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    {new Date(product.created_at).toLocaleDateString("vi-VN")}
+                  <span className="flex items-center gap-1 text-white/80">
+                    <Icons.Calendar />
+                    {formatDate(product.created_at)}
                   </span>
                 </div>
               </div>
 
-              {REJECT === "rejected" ? (
-                ""
-              ) : (
+              {product.status !== STATUS.REJECTED && (
                 <div className="flex items-center gap-2">
-                  <button className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
+                  <button className="p-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition">
+                    <Icons.Heart />
                   </button>
-                  <button className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                      />
-                    </svg>
+                  <button className="p-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition">
+                    <Icons.Share />
                   </button>
                 </div>
               )}
             </div>
 
-            {product?.status === "rejected" ? (
-              ""
-            ) : (
-              <div className="flex items-center gap-6 mt-4">
-                <div className="flex items-center gap-1">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
+            {/* Stats */}
+            {product.status !== STATUS.REJECTED && (
+              <div className="flex flex-wrap items-center gap-6 mt-6 pt-4 border-t border-white/20">
+                <div className="flex items-center gap-2 text-white/90">
+                  <Icons.Eye />
                   <span className="text-sm font-medium">
                     {product.activity_logs?.views || 0} lượt xem
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
+                <div className="flex items-center gap-2 text-white/90">
+                  <Icons.Share />
                   <span className="text-sm font-medium">
                     {product.activity_logs?.shares || 0} lượt chia sẻ
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                    />
-                  </svg>
+                <div className="flex items-center gap-2 text-white/90">
+                  <Icons.Download />
                   <span className="text-sm font-medium">
                     {product.activity_logs?.downloads || 0} lượt tải
                   </span>
@@ -248,36 +184,32 @@ const ProductDetailScreen = () => {
               </div>
             )}
 
-            {product.status === "approved" && product.approved_by_user && (
-              <div className="mt-4 p-3 bg-green-50 rounded-lg flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span className="text-sm text-green-800">
-                  Đã được duyệt bởi {product.approved_by_user.fullname} vào ngày{" "}
-                  {new Date(product.approved_at).toLocaleDateString("vi-VN")}
+            {/* Approved info */}
+            {product.status === STATUS.APPROVED && product.approved_by_user && (
+              <div className="mt-4 p-3 bg-white/10 backdrop-blur rounded-lg flex items-center gap-2">
+                <Icons.CheckCircle />
+                <span className="text-sm text-white">
+                  Được duyệt bởi {product.approved_by_user.fullname} vào ngày{" "}
+                  {formatDate(product.approved_at)}
                 </span>
               </div>
             )}
           </div>
         </div>
 
+        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - 2/3 */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h2 className="text-lg font-semibold mb-4">Hình ảnh sản phẩm</h2>
+            {/* Images Section */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h2
+                className={`text-lg font-bold mb-4 ${theme.text} border-l-4 ${theme.border} pl-3 flex items-center gap-2`}
+              >
+                <Icons.Image />
+                Hình ảnh sản phẩm
+              </h2>
 
-              {/* Ảnh chính - có hiệu ứng hover như teacher */}
               <div
                 className="aspect-video bg-gray-100 rounded-xl overflow-hidden mb-4 cursor-pointer group relative"
                 onClick={() => openViewer(product.thumbnail)}
@@ -288,25 +220,12 @@ const ProductDetailScreen = () => {
                   className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                  <svg
-                    className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                    />
-                  </svg>
+                  <Icons.ZoomIn />
                 </div>
               </div>
 
-              {/* Danh sách ảnh nhỏ */}
               {product.images?.length > 1 && (
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-5 gap-3">
                   {product.images.map((img, index) => (
                     <button
                       key={img.product_image_id || index}
@@ -319,19 +238,7 @@ const ProductDetailScreen = () => {
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                        <svg
-                          className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                          />
-                        </svg>
+                        <Icons.ZoomInSmall />
                       </div>
                     </button>
                   ))}
@@ -339,91 +246,105 @@ const ProductDetailScreen = () => {
               )}
             </div>
 
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            {/* Tabs Section */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="border-b">
                 <div className="flex">
-                  <button
-                    onClick={() => setActiveTab("overview")}
-                    className={`px-6 py-3 font-medium text-sm transition ${
-                      activeTab === "overview"
-                        ? "border-b-2 border-blue-600 text-blue-600"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    Tổng quan
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("files")}
-                    className={`px-6 py-3 font-medium text-sm transition ${
-                      activeTab === "files"
-                        ? "border-b-2 border-blue-600 text-blue-600"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    Files đính kèm ({product.files?.length || 0})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("reviews")}
-                    className={`px-6 py-3 font-medium text-sm transition ${
-                      activeTab === "reviews"
-                        ? "border-b-2 border-blue-600 text-blue-600"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    Đánh giá từ giảng viên ({product.reviews?.length || 0})
-                  </button>
+                  {["overview", "files", "reviews"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-6 py-3 font-medium text-sm transition flex items-center gap-2 ${
+                        activeTab === tab
+                          ? `border-b-2 ${theme.border.replace("border-", "border-")} ${theme.text}`
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      {tab === "overview" && (
+                        <>
+                          <Icons.FileText /> Tổng quan
+                        </>
+                      )}
+                      {tab === "files" && (
+                        <>
+                          <Icons.Paperclip /> Files (
+                          {product.files?.length || 0})
+                        </>
+                      )}
+                      {tab === "reviews" && (
+                        <>
+                          <Icons.MessageCircle /> Đánh giá (
+                          {product.reviews?.length || 0})
+                        </>
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
 
               <div className="p-6">
                 {activeTab === "overview" && (
                   <div className="prose max-w-none">
-                    <p className="text-gray-700">{product.description}</p>
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                      {product.description}
+                    </p>
                   </div>
                 )}
 
                 {activeTab === "files" && (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {product.files?.length > 0 ? (
                       product.files.map((file) => {
                         const fileName = file.file_url.split("/").pop();
                         const fileExt =
                           file.file_type?.toUpperCase() ||
                           fileName.split(".").pop().toUpperCase();
+                        let fileType = "FILE";
+                        if (["PDF"].includes(fileExt)) fileType = "PDF";
+                        if (
+                          ["JPG", "JPEG", "PNG", "GIF", "WEBP"].includes(
+                            fileExt,
+                          )
+                        )
+                          fileType = "IMAGE";
+                        if (["MP4", "MOV", "AVI", "MKV"].includes(fileExt))
+                          fileType = "VIDEO";
 
                         return (
                           <div
                             key={file.product_file_id}
-                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:shadow-md transition"
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold">
-                                {fileExt}
+                              <div
+                                className={`w-12 h-12 rounded-lg flex items-center justify-center font-bold ${theme.badge}`}
+                              >
+                                <Icons.FileIcon type={fileType} />
                               </div>
                               <div>
                                 <p className="font-medium text-gray-900">
                                   {fileName}
                                 </p>
-                                <p className="text-sm text-gray-500">
-                                  Ngày tải lên:{" "}
-                                  {new Date(file.created_at).toLocaleDateString(
-                                    "vi-VN",
-                                  )}
+                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                  <Icons.Clock />
+                                  {formatDate(file.created_at)}
                                 </p>
                               </div>
                             </div>
                             <a
                               href={file.file_url}
                               download
-                              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm"
+                              className={`px-4 py-2 ${theme.button} text-white rounded-lg transition text-sm flex items-center gap-2`}
                             >
+                              <Icons.Download />
                               Tải xuống
                             </a>
                           </div>
                         );
                       })
                     ) : (
-                      <p className="text-center text-gray-500 py-8">
+                      <p className="text-center text-gray-500 py-8 flex items-center justify-center gap-2">
+                        <Icons.Paperclip />
                         Chưa có file đính kèm
                       </p>
                     )}
@@ -431,42 +352,45 @@ const ProductDetailScreen = () => {
                 )}
 
                 {activeTab === "reviews" && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     {product.reviews?.length > 0 ? (
                       product.reviews.map((review) => (
                         <div
                           key={review.review_id}
-                          className="border-b last:border-0 pb-4"
+                          className="flex gap-3 p-4 bg-gray-50 rounded-xl"
                         >
-                          <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                              {review.teacher?.fullname?.charAt(0) || "G"}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="font-medium text-gray-900">
-                                    {review.teacher?.fullname}
-                                  </p>
-                                  <p className="text-xs text-gray-500">
+                          <div
+                            className={`w-10 h-10 bg-gradient-to-r ${theme?.gradient} rounded-full flex items-center justify-center text-white font-semibold shadow-md`}
+                          >
+                            {review.teacher?.fullname?.charAt(0) || (
+                              <Icons.User />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                              <div>
+                                <p className="font-semibold text-gray-900 flex items-center gap-2">
+                                  {review.teacher?.fullname}
+                                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                                    <Icons.User />
                                     Giảng viên
-                                  </p>
-                                </div>
-                                <span className="text-xs text-gray-500">
-                                  {new Date(
-                                    review.created_at,
-                                  ).toLocaleDateString("vi-VN")}
-                                </span>
+                                  </span>
+                                </p>
                               </div>
-                              <p className="text-gray-700 mt-2">
-                                {review.comment}
-                              </p>
+                              <span className="text-xs text-gray-400 flex items-center gap-1">
+                                <Icons.Clock />
+                                {formatDate(review.created_at)}
+                              </span>
                             </div>
+                            <p className="text-gray-700 mt-2">
+                              {review.comment}
+                            </p>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="text-center text-gray-500 py-8">
+                      <p className="text-center text-gray-500 py-8 flex items-center justify-center gap-2">
+                        <Icons.MessageCircle />
                         Chưa có đánh giá từ giảng viên
                       </p>
                     )}
@@ -476,145 +400,247 @@ const ProductDetailScreen = () => {
             </div>
           </div>
 
+          {/* Right Column - 1/3 */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h2 className="text-lg font-semibold mb-4">Thông tin tác giả</h2>
+            {/* Author Card */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h2
+                className={`text-lg font-bold mb-4 ${theme.text} flex items-center gap-2`}
+              >
+                <Icons.User />
+                Tác giả
+              </h2>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  {product.user_id?.charAt(0) || "U"}
+                <div
+                  className={`w-16 h-16 bg-gradient-to-r ${theme?.gradient} rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg`}
+                >
+                  {product.fullname?.charAt(0)?.toUpperCase() || <Icons.User />}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">
-                    {product.user_id}
+                  <p className="font-semibold text-gray-900 text-lg">
+                    {product?.user_id}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p
+                    className={`text-sm ${theme.text} flex items-center gap-1`}
+                  >
                     {product.major?.major_name}
                   </p>
                 </div>
               </div>
             </div>
 
+            {/* Tags Card */}
             {product.tags?.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-xl p-6">
-                <h2 className="text-lg font-semibold mb-4">
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2
+                  className={`text-lg font-bold mb-4 ${theme.text} flex items-center gap-2`}
+                >
+                  <Icons.Tag />
                   Công nghệ sử dụng
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {product.tags.map((tag) => (
                     <span
                       key={tag.tag_id}
-                      className="px-3 py-1 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-full text-sm"
+                      className={`px-3 py-1.5 bg-gradient-to-r ${theme.gradient} text-white rounded-full text-sm font-medium shadow-sm flex items-center gap-1`}
                     >
-                      #{tag.tag_name}
+                      <Icons.Tag />#{tag.tag_name}
                     </span>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h2 className="text-lg font-semibold mb-4">Liên kết</h2>
-              <div className="space-y-3">
-                {product.github_link && (
-                  <a
-                    href={product.github_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
-                  >
-                    <svg
-                      className="w-6 h-6 text-gray-700"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
+            {/* Links Card */}
+            {(product.github_link ||
+              product.demo_link ||
+              product.behance_link ||
+              product.drive_link ||
+              product.simulation_link ||
+              product.report_link ||
+              product.dataset_link) && (
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2
+                  className={`text-lg font-bold mb-4 ${theme.text} flex items-center gap-2`}
+                >
+                  <Icons.Link />
+                  Liên kết
+                </h2>
+                <div className="space-y-3">
+                  {product.github_link && (
+                    <a
+                      href={product.github_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
                     >
-                      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                    </svg>
-                    <span className="flex-1 text-sm font-medium">
-                      GitHub Repository
-                    </span>
-                    <svg
-                      className="w-5 h-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                      <Icons.Github />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        GitHub Repository
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                  {product.demo_link && (
+                    <a
+                      href={product.demo_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </a>
-                )}
-
-                {product.demo_link && (
-                  <a
-                    href={product.demo_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
-                  >
-                    <svg
-                      className="w-6 h-6 text-gray-700"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                      <Icons.Monitor />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        Xem Demo
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                  {product.behance_link && (
+                    <a
+                      href={product.behance_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    <span className="flex-1 text-sm font-medium">Xem Demo</span>
-                    <svg
-                      className="w-5 h-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                      <Icons.Behance />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        Behance Portfolio
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                  {product.drive_link && (
+                    <a
+                      href={product.drive_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                  </a>
-                )}
+                      <Icons.GoogleDrive />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        Google Drive
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                  {product.simulation_link && (
+                    <a
+                      href={product.simulation_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
+                    >
+                      <Icons.Monitor />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        Mô phỏng/Simulation
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                  {product.report_link && (
+                    <a
+                      href={product.report_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
+                    >
+                      <Icons.FileText />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        Báo cáo/Report
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                  {product.dataset_link && (
+                    <a
+                      href={product.dataset_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition group"
+                    >
+                      <Icons.Database />
+                      <span className="flex-1 text-sm font-medium group-hover:underline">
+                        Dataset
+                      </span>
+                      <Icons.ExternalLink />
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="bg-white rounded-2xl shadow-xl p-6">
-              <h2 className="text-lg font-semibold mb-4">Thông tin thêm</h2>
+            {/* Info Card */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h2
+                className={`text-lg font-bold mb-4 ${theme.text} flex items-center gap-2`}
+              >
+                <Icons.Info />
+                Thông tin thêm
+              </h2>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Ngày đăng:</span>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500 flex items-center gap-1">
+                    <Icons.Calendar /> Ngày đăng:
+                  </span>
                   <span className="text-gray-900 font-medium">
-                    {new Date(product.created_at).toLocaleDateString("vi-VN")}
+                    {formatDate(product.created_at)}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Cập nhật cuối:</span>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500 flex items-center gap-1">
+                    <Icons.RefreshCw /> Cập nhật:
+                  </span>
                   <span className="text-gray-900 font-medium">
-                    {new Date(product.updated_at).toLocaleDateString("vi-VN")}
+                    {formatDate(product.updated_at)}
                   </span>
                 </div>
                 {product.approved_at && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Ngày duyệt:</span>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-1">
+                      <Icons.CheckCircle /> Ngày duyệt:
+                    </span>
                     <span className="text-gray-900 font-medium">
-                      {new Date(product.approved_at).toLocaleDateString(
-                        "vi-VN",
-                      )}
+                      {formatDate(product.approved_at)}
+                    </span>
+                  </div>
+                )}
+                {product.design_type && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-1">
+                      <Icons.Palette /> Loại thiết kế:
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {product.design_type}
+                    </span>
+                  </div>
+                )}
+                {product.tools && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-1">
+                      <Icons.Tool /> Công cụ:
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {product.tools}
+                    </span>
+                  </div>
+                )}
+                {product.model_type && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-1">
+                      <Icons.Robot /> Loại model:
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {product.model_type}
+                    </span>
+                  </div>
+                )}
+                {product.network_type && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-500 flex items-center gap-1">
+                      <Icons.Globe /> Loại mạng:
+                    </span>
+                    <span className="text-gray-900 font-medium">
+                      {product.network_type}
                     </span>
                   </div>
                 )}
