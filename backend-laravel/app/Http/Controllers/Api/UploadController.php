@@ -57,26 +57,4 @@ class UploadController extends Controller
             'data' => $product
         ], 200);
     }
-
-    // public function upload(Request $request)
-    // {
-    //     $res = $this->upload_service->upload($request->all());
-
-    //     // ❌ nếu có lỗi (ảnh vi phạm)
-    //     if (isset($res['error']) && $res['error'] === true) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => $res['message'],
-    //             'image_index' => $res['image_index'] ?? null,
-    //             'detail' => $res['detail'] ?? null
-    //         ], 422);
-    //     }
-
-    //     //  nếu OK
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Tạo sản phẩm thành công',
-    //         'data' => $res
-    //     ], 200);
-    // }
 }
