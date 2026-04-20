@@ -224,7 +224,7 @@ const ProductDetailScreen = () => {
                 </div>
               </div>
 
-              {product.images?.length > 1 && (
+              {product?.images && (
                 <div className="grid grid-cols-5 gap-3">
                   {product.images.map((img, index) => (
                     <button
