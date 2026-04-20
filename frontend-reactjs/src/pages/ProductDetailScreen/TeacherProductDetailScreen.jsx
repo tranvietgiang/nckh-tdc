@@ -1,5 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+
 import useProductDetailTeacher from "../../hooks/useProduct/useProductDetailTeacher";
 import useImageViewer from "../../shared/useImageViewer";
 import useTitle from "../../hooks/common/useTitle";
@@ -7,13 +9,15 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../utils/formatDate";
 import { getStatusColor } from "../../components/common/getStatusColor";
 import { getStatusText } from "../../components/common/getStatusText";
-import { useHandleApprove } from "../../components/teacher/useHandleApprove";
-import { useHandleSubmitReview } from "../../components/teacher/handleSubmitReview";
-import { useSubmitRejection } from "../../components/teacher/submitRejection";
-import { AuthContext } from "../../contexts/AuthContext";
+
+import { useHandleApprove } from "../../hooks/useTeacher/useHandleApprove";
+import { useHandleSubmitReview } from "../../hooks/useTeacher/useHandleSubmitReview";
+import { useHandleSubmitRejection } from "../../hooks/useTeacher/useHandleSubmitRejection";
+
 import useTeacherApprove from "../../hooks/useTeacher/useTeacherApprove";
 import useTeacherReject from "../../hooks/useTeacher/useTeacherReject";
 import useReviewToggle from "../../hooks/common/useReviewToggle";
+
 import LoadingSpinner from "../../components/common/LoadingOverlay";
 import { confirmToast } from "../../components/common/ConfirmToast";
 import BackButton from "../../components/common/BackButton";
@@ -39,6 +43,7 @@ const TeacherProductDetailScreen = () => {
     useTeacherApprove();
 
   const { teacherReject, loading_reject, error_reject } = useTeacherReject();
+  console.log("product:", product);
 
   // Hook duyệt sản phẩm (có thể đã quản lý isSubmitting bên trong)
   const handleApproveOriginal = useHandleApprove(
@@ -59,7 +64,7 @@ const TeacherProductDetailScreen = () => {
   );
 
   // Hook từ chối
-  const submitRejectionOriginal = useSubmitRejection(
+  const submitRejectionOriginal = useHandleSubmitRejection(
     feedback,
     setIsSubmitting,
     toast,
@@ -182,8 +187,6 @@ const TeacherProductDetailScreen = () => {
 
   const images = product.images || [];
   const productData = product?.product || {};
-  // Trong component TeacherProductDetailScreen, sau các useState khác
-
   const reviews = product?.reviews || [];
 
   const displayedReviews = getDisplayed(reviews);
@@ -274,9 +277,8 @@ const TeacherProductDetailScreen = () => {
             </div>
           </div>
         </div>
-
         {/* Gallery ảnh */}
-        {images.length > 0 && (
+        {(productData?.thumbnail || images.length > 0) && (
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Hình ảnh sản phẩm

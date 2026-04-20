@@ -1,7 +1,8 @@
 import { useBackToPage } from "../../hooks/common/useRouters";
 
-const BackButton = ({ loading }) => {
+const BackButton = ({ loading, label = "Quay lại" }) => {
   const goBack = useBackToPage();
+
   return (
     <div className="mb-6">
       <button
@@ -9,22 +10,21 @@ const BackButton = ({ loading }) => {
           if (loading) return;
           goBack();
         }}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition"
+        disabled={loading}
+        className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-900 font-medium text-sm px-4 py-2 rounded-full transition-all hover:bg-blue-100 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <svg
-          className="w-5 h-5"
+          className="w-4 h-4"
           fill="none"
           stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
+          <path d="M19 12H5M12 5l-7 7 7 7" />
         </svg>
-        Quay lại
+        {label}
       </button>
     </div>
   );

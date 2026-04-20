@@ -70,19 +70,18 @@ const ProfileScreen = () => {
 
   const getRoleBadge = () => {
     switch (user?.role) {
-      case ROLE.ADMIN:
-        return { text: "Quản trị viên", color: "purple", icon: "👑" };
       case ROLE.TEACHER:
         return { text: "Giảng viên", color: "blue", icon: "👨‍🏫" };
       case ROLE.STUDENT:
         return { text: "Sinh viên", color: "green", icon: "🎓" };
       default:
-        return null; // Không hiển thị gì nếu không có role
+        return null;
     }
   };
 
   const roleBadge = getRoleBadge();
 
+  // fix cho tui nha
   const stats = [
     {
       label: "Sản phẩm đã duyệt",
@@ -140,9 +139,9 @@ const ProfileScreen = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <BackButton />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Card */}
+        <BackButton />
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           {/* Cover Image */}
           <div className="h-32 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
@@ -156,7 +155,6 @@ const ProfileScreen = () => {
               </div>
             </div>
           </div>
-
           {/* Profile Info */}
           <div className="pt-14 sm:pt-16 pb-6 px-4 sm:px-8">
             <div className="flex flex-wrap justify-between items-start gap-4">
