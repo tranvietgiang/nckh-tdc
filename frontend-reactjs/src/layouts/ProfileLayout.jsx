@@ -5,12 +5,17 @@ import { formatDate } from "../utils/formatDate";
 import { toast } from "react-toastify";
 import { ROLE } from "../utils/constants";
 import BackButton from "../components/common/BackButton";
+import { getMajorTheme } from "../utils/uploadProductScreen/uploadRegistry";
+import { Icons } from "../components/common/Icon";
 
 const ProfileScreen = () => {
   useTitle("Hồ sơ cá nhân");
   const { user, setUser } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Lấy theme dựa trên major_id của user
+  const theme = getMajorTheme(user?.major_id);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -20,6 +25,7 @@ const ProfileScreen = () => {
     mssv: user?.mssv || "",
     major_name: user?.major_name || "",
     class_name: user?.class_name || "",
+    bio: user?.bio || "",
   });
 
   // Reset form data về giá trị ban đầu của user
@@ -32,6 +38,7 @@ const ProfileScreen = () => {
       mssv: user?.mssv || "",
       major_name: user?.major_name || "",
       class_name: user?.class_name || "",
+      bio: user?.bio || "",
     });
   };
 
@@ -71,9 +78,17 @@ const ProfileScreen = () => {
   const getRoleBadge = () => {
     switch (user?.role) {
       case ROLE.TEACHER:
-        return { text: "Giảng viên", color: "blue", icon: "👨‍🏫" };
+        return {
+          text: "Giảng viên",
+          color: "blue",
+          icon: <Icons.Teacher className="w-3 h-3" />,
+        };
       case ROLE.STUDENT:
-        return { text: "Sinh viên", color: "green", icon: "🎓" };
+        return {
+          text: "Sinh viên",
+          color: "green",
+          icon: <Icons.Student className="w-3 h-3" />,
+        };
       default:
         return null;
     }
@@ -81,40 +96,49 @@ const ProfileScreen = () => {
 
   const roleBadge = getRoleBadge();
 
-  // fix cho tui nha
   const stats = [
     {
       label: "Sản phẩm đã duyệt",
       value: user?.approved_count || 0,
       color: "green",
+      icon: <Icons.CheckCircle className="w-4 h-4" />,
     },
     {
       label: "Sản phẩm chờ duyệt",
       value: user?.pending_count || 0,
       color: "yellow",
+      icon: <Icons.Clock className="w-4 h-4" />,
     },
     {
       label: "Sản phẩm từ chối",
       value: user?.rejected_count || 0,
       color: "red",
+      icon: <Icons.XCircle className="w-4 h-4" />,
     },
     {
       label: "Tổng sản phẩm",
       value: user?.total_products || 0,
       color: "purple",
+      icon: <Icons.Product className="w-4 h-4" />,
     },
   ];
 
-  const InfoField = ({ label, value }) => (
+  const InfoField = ({ label, value, icon }) => (
     <div className="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-100 last:border-0">
-      <span className="text-sm font-medium text-gray-500 w-32">{label}</span>
+      <div className="flex items-center gap-2 w-32">
+        {icon && <span className="text-gray-400">{icon}</span>}
+        <span className="text-sm font-medium text-gray-500">{label}</span>
+      </div>
       <span className="text-sm text-gray-900 mt-1 sm:mt-0">{value || "—"}</span>
     </div>
   );
 
-  const EditableField = ({ label, name, type = "text", placeholder }) => (
+  const EditableField = ({ label, name, type = "text", placeholder, icon }) => (
     <div className="flex flex-col sm:flex-row sm:items-center py-3 border-b border-gray-100">
-      <label className="text-sm font-medium text-gray-500 w-32">{label}</label>
+      <div className="flex items-center gap-2 w-32">
+        {icon && <span className="text-gray-400">{icon}</span>}
+        <label className="text-sm font-medium text-gray-500">{label}</label>
+      </div>
       {type === "textarea" ? (
         <textarea
           name={name}
@@ -143,11 +167,13 @@ const ProfileScreen = () => {
         {/* Profile Card */}
         <BackButton />
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          {/* Cover Image */}
-          <div className="h-32 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
+          {/* Cover Image - Sử dụng gradient từ theme */}
+          <div className={`h-32 bg-gradient-to-r ${theme.gradient} relative`}>
             <div className="absolute -bottom-12 left-6 sm:left-8">
               <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-2xl shadow-lg flex items-center justify-center p-1">
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <div
+                  className={`w-full h-full bg-gradient-to-br ${theme.gradient} rounded-xl flex items-center justify-center`}
+                >
                   <span className="text-white text-2xl sm:text-3xl font-bold">
                     {user?.name?.charAt(0) || "U"}
                   </span>
@@ -155,6 +181,7 @@ const ProfileScreen = () => {
               </div>
             </div>
           </div>
+
           {/* Profile Info */}
           <div className="pt-14 sm:pt-16 pb-6 px-4 sm:px-8">
             <div className="flex flex-wrap justify-between items-start gap-4">
@@ -165,15 +192,20 @@ const ProfileScreen = () => {
                   </h2>
                   {roleBadge && (
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium bg-${roleBadge.color}-100 text-${roleBadge.color}-700`}
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center gap-1 bg-${roleBadge.color}-100 text-${roleBadge.color}-700`}
                     >
-                      {roleBadge.icon} {roleBadge.text}
+                      {roleBadge.icon}
+                      {roleBadge.text}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-500">{user?.email}</p>
+                <p className="text-sm text-gray-500 flex items-center gap-1">
+                  <Icons.Mail className="w-4 h-4" />
+                  {user?.email}
+                </p>
                 {user?.role === ROLE.STUDENT && user?.mssv && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                    <Icons.StudentId className="w-3 h-3" />
                     MSSV: {user.mssv}
                   </p>
                 )}
@@ -187,19 +219,7 @@ const ProfileScreen = () => {
                       disabled={isLoading}
                       className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <Icons.X className="w-4 h-4" />
                       Hủy
                     </button>
                     <button
@@ -214,19 +234,7 @@ const ProfileScreen = () => {
                         </>
                       ) : (
                         <>
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                          <Icons.Check className="w-4 h-4" />
                           Lưu thay đổi
                         </>
                       )}
@@ -237,19 +245,7 @@ const ProfileScreen = () => {
                     onClick={handleEdit}
                     className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                      />
-                    </svg>
+                    <Icons.Edit className="w-4 h-4" />
                     Chỉnh sửa
                   </button>
                 )}
@@ -261,20 +257,10 @@ const ProfileScreen = () => {
         {/* Thông tin chi tiết */}
         <div className="mt-6 bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 sm:px-8 py-4 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+            <h3
+              className={`text-lg font-semibold flex items-center gap-2 ${theme.text}`}
+            >
+              <Icons.Info className="w-5 h-5" />
               Thông tin cá nhân
             </h3>
           </div>
@@ -285,28 +271,33 @@ const ProfileScreen = () => {
                 <EditableField
                   label="Họ tên"
                   name="name"
+                  icon={<Icons.User className="w-4 h-4" />}
                   placeholder="Nhập họ tên"
                 />
                 <EditableField
                   label="Email"
                   name="email"
                   type="email"
+                  icon={<Icons.Mail className="w-4 h-4" />}
                   placeholder="Nhập email"
                 />
                 <EditableField
                   label="Số điện thoại"
                   name="phone"
+                  icon={<Icons.Phone className="w-4 h-4" />}
                   placeholder="Nhập số điện thoại"
                 />
                 <EditableField
                   label="Địa chỉ"
                   name="address"
+                  icon={<Icons.Location className="w-4 h-4" />}
                   placeholder="Nhập địa chỉ"
                 />
                 <EditableField
                   label="Giới thiệu"
                   name="bio"
                   type="textarea"
+                  icon={<Icons.Bio className="w-4 h-4" />}
                   placeholder="Giới thiệu về bản thân..."
                 />
 
@@ -315,16 +306,19 @@ const ProfileScreen = () => {
                     <EditableField
                       label="MSSV"
                       name="mssv"
+                      icon={<Icons.StudentId className="w-4 h-4" />}
                       placeholder="Nhập MSSV"
                     />
                     <EditableField
                       label="Lớp"
                       name="class_name"
+                      icon={<Icons.Class className="w-4 h-4" />}
                       placeholder="Nhập tên lớp"
                     />
                     <EditableField
                       label="Chuyên ngành"
                       name="major_name"
+                      icon={<Icons.Major className="w-4 h-4" />}
                       placeholder="Nhập chuyên ngành"
                     />
                   </>
@@ -334,32 +328,73 @@ const ProfileScreen = () => {
                   <EditableField
                     label="Chuyên ngành"
                     name="major_name"
+                    icon={<Icons.Major className="w-4 h-4" />}
                     placeholder="Nhập chuyên ngành"
                   />
                 )}
               </>
             ) : (
               <>
-                <InfoField label="Họ tên" value={user?.name} />
-                <InfoField label="Email" value={user?.email} />
-                <InfoField label="Số điện thoại" value={user?.phone} />
-                <InfoField label="Địa chỉ" value={user?.address} />
-                <InfoField label="Giới thiệu" value={user?.bio} />
+                <InfoField
+                  label="Họ tên"
+                  value={user?.name}
+                  icon={<Icons.User className="w-4 h-4" />}
+                />
+                <InfoField
+                  label="Email"
+                  value={user?.email}
+                  icon={<Icons.Mail className="w-4 h-4" />}
+                />
+                <InfoField
+                  label="Số điện thoại"
+                  value={user?.phone}
+                  icon={<Icons.Phone className="w-4 h-4" />}
+                />
+                <InfoField
+                  label="Địa chỉ"
+                  value={user?.address}
+                  icon={<Icons.Location className="w-4 h-4" />}
+                />
+                <InfoField
+                  label="Giới thiệu"
+                  value={user?.bio}
+                  icon={<Icons.Bio className="w-4 h-4" />}
+                />
 
                 {user?.role === ROLE.STUDENT && (
                   <>
-                    <InfoField label="MSSV" value={user?.mssv} />
-                    <InfoField label="Lớp" value={user?.class_name} />
-                    <InfoField label="Chuyên ngành" value={user?.major_name} />
+                    <InfoField
+                      label="MSSV"
+                      value={user?.mssv}
+                      icon={<Icons.StudentId className="w-4 h-4" />}
+                    />
+                    <InfoField
+                      label="Lớp"
+                      value={user?.class_name}
+                      icon={<Icons.Class className="w-4 h-4" />}
+                    />
+                    <InfoField
+                      label="Chuyên ngành"
+                      value={user?.major_name}
+                      icon={<Icons.Major className="w-4 h-4" />}
+                    />
                   </>
                 )}
 
                 {user?.role === ROLE.TEACHER && (
-                  <InfoField label="Chuyên ngành" value={user?.major_name} />
+                  <InfoField
+                    label="Chuyên ngành"
+                    value={user?.major_name}
+                    icon={<Icons.Major className="w-4 h-4" />}
+                  />
                 )}
 
                 {user?.role === ROLE.ADMIN && (
-                  <InfoField label="Vai trò" value="Quản trị viên hệ thống" />
+                  <InfoField
+                    label="Vai trò"
+                    value="Quản trị viên hệ thống"
+                    icon={<Icons.Admin className="w-4 h-4" />}
+                  />
                 )}
               </>
             )}
@@ -370,20 +405,10 @@ const ProfileScreen = () => {
         {(user?.role === ROLE.TEACHER || user?.role === ROLE.STUDENT) && (
           <div className="mt-6 bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 sm:px-8 py-4 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
+              <h3
+                className={`text-lg font-semibold flex items-center gap-2 ${theme.text}`}
+              >
+                <Icons.Chart className="w-5 h-5" />
                 Thống kê sản phẩm
               </h3>
             </div>
@@ -394,9 +419,16 @@ const ProfileScreen = () => {
                     key={stat.label}
                     className={`bg-gradient-to-br from-${stat.color}-50 to-${stat.color}-100 rounded-xl p-4`}
                   >
-                    <p className={`text-xs font-medium text-${stat.color}-600`}>
-                      {stat.label}
-                    </p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-${stat.color}-600`}>
+                        {stat.icon}
+                      </span>
+                      <p
+                        className={`text-xs font-medium text-${stat.color}-600`}
+                      >
+                        {stat.label}
+                      </p>
+                    </div>
                     <p
                       className={`text-2xl font-bold text-${stat.color}-700 mt-1`}
                     >
@@ -412,20 +444,10 @@ const ProfileScreen = () => {
         {/* Thông tin hệ thống */}
         <div className="mt-6 bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 sm:px-8 py-4 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+            <h3
+              className={`text-lg font-semibold flex items-center gap-2 ${theme.text}`}
+            >
+              <Icons.System className="w-5 h-5" />
               Thông tin hệ thống
             </h3>
           </div>
@@ -434,10 +456,12 @@ const ProfileScreen = () => {
               <InfoField
                 label="Ngày tham gia"
                 value={formatDate(user?.created_at)}
+                icon={<Icons.Calendar className="w-4 h-4" />}
               />
               <InfoField
                 label="Lần đăng nhập cuối"
                 value={formatDate(user?.last_login)}
+                icon={<Icons.Login className="w-4 h-4" />}
               />
               <InfoField
                 label="Trạng thái"
@@ -447,8 +471,13 @@ const ProfileScreen = () => {
                     <span className="text-green-700">Hoạt động</span>
                   </span>
                 }
+                icon={<Icons.Status className="w-4 h-4" />}
               />
-              <InfoField label="ID tài khoản" value={user?.id} />
+              <InfoField
+                label="ID tài khoản"
+                value={user?.id}
+                icon={<Icons.Id className="w-4 h-4" />}
+              />
             </div>
           </div>
         </div>
