@@ -4,6 +4,7 @@ import { confirmToast } from "../common/ConfirmToast";
 import useMajorName from "../../hooks/common/useMajorName";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../common/LoadingOverlay";
+
 const UploadProductForm_Graphic = ({
   formData,
   handleChange,
@@ -41,13 +42,20 @@ const UploadProductForm_Graphic = ({
   const [confirmed, setConfirmed] = useState(false);
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
+
+  // State cho loading upload ảnh
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+
+  // State cho loading submit sản phẩm
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageUploadWithLoading = async (e) => {
     setUploadingImage(true);
     try {
       await handleImageUpload(e);
+    } catch (error) {
+      console.error("Upload image error:", error);
     } finally {
       setUploadingImage(false);
     }
@@ -57,8 +65,22 @@ const UploadProductForm_Graphic = ({
     setUploadingFile(true);
     try {
       await handleFileUpload(e);
+    } catch (error) {
+      console.error("Upload file error:", error);
     } finally {
       setUploadingFile(false);
+    }
+  };
+
+  // Wrap handleSubmit để hiển thị loading khi đăng sản phẩm
+  const handleSubmitWithLoading = async (e) => {
+    setIsSubmitting(true);
+    try {
+      await handleSubmit(e);
+    } catch (error) {
+      console.error("Submit error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -66,20 +88,34 @@ const UploadProductForm_Graphic = ({
 
   return (
     <>
+      {/* Loading overlay khi upload ảnh hoặc file */}
       {(uploadingImage || uploadingFile) && (
         <LoadingSpinner
-          fullScreen
+          fullScreen={true}
           message={
             uploadingImage ? "Đang tải ảnh lên..." : "Đang tải file lên..."
           }
+          size="md"
         />
       )}
+
+      {/* Loading overlay khi đăng sản phẩm */}
+      {(isSubmitting || loading) && (
+        <LoadingSpinner
+          fullScreen={true}
+          message="Đang gửi sản phẩm đến giảng viên..."
+          size="md"
+        />
+      )}
+
       <div>
         <form
           onKeyDown={(e) => {
             if (e.key === "Enter" && currentStep !== 3) e.preventDefault();
           }}
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            handleSubmitWithLoading(e);
+          }}
           className="space-y-6"
         >
           {/* Step 1: Thông tin cơ bản - Đồ họa */}
@@ -208,46 +244,61 @@ const UploadProductForm_Graphic = ({
                 />
               </div>
 
-              {/* (Tùy chọn) Có thể thêm danh mục nếu cần - giống CNTT */}
-              {/* Ở đây tôi giữ nguyên phần category như CNTT nếu muốn dùng */}
+              {/* Danh mục */}
               {isLoadingCategories ? (
-                <div className="flex justify-center p-4">
-                  Đang tải danh mục...
+                <div className="flex items-center justify-center p-4">
+                  <div className="text-center">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                    <p className="text-sm text-gray-500">
+                      Đang tải danh mục...
+                    </p>
+                  </div>
                 </div>
               ) : categoryError ? (
-                <p className="text-red-500">Lỗi tải danh mục</p>
+                <p className="text-sm text-red-500">Lỗi tải danh mục</p>
               ) : (
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
                     Danh mục <span className="text-red-500">*</span>
                   </label>
                   <div className="space-y-2">
-                    {(categories || []).map((cat) => (
-                      <button
-                        key={cat.cate_id}
-                        type="button"
-                        onClick={() => handleSelectCategory(cat.cate_id)}
-                        className={`flex w-full items-center gap-3 rounded-xl border-2 p-4 transition-all ${
-                          formData.cate_id === cat.cate_id
-                            ? "border-indigo-500 bg-indigo-50 ring-4 ring-indigo-100"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-                          🗂️
-                        </div>
-                        <div className="flex-1 text-left">
-                          <p className="font-medium text-gray-700">
-                            {cat.category_name}
-                          </p>
-                          {formData.cate_id === cat.cate_id && (
-                            <p className="text-xs text-indigo-600">
-                              ✔ Đang chọn
+                    {(categories || []).map((cat) => {
+                      const isSelected = formData.cate_id === cat.cate_id;
+                      return (
+                        <button
+                          key={cat.cate_id}
+                          type="button"
+                          onClick={() => handleSelectCategory(cat.cate_id)}
+                          className={`flex w-full items-center gap-3 rounded-xl border-2 p-4 transition-all ${
+                            isSelected
+                              ? "border-indigo-500 bg-indigo-50 ring-4 ring-indigo-100"
+                              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                              isSelected ? "bg-indigo-200" : "bg-gray-100"
+                            }`}
+                          >
+                            <span className="text-xl">🗂️</span>
+                          </div>
+                          <div className="flex-1 text-left">
+                            <p
+                              className={`font-medium ${
+                                isSelected ? "text-indigo-700" : "text-gray-700"
+                              }`}
+                            >
+                              {cat.category_name}
                             </p>
-                          )}
-                        </div>
-                      </button>
-                    ))}
+                            {isSelected && (
+                              <p className="mt-0.5 text-xs text-indigo-600">
+                                ✔ Đang chọn
+                              </p>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                   {errors.cate_id && (
                     <p className="mt-2 text-sm text-red-600">
@@ -259,7 +310,7 @@ const UploadProductForm_Graphic = ({
             </div>
           </div>
 
-          {/* Step 2: Hình ảnh & Files - giữ y hệt CNTT nhưng có thể chỉnh nhãn */}
+          {/* Step 2: Hình ảnh & Files */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 2
@@ -273,7 +324,7 @@ const UploadProductForm_Graphic = ({
               </h2>
             </div>
             <div className="space-y-8 p-6">
-              {/* Upload ảnh - giống hệt CNTT */}
+              {/* Upload ảnh */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Hình ảnh sản phẩm (mockup, ảnh chụp){" "}
@@ -298,7 +349,7 @@ const UploadProductForm_Graphic = ({
                     <div className="text-center">
                       <div className="mb-4 inline-flex rounded-full bg-white p-4 shadow-lg transition-transform group-hover:scale-110">
                         {uploadingImage ? (
-                          <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></div>
+                          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                         ) : (
                           <svg
                             className="h-8 w-8 text-purple-500"
@@ -403,7 +454,7 @@ const UploadProductForm_Graphic = ({
                 )}
               </div>
 
-              {/* Upload file nguồn (PSD, AI, Figma, PDF, video) */}
+              {/* Upload file nguồn */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   File nguồn (PSD, AI, Figma, PDF, video)
@@ -426,7 +477,7 @@ const UploadProductForm_Graphic = ({
                     <div className="text-center">
                       <div className="mb-3 inline-flex rounded-full bg-white p-3 shadow-lg transition-transform group-hover:scale-110">
                         {uploadingFile ? (
-                          <div className="h-6 w-6 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
+                          <div className="w-6 h-6 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                         ) : (
                           <svg
                             className="h-6 w-6 text-indigo-500"
@@ -508,7 +559,7 @@ const UploadProductForm_Graphic = ({
             </div>
           </div>
 
-          {/* Step 3: Tags & Liên kết - Đồ họa (thay github/demo bằng behance/drive) */}
+          {/* Step 3: Tags & Liên kết */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 3
@@ -522,7 +573,7 @@ const UploadProductForm_Graphic = ({
               </h2>
             </div>
             <div className="space-y-6 p-6">
-              {/* Tags input - dùng cho phong cách/kỹ thuật */}
+              {/* Tags input */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Phong cách / kỹ thuật sử dụng
@@ -569,7 +620,6 @@ const UploadProductForm_Graphic = ({
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Behance / Dribbble */}
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
                     Behance / Dribbble
@@ -592,7 +642,6 @@ const UploadProductForm_Graphic = ({
                     </p>
                   )}
                 </div>
-                {/* Google Drive */}
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
                     Google Drive (file nguồn)
@@ -619,7 +668,7 @@ const UploadProductForm_Graphic = ({
             </div>
           </div>
 
-          {/* Navigation buttons - giống hệt CNTT */}
+          {/* Navigation buttons */}
           <div className="flex items-center justify-between gap-4">
             <button
               type="button"
@@ -627,6 +676,7 @@ const UploadProductForm_Graphic = ({
               className={`rounded-xl border-2 border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 ${
                 currentStep === 1 ? "invisible" : ""
               }`}
+              disabled={isSubmitting || loading}
             >
               ← Quay lại
             </button>
@@ -635,6 +685,7 @@ const UploadProductForm_Graphic = ({
                 type="button"
                 onClick={handleSaveDraft}
                 className="rounded-xl border-2 border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50"
+                disabled={isSubmitting || loading}
               >
                 Lưu nháp
               </button>
@@ -642,14 +693,19 @@ const UploadProductForm_Graphic = ({
                 type="button"
                 onClick={handleViewDraft}
                 className="rounded-xl border-2 border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50"
+                disabled={isSubmitting || loading}
               >
                 Xem nháp
               </button>
               {currentStep < 3 ? (
                 <button
                   type="button"
-                  onClick={handleNextStep}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNextStep();
+                  }}
                   className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 font-medium text-white shadow-lg transition hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
+                  disabled={isSubmitting || loading}
                 >
                   Tiếp theo
                   <svg
@@ -669,36 +725,35 @@ const UploadProductForm_Graphic = ({
               ) : (
                 <button
                   type="submit"
-                  disabled={loading || !isAllStepsCompleted() || !confirmed}
+                  disabled={
+                    isSubmitting ||
+                    loading ||
+                    !isAllStepsCompleted() ||
+                    !confirmed
+                  }
                   className={`flex items-center gap-2 rounded-xl px-8 py-3 font-medium shadow-lg hover:shadow-xl ${
-                    isAllStepsCompleted() && confirmed
+                    isAllStepsCompleted() &&
+                    confirmed &&
+                    !isSubmitting &&
+                    !loading
                       ? "bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700"
                       : "cursor-not-allowed bg-gray-300 text-gray-500"
                   }`}
                 >
-                  {loading ? (
-                    <>
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                      Đang gửi...
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      Gửi duyệt
-                    </>
-                  )}
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Gửi duyệt
                 </button>
               )}
             </div>
@@ -720,6 +775,7 @@ const UploadProductForm_Graphic = ({
                   checked={confirmed}
                   onChange={(e) => setConfirmed(e.target.checked)}
                   className="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                  disabled={isSubmitting || loading}
                 />
                 <label htmlFor="confirmCheck">
                   Tôi đã đọc và xác nhận thông tin
@@ -738,7 +794,7 @@ const UploadProductForm_Graphic = ({
           </div>
         </form>
 
-        {/* Modal xem nháp - giống hệt CNTT */}
+        {/* Modal xem nháp */}
         {openViewDraft && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="w-full max-w-lg rounded-xl bg-white p-6">
