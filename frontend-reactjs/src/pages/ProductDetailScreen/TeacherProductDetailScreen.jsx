@@ -23,6 +23,7 @@ import LoadingSpinner from "../../components/common/LoadingOverlay";
 import { confirmToast } from "../../components/common/ConfirmToast";
 import BackButton from "../../components/common/BackButton";
 import { Icons } from "../../components/common/Icon";
+import { STATUS } from "../../utils/constants";
 
 const TeacherProductDetailScreen = () => {
   useTitle("Xem chi tiết sản phẩm - Giảng viên");
@@ -231,11 +232,11 @@ const TeacherProductDetailScreen = () => {
                   </h1>
                   <span
                     className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                      productData?.status === "approved"
+                      productData?.status === STATUS.APPROVED
                         ? "bg-green-500 text-white"
-                        : productData?.status === "pending"
+                        : productData?.status === STATUS.PENDING
                           ? "bg-yellow-500 text-white"
-                          : "bg-red-500 text-white"
+                          : "bg-red-500 text-w  hite"
                     }`}
                   >
                     {getStatusText(productData?.status)}

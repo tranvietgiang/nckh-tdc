@@ -40,17 +40,15 @@ class UploadController extends Controller
     {
         $product = $this->upload_service->upload($request->validated());
 
-        // ❌ nếu có lỗi (ảnh vi phạm)
-        if (isset($res['error']) && $res['error'] === true) {
+        if (isset($product['error']) && $product['error'] === true) {
             return response()->json([
                 'status' => 'error',
-                'message' => $res['message'],
-                'image_index' => $res['image_index'] ?? null,
-                'detail' => $res['detail'] ?? null
+                'message' => $product['message'],
+                'image_index' => $product['image_index'] ?? null,
+                'detail' => $product['detail'] ?? null
             ], 422);
         }
 
-        //  nếu OK
         return response()->json([
             'status' => 'success',
             'message' => 'Tạo sản phẩm thành công',
