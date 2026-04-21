@@ -4,6 +4,7 @@ import { confirmToast } from "../common/ConfirmToast";
 import useMajorName from "../../hooks/common/useMajorName";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../common/LoadingOverlay";
+import { Icons } from "../../components/common/Icon";
 
 const UploadProductForm_CNTT = ({
   formData,
@@ -295,7 +296,11 @@ const UploadProductForm_CNTT = ({
           >
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
               <h2 className="flex items-center gap-2 text-xl font-semibold text-white">
-                <span>🖼️</span> Hình ảnh & Files
+                <span>
+                  {" "}
+                  <Icons.image />
+                </span>{" "}
+                Hình ảnh & Files
               </h2>
             </div>
 
