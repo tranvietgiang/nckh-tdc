@@ -4,16 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProductTag extends Model
+class Graphic extends Model
 {
     //
-    protected $table = 'product_tags';
-    protected $primaryKey = 'product_tag_id';
+    protected $table = 'product_graphic';
+    protected $primaryKey = 'product_graphic_id';
     protected $keyType = 'int';
     public $incrementing = true;
 
     protected $fillable = [
         'product_id',
-        'tag_name',
+        'design_type',
+        'tools_used',
+        'file_source',
     ];
 }
