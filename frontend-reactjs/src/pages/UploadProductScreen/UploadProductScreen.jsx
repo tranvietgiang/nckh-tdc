@@ -168,13 +168,13 @@ const UploadProductScreen = () => {
                 <div className="flex flex-col items-center">
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold
-                    ${
-                      currentStep === step.id
-                        ? `bg-gradient-to-r ${gradient} text-white`
-                        : isValid && isTouched
-                          ? "bg-green-500 text-white"
-                          : "bg-gray-200 text-gray-500"
-                    }`}
+                      ${
+                        currentStep === step.id
+                          ? `bg-gradient-to-r ${gradient} text-white`
+                          : isValid && isTouched
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-200 text-gray-500"
+                      }`}
                   >
                     {step.icon}
                   </div>
@@ -210,7 +210,7 @@ const UploadProductScreen = () => {
 
             <div className="text-right">
               <div className="text-3xl font-bold">
-                {upload_loading ? "..." : upload_error ? "Lỗi" : upload_count}
+                {upload_loading ? "..." : upload_error ? 0 : upload_count}
               </div>
               <div className="text-sm text-white/70">sản phẩm đã đăng</div>
             </div>

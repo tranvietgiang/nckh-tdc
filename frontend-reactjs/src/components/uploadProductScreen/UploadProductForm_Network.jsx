@@ -42,13 +42,20 @@ const UploadProductForm_Network = ({
   const [confirmed, setConfirmed] = useState(false);
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
+
+  // State cho loading upload ảnh
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+
+  // State cho loading submit sản phẩm
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageUploadWithLoading = async (e) => {
     setUploadingImage(true);
     try {
       await handleImageUpload(e);
+    } catch (error) {
+      console.error("Upload image error:", error);
     } finally {
       setUploadingImage(false);
     }
@@ -58,8 +65,22 @@ const UploadProductForm_Network = ({
     setUploadingFile(true);
     try {
       await handleFileUpload(e);
+    } catch (error) {
+      console.error("Upload file error:", error);
     } finally {
       setUploadingFile(false);
+    }
+  };
+
+  // Wrap handleSubmit để hiển thị loading khi đăng sản phẩm
+  const handleSubmitWithLoading = async (e) => {
+    setIsSubmitting(true);
+    try {
+      await handleSubmit(e);
+    } catch (error) {
+      console.error("Submit error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,20 +88,34 @@ const UploadProductForm_Network = ({
 
   return (
     <>
+      {/* Loading overlay khi upload ảnh hoặc file */}
       {(uploadingImage || uploadingFile) && (
         <LoadingSpinner
-          fullScreen
+          fullScreen={true}
           message={
             uploadingImage ? "Đang tải ảnh lên..." : "Đang tải file lên..."
           }
+          size="md"
         />
       )}
+
+      {/* Loading overlay khi đăng sản phẩm */}
+      {(isSubmitting || loading) && (
+        <LoadingSpinner
+          fullScreen={true}
+          message="Đang gửi sản phẩm đến giảng viên..."
+          size="md"
+        />
+      )}
+
       <div>
         <form
           onKeyDown={(e) => {
             if (e.key === "Enter" && currentStep !== 3) e.preventDefault();
           }}
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            handleSubmitWithLoading(e);
+          }}
           className="space-y-6"
         >
           {/* Step 1: Thông tin cơ bản - Network */}
@@ -215,41 +250,59 @@ const UploadProductForm_Network = ({
 
               {/* Danh mục */}
               {isLoadingCategories ? (
-                <div className="flex justify-center p-4">
-                  Đang tải danh mục...
+                <div className="flex items-center justify-center p-4">
+                  <div className="text-center">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                    <p className="text-sm text-gray-500">
+                      Đang tải danh mục...
+                    </p>
+                  </div>
                 </div>
               ) : categoryError ? (
-                <p className="text-red-500">Lỗi tải danh mục</p>
+                <p className="text-sm text-red-500">Lỗi tải danh mục</p>
               ) : (
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
                     Danh mục <span className="text-red-500">*</span>
                   </label>
                   <div className="space-y-2">
-                    {(categories || []).map((cat) => (
-                      <button
-                        key={cat.cate_id}
-                        type="button"
-                        onClick={() => handleSelectCategory(cat.cate_id)}
-                        className={`flex w-full items-center gap-3 rounded-xl border-2 p-4 transition-all ${
-                          formData.cate_id === cat.cate_id
-                            ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-                          🗂️
-                        </div>
-                        <div className="flex-1 text-left">
-                          <p className="font-medium text-gray-700">
-                            {cat.category_name}
-                          </p>
-                          {formData.cate_id === cat.cate_id && (
-                            <p className="text-xs text-blue-600">✔ Đang chọn</p>
-                          )}
-                        </div>
-                      </button>
-                    ))}
+                    {(categories || []).map((cat) => {
+                      const isSelected = formData.cate_id === cat.cate_id;
+                      return (
+                        <button
+                          key={cat.cate_id}
+                          type="button"
+                          onClick={() => handleSelectCategory(cat.cate_id)}
+                          className={`flex w-full items-center gap-3 rounded-xl border-2 p-4 transition-all ${
+                            isSelected
+                              ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100"
+                              : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          <div
+                            className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                              isSelected ? "bg-blue-200" : "bg-gray-100"
+                            }`}
+                          >
+                            <span className="text-xl">🗂️</span>
+                          </div>
+                          <div className="flex-1 text-left">
+                            <p
+                              className={`font-medium ${
+                                isSelected ? "text-blue-700" : "text-gray-700"
+                              }`}
+                            >
+                              {cat.category_name}
+                            </p>
+                            {isSelected && (
+                              <p className="mt-0.5 text-xs text-blue-600">
+                                ✔ Đang chọn
+                              </p>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                   {errors.cate_id && (
                     <p className="mt-2 text-sm text-red-600">
@@ -300,7 +353,7 @@ const UploadProductForm_Network = ({
                     <div className="text-center">
                       <div className="mb-4 inline-flex rounded-full bg-white p-4 shadow-lg transition-transform group-hover:scale-110">
                         {uploadingImage ? (
-                          <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></div>
+                          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                         ) : (
                           <svg
                             className="h-8 w-8 text-purple-500"
@@ -428,7 +481,7 @@ const UploadProductForm_Network = ({
                     <div className="text-center">
                       <div className="mb-3 inline-flex rounded-full bg-white p-3 shadow-lg transition-transform group-hover:scale-110">
                         {uploadingFile ? (
-                          <div className="h-6 w-6 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
+                          <div className="w-6 h-6 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                         ) : (
                           <svg
                             className="h-6 w-6 text-indigo-500"
@@ -629,6 +682,7 @@ const UploadProductForm_Network = ({
               className={`rounded-xl border-2 border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 ${
                 currentStep === 1 ? "invisible" : ""
               }`}
+              disabled={isSubmitting || loading}
             >
               ← Quay lại
             </button>
@@ -637,6 +691,7 @@ const UploadProductForm_Network = ({
                 type="button"
                 onClick={handleSaveDraft}
                 className="rounded-xl border-2 border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50"
+                disabled={isSubmitting || loading}
               >
                 Lưu nháp
               </button>
@@ -644,14 +699,19 @@ const UploadProductForm_Network = ({
                 type="button"
                 onClick={handleViewDraft}
                 className="rounded-xl border-2 border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50"
+                disabled={isSubmitting || loading}
               >
                 Xem nháp
               </button>
               {currentStep < 3 ? (
                 <button
                   type="button"
-                  onClick={handleNextStep}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNextStep();
+                  }}
                   className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 font-medium text-white shadow-lg transition hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
+                  disabled={isSubmitting || loading}
                 >
                   Tiếp theo
                   <svg
@@ -671,36 +731,35 @@ const UploadProductForm_Network = ({
               ) : (
                 <button
                   type="submit"
-                  disabled={loading || !isAllStepsCompleted() || !confirmed}
+                  disabled={
+                    isSubmitting ||
+                    loading ||
+                    !isAllStepsCompleted() ||
+                    !confirmed
+                  }
                   className={`flex items-center gap-2 rounded-xl px-8 py-3 font-medium shadow-lg hover:shadow-xl ${
-                    isAllStepsCompleted() && confirmed
+                    isAllStepsCompleted() &&
+                    confirmed &&
+                    !isSubmitting &&
+                    !loading
                       ? "bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700"
                       : "cursor-not-allowed bg-gray-300 text-gray-500"
                   }`}
                 >
-                  {loading ? (
-                    <>
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                      Đang gửi...
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      Gửi duyệt
-                    </>
-                  )}
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Gửi duyệt
                 </button>
               )}
             </div>
@@ -722,6 +781,7 @@ const UploadProductForm_Network = ({
                   checked={confirmed}
                   onChange={(e) => setConfirmed(e.target.checked)}
                   className="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                  disabled={isSubmitting || loading}
                 />
                 <label htmlFor="confirmCheck">
                   Tôi đã đọc và xác nhận thông tin
