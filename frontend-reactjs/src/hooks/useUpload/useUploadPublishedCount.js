@@ -17,7 +17,7 @@ export default function useUploadPublishedCount() {
         // backend bạn trả về: { success, data }
         setCount(res.data);
       } catch (err) {
-        console.error(err);
+        // console.error(err);
 
         if (
           err.response?.status === 404 ||

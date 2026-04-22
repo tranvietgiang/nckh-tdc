@@ -13,7 +13,7 @@ export default function useTeacherReject() {
     try {
       const res = await teacherApi.reject(data);
 
-      console.log(res);
+      // console.log(res);
       if (!res.result) {
         toast.error(res?.message);
         return;
