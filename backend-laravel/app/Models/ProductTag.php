@@ -14,6 +14,6 @@ class ProductTag extends Model
 
     protected $fillable = [
         'product_id',
-        'tag_id'
+        'tag_name',
     ];
 }
