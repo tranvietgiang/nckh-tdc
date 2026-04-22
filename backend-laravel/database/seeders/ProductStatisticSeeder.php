@@ -9,43 +9,20 @@ class ProductStatisticSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('product_statistics')->insert([
-            [
-                'product_id' => 1,
-                'views' => 1234,
-                'likes' => 89,
-                'downloads' => 89,
-                'shares' => 89,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'product_id' => 2,
-                'views' => 2341,
-                'likes' => 156,
-                'downloads' => 89,
-                'shares' => 89,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'product_id' => 3,
-                'views' => 0,
-                'likes' => 0,
-                'downloads' => 89,
-                'shares' => 89,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'product_id' => 4,
-                'views' => 0,
-                'likes' => 0,
-                'downloads' => 89,
-                'shares' => 89,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        $rows = [];
+
+        for ($productId = 1; $productId <= 40; $productId++) {
+            $rows[] = [
+                'product_id'   => $productId,
+                'views'        => rand(100, 5000),
+                'likes'        => rand(10, 500),
+                'downloads'    => rand(0, 300),
+                'shares'       => rand(0, 200),
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ];
+        }
+
+        DB::table('product_statistics')->insert($rows);
     }
 }

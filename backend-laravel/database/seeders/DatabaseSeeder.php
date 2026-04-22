@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             ProductImageSeeder::class,
             ProductFileSeeder::class,
-            TagSeeder::class,
             ProductTagSeeder::class,
             ProductStatisticSeeder::class,
         ]);

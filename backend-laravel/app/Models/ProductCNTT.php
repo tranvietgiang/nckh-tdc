@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CNTT extends Model
+class ProductCNTT extends Model
 {
     //
     protected $table = 'product_cntt';
@@ -17,5 +17,7 @@ class CNTT extends Model
         'programming_language',
         'framework',
         'database_used',
+        'github_link',
+        'demo_link',
     ];
 }
