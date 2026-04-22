@@ -9,70 +9,153 @@ class ProductFileSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('product_files')->insert([
-            // product 1
-            [
-                'product_file_id' => 1,
-                'product_id' => 1,
-                'file_url' => '/storage/products/taskflow/report.pdf',
-                'file_type' => 'pdf',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'product_file_id' => 2,
-                'product_id' => 1,
-                'file_url' => '/storage/products/taskflow/source.zip',
-                'file_type' => 'zip',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        $rows = [];
+        $fileId = 1;
 
-            // product 2
-            [
-                'product_file_id' => 3,
-                'product_id' => 2,
-                'file_url' => '/storage/products/techstore/report.pdf',
+        /*
+        |--------------------------------------------------------------------------
+        | Product 1 -> 10 : AI
+        |--------------------------------------------------------------------------
+        */
+
+        for ($productId = 1; $productId <= 10; $productId++) {
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/ai/product_$productId/report.pdf",
                 'file_type' => 'pdf',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'product_file_id' => 4,
-                'product_id' => 2,
-                'file_url' => '/storage/products/techstore/source.zip',
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/ai/product_$productId/model.zip",
                 'file_type' => 'zip',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'product_file_id' => 5,
-                'product_id' => 2,
-                'file_url' => '/storage/products/techstore/slide.pptx',
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/ai/product_$productId/demo.pptx",
                 'file_type' => 'pptx',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
+            ];
+        }
 
-            // product 3
-            [
-                'product_file_id' => 6,
-                'product_id' => 3,
-                'file_url' => '/storage/products/easyenglish/report.pdf',
+        /*
+        |--------------------------------------------------------------------------
+        | Product 11 -> 20 : CNTT
+        |--------------------------------------------------------------------------
+        */
+
+        for ($productId = 11; $productId <= 20; $productId++) {
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/cntt/product_$productId/report.pdf",
                 'file_type' => 'pdf',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
+            ];
 
-            // product 4
-            [
-                'product_file_id' => 7,
-                'product_id' => 4,
-                'file_url' => '/storage/products/flappybird/source.zip',
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/cntt/product_$productId/source.zip",
                 'file_type' => 'zip',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-        ]);
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/cntt/product_$productId/slide.pptx",
+                'file_type' => 'pptx',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Product 21 -> 30 : MMT
+        |--------------------------------------------------------------------------
+        */
+
+        for ($productId = 21; $productId <= 30; $productId++) {
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/mmt/product_$productId/report.pdf",
+                'file_type' => 'pdf',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/mmt/product_$productId/config.zip",
+                'file_type' => 'zip',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/mmt/product_$productId/topology.pkt",
+                'file_type' => 'pkt',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Product 31 -> 40 : Graphic
+        |--------------------------------------------------------------------------
+        */
+
+        for ($productId = 31; $productId <= 40; $productId++) {
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/graphic/product_$productId/report.pdf",
+                'file_type' => 'pdf',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/graphic/product_$productId/source.psd",
+                'file_type' => 'psd',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            $rows[] = [
+                'product_file_id' => $fileId++,
+                'product_id' => $productId,
+                'file_url' => "/storage/products/graphic/product_$productId/mockup.ai",
+                'file_type' => 'ai',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        DB::table('product_files')->insert($rows);
     }
 }

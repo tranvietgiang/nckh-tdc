@@ -2,35 +2,42 @@
 
 namespace Database\Seeders;
 
-use App\Models\Major;
 use Illuminate\Database\Seeder;
+use App\Models\Major;
 
 class MajorSeeder extends Seeder
 {
     public function run(): void
     {
-        Major::create([
-            'major_code' => 'CNTT',
-            'major_name' => 'Công nghệ thông tin',
-            'description' => 'Ngành đào tạo về lập trình, hệ thống thông tin, mạng máy tính và phần mềm.'
-        ]);
-
-        Major::create([
-            'major_code' => 'KTPM',
-            'major_name' => 'Kỹ thuật phần mềm',
-            'description' => 'Ngành tập trung vào phân tích, thiết kế, phát triển và kiểm thử phần mềm.'
-        ]);
-
-        Major::create([
-            'major_code' => 'HTTT',
-            'major_name' => 'Hệ thống thông tin',
-            'description' => 'Ngành đào tạo về quản lý, phân tích và xây dựng hệ thống thông tin cho doanh nghiệp.'
-        ]);
-
-        Major::create([
-            'major_code' => 'MMT',
-            'major_name' => 'Mạng máy tính và truyền thông dữ liệu',
-            'description' => 'Ngành đào tạo về quản trị mạng, bảo mật, hạ tầng và truyền thông dữ liệu.'
+        Major::insert([
+            [
+                'major_code' => 'AI',
+                'major_name' => 'Artificial Intelligence',
+                'description' => 'Ngành trí tuệ nhân tạo và học máy.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'major_code' => 'CNTT',
+                'major_name' => 'Công nghệ thông tin',
+                'description' => 'Ngành phát triển phần mềm, website, hệ thống thông tin.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'major_code' => 'MMT',
+                'major_name' => 'Mạng máy tính',
+                'description' => 'Ngành quản trị mạng, an ninh mạng và hạ tầng hệ thống.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'major_code' => 'TKDH',
+                'major_name' => 'Thiết kế đồ họa',
+                'description' => 'Ngành thiết kế hình ảnh, thương hiệu và giao diện số.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

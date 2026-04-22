@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MMT extends Model
+class ProductMMT extends Model
 {
     //
 
@@ -19,5 +19,7 @@ class MMT extends Model
         'network_protocol',
         'topology_type',
         'config_file',
+        'github_link',
+        'demo_link',
     ];
 }

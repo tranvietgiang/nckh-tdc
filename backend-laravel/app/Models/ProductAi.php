@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Ai extends Model
+class ProductAi extends Model
 {
     //
     protected $table = 'product_ai';
@@ -19,6 +19,8 @@ class Ai extends Model
         'language',
         'dataset_used',
         'accuracy_score',
+        'github_link',
+        'demo_link',
     ];
 
     protected $casts = [

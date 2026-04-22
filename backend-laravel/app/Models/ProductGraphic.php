@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Graphic extends Model
+class ProductGraphic extends Model
 {
     //
     protected $table = 'product_graphic';
@@ -16,6 +16,8 @@ class Graphic extends Model
         'product_id',
         'design_type',
         'tools_used',
-        'file_source',
+        'drive_link',
+        'behance_link',
+        'demo_link',
     ];
 }
