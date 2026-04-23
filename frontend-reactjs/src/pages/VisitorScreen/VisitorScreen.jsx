@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 // ========== ICONS ==========
 const LogoIcon = () => (
   <img
@@ -175,7 +175,7 @@ const VisitorScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMajor, setSelectedMajor] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
-
+  const navigate = useNavigate();
   const handleLike = (id) => {
     setLikedProducts((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -248,7 +248,10 @@ const VisitorScreen = () => {
 
             {/* Buttons */}
             <div className="flex items-center gap-3">
-              <button className="px-5 py-2 text-[#003087] border border-[#003087] rounded-md font-medium text-sm hover:bg-[#003087] hover:text-white transition-all">
+              <button
+                onClick={() => navigate("/nckh-login")}
+                className="px-5 py-2 text-[#003087] border border-[#003087] rounded-md font-medium text-sm hover:bg-[#003087] hover:text-white transition-all"
+              >
                 Đăng nhập
               </button>
               <button className="px-5 py-2 bg-[#C8102E] text-white rounded-full font-semibold text-sm shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:scale-105 transition-all duration-200">
