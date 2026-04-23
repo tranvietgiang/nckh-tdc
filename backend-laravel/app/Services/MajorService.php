@@ -18,4 +18,9 @@ class MajorService
 
         return $this->majorRepository->getNameById($majorId);
     }
+
+    public function getAllMajors()
+    {
+        return $this->majorRepository->all();
+    }
 }
