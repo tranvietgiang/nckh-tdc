@@ -1,12 +1,7 @@
 import React, { useState } from "react";
+import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
-import {
-  LogoIcon,
-  SearchIcon,
-  EyeIcon,
-  FacebookIcon,
-  YoutubeIcon,
-} from "../../components/common/Icon";
+// ========== ICONS ==========
 
 const HeartIcon = ({ filled = false }) => (
   <svg
@@ -117,7 +112,6 @@ const products = [
     score: 8.9,
   },
 ];
-
 // ========== MAIN COMPONENT ==========
 const VisitorScreen = () => {
   const [likedProducts, setLikedProducts] = useState({});
@@ -165,7 +159,7 @@ const VisitorScreen = () => {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <LogoIcon />
+              <Icons.Logo />
               <div className="hidden sm:block">
                 <h1 className="text-lg md:text-xl font-bold text-[#003087] leading-tight">
                   Trưng bày sản phẩm sinh viên
@@ -257,7 +251,7 @@ const VisitorScreen = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
           <div className="bg-white rounded-lg shadow-md border border-gray-200 p-2 md:p-3 flex flex-col md:flex-row gap-3">
             <div className="flex-1 flex items-center bg-gray-50 rounded-md px-4 py-2.5 gap-2">
-              <SearchIcon />
+              <Icons.Search />
               <input
                 type="text"
                 placeholder="Tìm kiếm theo tên sản phẩm, tác giả, mô tả..."
@@ -421,14 +415,14 @@ const VisitorScreen = () => {
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                     <div className="flex items-center gap-3 text-gray-500 text-xs">
                       <div className="flex items-center gap-1">
-                        <EyeIcon />
+                        <Icons.Eye />
                         <span>{product.views}</span>
                       </div>
                       <button
                         onClick={() => handleLike(product.id)}
                         className="flex items-center gap-1 hover:text-[#C8102E] transition"
                       >
-                        <HeartIcon filled={likedProducts[product.id]} />
+                        <Icons.Heart filled={likedProducts[product.id]} />
                         <span>
                           {product.likes + (likedProducts[product.id] ? 1 : 0)}
                         </span>
@@ -462,7 +456,7 @@ const VisitorScreen = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <LogoIcon />
+                <Icons.Logo />
                 <div>
                   <div className="font-bold text-sm">Trường Cao Đẳng</div>
                   <div className="font-bold text-sm">Công Nghệ Thủ Đức</div>
@@ -516,13 +510,13 @@ const VisitorScreen = () => {
                   href="#"
                   className="bg-white/10 p-1.5 rounded-full hover:bg-white/20 transition"
                 >
-                  <FacebookIcon />
+                  <Icons.Facebook />
                 </a>
                 <a
                   href="#"
                   className="bg-white/10 p-1.5 rounded-full hover:bg-white/20 transition"
                 >
-                  <YoutubeIcon />
+                  <Icons.Youtube />
                 </a>
               </div>
             </div>
