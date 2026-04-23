@@ -25,4 +25,11 @@ class MajorController extends Controller
             'major_name' => $result
         ]);
     }
+
+    public function getMajorAll()
+    {
+        $result = $this->majorService->getAllMajors();
+
+        return response()->json($result);
+    }
 }

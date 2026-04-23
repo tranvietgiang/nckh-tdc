@@ -17,4 +17,10 @@ class MajorRepository
     {
         return Major::where('major_id', $majorId)->exists();
     }
+
+    // lấy tất cả các ngành
+    public function all()
+    {
+        return Major::all();
+    }
 }
