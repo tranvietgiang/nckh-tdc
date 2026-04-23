@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
+import useMajorAll from "../../hooks/common/useMajorAll";
+import useVisitorProduct from "../../hooks/useProduct/useVisitorProduct";
 // ========== ICONS ==========
 
 const HeartIcon = ({ filled = false }) => (
@@ -18,7 +20,12 @@ const HeartIcon = ({ filled = false }) => (
     />
   </svg>
 );
-
+const majorIcons = {
+  "Artificial Intelligence": "🧠",
+  "Công nghệ thông tin": "💻",
+  "Mạng máy tính": "🌐",
+  "Thiết kế đồ họa": "🎨",
+};
 // ========== MOCK DATA ==========
 const products = [
   {
@@ -37,7 +44,6 @@ const products = [
     views: 1247,
     likes: 89,
     advisor: "TS. Lê Văn Hoàng",
-    score: 9.2,
   },
   {
     id: 2,
@@ -55,7 +61,6 @@ const products = [
     views: 892,
     likes: 56,
     advisor: "ThS. Phạm Quốc Việt",
-    score: 8.7,
   },
   {
     id: 3,
@@ -73,7 +78,6 @@ const products = [
     views: 2103,
     likes: 142,
     advisor: "TS. Nguyễn Thành Nam",
-    score: 9.5,
   },
   {
     id: 4,
@@ -91,7 +95,6 @@ const products = [
     views: 567,
     likes: 103,
     advisor: "ThS. Trần Thị Thu Hà",
-    score: 9.0,
   },
   {
     id: 5,
@@ -109,7 +112,6 @@ const products = [
     views: 734,
     likes: 67,
     advisor: "PGS.TS. Hoàng Văn Tuấn",
-    score: 8.9,
   },
 ];
 // ========== MAIN COMPONENT ==========
@@ -119,6 +121,8 @@ const VisitorScreen = () => {
   const [selectedMajor, setSelectedMajor] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const navigate = useNavigate();
+  const { majorAll, loadingMajorAll } = useMajorAll();
+  const { productVisitor, loadingVisitor, errorVisitor } = useVisitorProduct();
   const handleLike = (id) => {
     setLikedProducts((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -150,7 +154,11 @@ const VisitorScreen = () => {
     { value: "45", label: "Giảng viên hướng dẫn" },
     { value: "24", label: "Giải thưởng đạt được" },
   ];
+  const activeClass =
+    "px-4 py-2 font-medium text-sm text-[#003087] border-b-2 border-[#003087]";
 
+  const normalClass =
+    "px-4 py-2 font-medium text-sm text-gray-500 hover:text-[#003087] border-b-2 border-transparent";
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* ========== HEADER ========== */}
@@ -264,14 +272,21 @@ const VisitorScreen = () => {
               className="px-4 py-2.5 bg-gray-50 rounded-md outline-none text-gray-600 text-sm border-0 cursor-pointer"
               value={selectedMajor}
               onChange={(e) => setSelectedMajor(e.target.value)}
+              disabled={loadingMajorAll}
             >
-              <option value="all">Tất cả ngành</option>
-              <option value="Công nghệ thông tin">
-                💻 Công nghệ thông tin
-              </option>
-              <option value="Trí tuệ nhân tạo">🧠 Trí tuệ nhân tạo</option>
-              <option value="Mạng máy tính">🌐 Mạng máy tính</option>
-              <option value="Thiết kế đồ họa">🎨 Thiết kế đồ họa</option>
+              {loadingMajorAll ? (
+                <option>Đang tải ngành...</option>
+              ) : (
+                <>
+                  <option value="all">Tất cả ngành</option>
+
+                  {majorAll?.map((major) => (
+                    <option key={major.major_id} value={major.major_id}>
+                      {majorIcons[major.major_name]} {major.major_name}
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
             <select
               className="px-4 py-2.5 bg-gray-50 rounded-md outline-none text-gray-600 text-sm border-0 cursor-pointer"
@@ -293,54 +308,22 @@ const VisitorScreen = () => {
           <div className="flex flex-wrap justify-center gap-1">
             <button
               onClick={() => setSelectedMajor("all")}
-              className={`px-4 py-2 font-medium text-sm transition-all duration-200 ${
-                selectedMajor === "all"
-                  ? "text-[#003087] border-b-2 border-[#003087]"
-                  : "text-gray-500 hover:text-[#003087] border-b-2 border-transparent"
-              }`}
+              className={selectedMajor === "all" ? activeClass : normalClass}
             >
               📌 Tất cả
             </button>
-            <button
-              onClick={() => setSelectedMajor("Công nghệ thông tin")}
-              className={`px-4 py-2 font-medium text-sm transition-all duration-200 ${
-                selectedMajor === "Công nghệ thông tin"
-                  ? "text-[#003087] border-b-2 border-[#003087]"
-                  : "text-gray-500 hover:text-[#003087] border-b-2 border-transparent"
-              }`}
-            >
-              💻 CNTT
-            </button>
-            <button
-              onClick={() => setSelectedMajor("Trí tuệ nhân tạo")}
-              className={`px-4 py-2 font-medium text-sm transition-all duration-200 ${
-                selectedMajor === "Trí tuệ nhân tạo"
-                  ? "text-[#003087] border-b-2 border-[#003087]"
-                  : "text-gray-500 hover:text-[#003087] border-b-2 border-transparent"
-              }`}
-            >
-              🧠 AI
-            </button>
-            <button
-              onClick={() => setSelectedMajor("Mạng máy tính")}
-              className={`px-4 py-2 font-medium text-sm transition-all duration-200 ${
-                selectedMajor === "Mạng máy tính"
-                  ? "text-[#003087] border-b-2 border-[#003087]"
-                  : "text-gray-500 hover:text-[#003087] border-b-2 border-transparent"
-              }`}
-            >
-              🌐 Mạng máy tính
-            </button>
-            <button
-              onClick={() => setSelectedMajor("Thiết kế đồ họa")}
-              className={`px-4 py-2 font-medium text-sm transition-all duration-200 ${
-                selectedMajor === "Thiết kế đồ họa"
-                  ? "text-[#003087] border-b-2 border-[#003087]"
-                  : "text-gray-500 hover:text-[#003087] border-b-2 border-transparent"
-              }`}
-            >
-              🎨 Đồ họa
-            </button>
+
+            {majorAll?.map((major) => (
+              <button
+                key={major.major_id}
+                onClick={() => setSelectedMajor(major.major_id)}
+                className={
+                  selectedMajor === major.major_id ? activeClass : normalClass
+                }
+              >
+                {majorIcons[major.major_name]} {major.major_code}
+              </button>
+            ))}
           </div>
         </section>
 
@@ -366,9 +349,6 @@ const VisitorScreen = () => {
                     <span className="bg-gray-800/80 text-white text-xs px-2 py-1 rounded">
                       {product.type}
                     </span>
-                  </div>
-                  <div className="absolute top-3 right-3 bg-yellow-500 text-white text-xs px-2 py-1 rounded font-bold">
-                    {product.score}/10
                   </div>
                 </div>
 
@@ -407,7 +387,7 @@ const VisitorScreen = () => {
 
                   {/* Advisor */}
                   <div className="text-xs text-gray-500 mb-3">
-                    <span className="text-gray-400">👨‍🏫 GVHD:</span>{" "}
+                    <span className="text-gray-400">👨‍🏫 GVD:</span>{" "}
                     {product.advisor}
                   </div>
 

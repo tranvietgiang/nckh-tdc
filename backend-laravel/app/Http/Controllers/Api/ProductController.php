@@ -54,4 +54,12 @@ class ProductController extends Controller
             $result
         );
     }
+
+    public function getProductsVisitor()
+    {
+        $result = $this->productService->getProductsVisitor();
+        return response()->json(
+            $result
+        );
+    }
 }

@@ -31,7 +31,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 */
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/major/{id}', [MajorController::class, 'majorName']);
-    Route::get('/majors', [MajorController::class, 'getMajorAll']);
 });
 
 /*
@@ -79,3 +78,13 @@ Route::post('/upload', [UploadController::class, 'upload'])
 |--------------------------------------------------------------------------
 */
 Route::get('/category/all', [CategoryController::class, 'getAllCategories'])->middleware('auth:sanctum');
+
+/*
+|--------------------------------------------------------------------------
+| Visitor ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::prefix('visitor')->group(function () {
+    Route::get('/products', [ProductController::class, 'getProductsVisitor']);
+    Route::get('/majors', [MajorController::class, 'getMajorAll']);
+});
