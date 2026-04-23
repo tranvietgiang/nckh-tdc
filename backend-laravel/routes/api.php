@@ -29,8 +29,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 | Majors ROUTES
 |--------------------------------------------------------------------------
 */
-
-Route::get('/major/{id}', [MajorController::class, 'majorName'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/major/{id}', [MajorController::class, 'majorName']);
+    Route::get('/majors', [MajorController::class, 'getMajorAll']);
+});
 
 /*
 |--------------------------------------------------------------------------
