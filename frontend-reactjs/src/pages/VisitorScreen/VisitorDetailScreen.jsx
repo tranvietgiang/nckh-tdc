@@ -35,28 +35,6 @@ const VisitorDetailScreen = () => {
       title: "Hệ thống quản lý thực tập doanh nghiệp thông minh",
       description:
         "Nền tảng kết nối sinh viên với doanh nghiệp, theo dõi tiến độ thực tập và đánh giá kết quả tự động",
-      fullDescription: `
-        ## 📌 Tổng quan dự án
-        
-        Dự án xây dựng hệ thống quản lý thực tập cho sinh viên Khoa Công Nghệ Thông Tin, giúp kết nối doanh nghiệp và nhà trường.
-        
-        ## 🎯 Mục tiêu
-        - Tự động hóa quy trình đăng ký thực tập
-        - Theo dõi tiến độ thực tập theo thời gian thực
-        - Đánh giá kết quả thực tập trực tuyến
-        - Báo cáo thống kê chi tiết
-        
-        ## 🛠️ Công nghệ sử dụng
-        - Frontend: ReactJS, TailwindCSS, Redux Toolkit
-        - Backend: Spring Boot, Java
-        - Database: PostgreSQL, Redis
-        - Deployment: Docker, AWS EC2
-        
-        ## 📊 Kết quả đạt được
-        - 500+ sinh viên sử dụng
-        - 50+ doanh nghiệp tham gia
-        - Giảm 70% thời gian xử lý thủ tục
-      `,
       thumbnail:
         "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop",
       images: [
@@ -115,27 +93,6 @@ const VisitorDetailScreen = () => {
       title: "Trợ lý ảo AI hỗ trợ học tập thông minh",
       description:
         "Chatbot sử dụng NLP và Machine Learning để trả lời câu hỏi, gợi ý tài liệu học tập cho sinh viên",
-      fullDescription: `
-        ## 📌 Tổng quan dự án
-        
-        Trợ lý ảo AI giúp sinh viên tra cứu thông tin học tập, lịch thi, tài liệu môn học 24/7.
-        
-        ## 🎯 Mục tiêu
-        - Hỗ trợ sinh viên tra cứu thông tin nhanh chóng
-        - Gợi ý tài liệu học tập dựa trên sở thích
-        - Tích hợp với hệ thống đào tạo của trường
-        
-        ## 🛠️ Công nghệ sử dụng
-        - Frontend: ReactJS, TailwindCSS
-        - Backend: Python, FastAPI
-        - AI: BERT, TensorFlow, PyTorch
-        - Database: MongoDB, Elasticsearch
-        
-        ## 📊 Kết quả đạt được
-        - Xử lý 10,000+ câu hỏi mỗi ngày
-        - Độ chính xác 96%
-        - Thời gian phản hồi trung bình 1.5 giây
-      `,
       thumbnail:
         "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
       images: [
@@ -553,7 +510,6 @@ const VisitorDetailScreen = () => {
             <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="flex border-b border-gray-200">
                 {[
-                  { id: "overview", label: "📋 Tổng quan" },
                   { id: "tech", label: "🛠️ Công nghệ" },
                   { id: "team", label: "👥 Nhóm thực hiện" },
                   { id: "feedback", label: "💬 Đánh giá" },
