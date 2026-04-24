@@ -20,13 +20,15 @@ function AppRoutes() {
         />
 
         <Route path="/nckh-visitor" element={<VisitorScreen />} />
-        <Route path="/nckh-visitor-detail" element={<VisitorDetailScreen />} />
+
+        <Route
+          path="/visitor-product-detail"
+          element={<VisitorDetailScreen />}
+        />
 
         <Route path="/nckh-profile" element={<Profile />} />
 
-        <Route path="/404" element={<NotFoundPage />} />
-
-        <Route path="/*" element={<RoleRoutes />} />
+        <Route path="*" element={<RoleRoutes />} />
       </Routes>
     </BrowserRouter>
   );

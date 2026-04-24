@@ -46,6 +46,10 @@ const VisitorScreen = () => {
   const { majorAll, loadingMajorAll } = useMajorAll();
   const { productVisitor, loadingVisitor, errorVisitor } = useVisitorProduct();
 
+  const handleViewDetail = (id) => {
+    navigate("/visitor-product-detail", { state: { productId: id } });
+  };
+
   const handleLike = (id) => {
     setLikedProducts((prev) => ({
       ...prev,
@@ -148,7 +152,7 @@ const VisitorScreen = () => {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate("/nckh-login")}
+                onClick={() => navigate("/login")}
                 className="px-5 py-2 text-[#003087] border border-[#003087] rounded-md font-medium text-sm hover:bg-[#003087] hover:text-white transition-all"
               >
                 Đăng nhập
@@ -380,7 +384,7 @@ const VisitorScreen = () => {
                       </div>
 
                       <button
-                        onClick={() => navigate(`/product/${product.id}`)}
+                        onClick={() => handleViewDetail(product?.id)}
                         className="px-3 py-1 bg-white border border-[#003087] text-[#003087] text-xs rounded-md hover:bg-[#003087] hover:text-white transition"
                       >
                         Xem chi tiết

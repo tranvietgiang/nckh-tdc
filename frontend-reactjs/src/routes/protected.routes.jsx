@@ -66,8 +66,7 @@ function RoleRoutes() {
       />
 
       {/* 404 Page - luôn đặt ở cuối cùng */}
-      <Route path="/not-found" element={<NotFoundScreen />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<NotFoundScreen />} />
     </Routes>
   );
 }

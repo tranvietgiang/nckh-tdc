@@ -9,7 +9,8 @@ import { Icons } from "../../components/common/Icon";
 const VisitorDetailScreen = () => {
   const { state } = useLocation();
   const id = state?.productId;
-  // const id = 1; // Mock ID tạm thời
+  console.log(id);
+
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
