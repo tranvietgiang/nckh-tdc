@@ -29,9 +29,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 | Majors ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/major/{id}', [MajorController::class, 'majorName']);
-});
+Route::middleware('auth:sanctum')->group(function () {});
+Route::get('/major/{id}', [MajorController::class, 'majorName']);
 
 /*
 |--------------------------------------------------------------------------
