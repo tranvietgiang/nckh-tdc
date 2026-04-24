@@ -21,7 +21,7 @@ const StudentScreen = () => {
   const { products, loading, error } = useProductAll();
   const currentStudent = mapCurrentStudent(user, majorName);
 
-  const theme = getMajorTheme(user?.major_id);
+  const theme = getMajorTheme(majorName);
 
   const productsArray = useMemo(
     () => (Array.isArray(products) ? products : []),
