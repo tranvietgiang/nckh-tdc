@@ -22,7 +22,7 @@ const StudentScreen = () => {
   const currentStudent = mapCurrentStudent(user, majorName);
 
   const theme = getMajorTheme(user?.major_id);
-  console.log(theme);
+
   const productsArray = useMemo(
     () => (Array.isArray(products) ? products : []),
     [products],

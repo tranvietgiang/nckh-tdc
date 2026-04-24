@@ -118,6 +118,18 @@ export const getMajorTheme = (majorId) => {
         tabHover: "hover:text-purple-600",
       };
     default:
-      return null;
+      return {
+        headerGradient: "from-blue-600 to-indigo-600",
+        buttonBg: "bg-blue-600 hover:bg-blue-700",
+        badgeBg: "bg-blue-700",
+        textColor: "text-blue-700",
+        hoverText: "hover:text-blue-700",
+        hoverBg: "hover:bg-blue-50",
+        statIconBg: "bg-blue-500/30",
+        statIconHover: "group-hover:bg-blue-500/40",
+        statText: "text-blue-100",
+        tabActive: "text-blue-600",
+        tabHover: "hover:text-blue-600",
+      };
   }
 };
