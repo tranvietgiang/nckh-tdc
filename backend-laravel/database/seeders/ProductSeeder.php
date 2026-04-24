@@ -37,7 +37,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'TensorFlow',
                 'language' => 'Python',
                 'dataset_used' => 'Custom Face Dataset',
-                'accuracy_score' => 95.40,
             ],
             [
                 'title' => 'Nhận diện biển số xe thông minh',
@@ -46,7 +45,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'PyTorch',
                 'language' => 'Python',
                 'dataset_used' => 'Vietnam Plate Dataset',
-                'accuracy_score' => 93.80,
             ],
             [
                 'title' => 'Chatbot tư vấn tuyển sinh',
@@ -55,7 +53,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'OpenAI',
                 'language' => 'Python',
                 'dataset_used' => 'Training FAQ',
-                'accuracy_score' => 92.10,
             ],
             [
                 'title' => 'Dự đoán giá nhà bằng Machine Learning',
@@ -64,7 +61,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'Scikit-learn',
                 'language' => 'Python',
                 'dataset_used' => 'Housing Dataset',
-                'accuracy_score' => 90.50,
             ],
             [
                 'title' => 'Phân loại rác thải thông minh',
@@ -73,7 +69,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'PyTorch',
                 'language' => 'Python',
                 'dataset_used' => 'Garbage Dataset',
-                'accuracy_score' => 94.20,
             ],
             [
                 'title' => 'Nhận diện cảm xúc khuôn mặt',
@@ -82,7 +77,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'TensorFlow',
                 'language' => 'Python',
                 'dataset_used' => 'FER2013',
-                'accuracy_score' => 89.60,
             ],
             [
                 'title' => 'Dịch máy Anh - Việt',
@@ -91,7 +85,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'PyTorch',
                 'language' => 'Python',
                 'dataset_used' => 'Parallel Corpus',
-                'accuracy_score' => 91.30,
             ],
             [
                 'title' => 'Nhận dạng chữ viết tay',
@@ -100,7 +93,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'TensorFlow',
                 'language' => 'Python',
                 'dataset_used' => 'MNIST',
-                'accuracy_score' => 98.70,
             ],
             [
                 'title' => 'Hệ thống gợi ý khóa học',
@@ -109,7 +101,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'Scikit-learn',
                 'language' => 'Python',
                 'dataset_used' => 'Student Behavior Data',
-                'accuracy_score' => 88.40,
             ],
             [
                 'title' => 'Phát hiện khẩu trang nơi công cộng',
@@ -118,7 +109,6 @@ class ProductSeeder extends Seeder
                 'framework' => 'PyTorch',
                 'language' => 'Python',
                 'dataset_used' => 'Mask Dataset',
-                'accuracy_score' => 96.10,
             ],
         ];
 
@@ -131,7 +121,6 @@ class ProductSeeder extends Seeder
                 'framework' => $item['framework'],
                 'language' => $item['language'],
                 'dataset_used' => $item['dataset_used'],
-                'accuracy_score' => $item['accuracy_score'],
                 'github_link' => 'https://github.com/example/project',
                 'demo_link' => 'https://demo.example.com',
             ]);

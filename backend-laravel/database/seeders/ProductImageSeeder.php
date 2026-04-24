@@ -126,6 +126,7 @@ class ProductImageSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
+            //2
 
             $rows[] = [
                 'product_image_id' => $imageId++,
