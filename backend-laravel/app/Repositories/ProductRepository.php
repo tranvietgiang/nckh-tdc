@@ -299,7 +299,9 @@ class ProductRepository extends BaseRepository
         return DB::table('products as p')
             ->join('majors as m', 'p.major_id', '=', 'm.major_id')
             ->leftJoin('product_statistics as s', 'p.product_id', '=', 's.product_id')
+            ->leftJoin('categories as c', 'p.cate_id', '=', 'c.cate_id')
             ->leftJoin('users as u', 'p.user_id', '=', 'u.user_id')
+            ->leftJoin('users as gv', 'p.approved_by', '=', 'gv.user_id')
             ->where('p.status', 'approved')
             ->orderByDesc('p.created_at')
             ->select(
@@ -308,12 +310,17 @@ class ProductRepository extends BaseRepository
                 'p.description',
                 'p.thumbnail',
                 'p.created_at',
+                'p.cate_id',
 
                 'm.major_id',
-                'm.major_name',
+                'm.major_name as major',
 
                 'u.name as student',
-                'u.email as student_email',
+                'u.user_id as studentId',
+
+                'gv.name as advisor',
+
+                'c.category_name as type',
 
                 's.views',
                 's.likes'
@@ -322,6 +329,7 @@ class ProductRepository extends BaseRepository
             ->map(fn($p) => [
                 'id' => $p->id,
                 'title' => $p->title,
+                'cate_id' => $p->cate_id,
                 'description' => $p->description,
                 'thumbnail' => $p->thumbnail,
 
@@ -329,19 +337,20 @@ class ProductRepository extends BaseRepository
                     ? date('Y', strtotime($p->created_at))
                     : null,
 
+                //sv
                 'student' => $p->student ?? 'Ẩn danh',
                 'studentId' => $p->studentId ?? null,
-                'class' => $p->class ?? null,
 
                 'major_id' => $p->major_id,
-                'major' => $p->major_name,
+                'major' => $p->major,
 
-                'type' => 'Sản phẩm cá nhân',
+                'type' => $p->type ?? null,
 
                 'views' => (int) ($p->views ?? 0),
                 'likes' => (int) ($p->likes ?? 0),
 
-                'advisor' => null,
+                //gv duyệt
+                'advisor' => $p->advisor ?? null,
             ])
             ->toArray();
     }

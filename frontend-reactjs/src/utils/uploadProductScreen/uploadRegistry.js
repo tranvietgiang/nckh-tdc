@@ -57,63 +57,67 @@ export const getUploadResources = (majorId) => {
       return null;
   }
 };
+
 // Hàm lấy theme theo ngành (đồng bộ với StudentScreen)
 export const getMajorTheme = (majorId) => {
   switch (Number(majorId)) {
-    case 1: // CNTT
+    case 1:
       return {
-        primary: "blue",
-        gradient: "from-blue-600 to-indigo-600",
-        light: "bg-blue-50",
-        text: "text-blue-700",
-        border: "border-blue-200",
-        badge: "bg-blue-100 text-blue-800",
-        button: "bg-blue-600 hover:bg-blue-700",
-        accent: "indigo",
+        headerGradient: "from-blue-600 to-indigo-600",
+        buttonBg: "bg-blue-600 hover:bg-blue-700",
+        badgeBg: "bg-blue-700",
+        textColor: "text-blue-700",
+        hoverText: "hover:text-blue-700",
+        hoverBg: "hover:bg-blue-50",
+        statIconBg: "bg-blue-500/30",
+        statIconHover: "group-hover:bg-blue-500/40",
+        statText: "text-blue-100",
+        tabActive: "text-blue-600",
+        tabHover: "hover:text-blue-600",
       };
-    case 2: // Đồ họa
+    case 2:
       return {
-        primary: "rose",
-        gradient: "from-rose-600 to-orange-600",
-        light: "bg-rose-50",
-        text: "text-rose-700",
-        border: "border-rose-200",
-        badge: "bg-rose-100 text-rose-800",
-        button: "bg-rose-600 hover:bg-rose-700",
-        accent: "orange",
+        headerGradient: "from-rose-600 to-orange-600",
+        buttonBg: "bg-rose-600 hover:bg-rose-700",
+        badgeBg: "bg-rose-700",
+        textColor: "text-rose-700",
+        hoverText: "hover:text-rose-700",
+        hoverBg: "hover:bg-rose-50",
+        statIconBg: "bg-rose-500/30",
+        statIconHover: "group-hover:bg-rose-500/40",
+        statText: "text-rose-100",
+        tabActive: "text-rose-600",
+        tabHover: "hover:text-rose-600",
       };
-    case 3: // Network
+    case 3:
       return {
-        primary: "cyan",
-        gradient: "from-cyan-700 to-blue-800",
-        light: "bg-cyan-50",
-        text: "text-cyan-700",
-        border: "border-cyan-200",
-        badge: "bg-cyan-100 text-cyan-800",
-        button: "bg-cyan-700 hover:bg-cyan-800",
-        accent: "blue",
+        headerGradient: "from-cyan-700 to-blue-800",
+        buttonBg: "bg-cyan-700 hover:bg-cyan-800",
+        badgeBg: "bg-cyan-800",
+        textColor: "text-cyan-700",
+        hoverText: "hover:text-cyan-700",
+        hoverBg: "hover:bg-cyan-50",
+        statIconBg: "bg-cyan-500/30",
+        statIconHover: "group-hover:bg-cyan-500/40",
+        statText: "text-cyan-100",
+        tabActive: "text-cyan-600",
+        tabHover: "hover:text-cyan-600",
       };
-    case 4: // AI
+    case 4:
       return {
-        primary: "purple",
-        gradient: "from-purple-700 to-indigo-800",
-        light: "bg-purple-50",
-        text: "text-purple-700",
-        border: "border-purple-200",
-        badge: "bg-purple-100 text-purple-800",
-        button: "bg-purple-700 hover:bg-purple-800",
-        accent: "indigo",
+        headerGradient: "from-purple-700 to-indigo-800",
+        buttonBg: "bg-purple-700 hover:bg-purple-800",
+        badgeBg: "bg-purple-800",
+        textColor: "text-purple-700",
+        hoverText: "hover:text-purple-700",
+        hoverBg: "hover:bg-purple-50",
+        statIconBg: "bg-purple-500/30",
+        statIconHover: "group-hover:bg-purple-500/40",
+        statText: "text-purple-100",
+        tabActive: "text-purple-600",
+        tabHover: "hover:text-purple-600",
       };
     default:
-      return {
-        primary: "blue",
-        gradient: "from-blue-600 to-indigo-600",
-        light: "bg-blue-50",
-        text: "text-blue-700",
-        border: "border-blue-200",
-        badge: "bg-blue-100 text-blue-800",
-        button: "bg-blue-600 hover:bg-blue-700",
-        accent: "indigo",
-      };
+      return null;
   }
 };
