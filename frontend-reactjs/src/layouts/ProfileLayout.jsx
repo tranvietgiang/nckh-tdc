@@ -7,15 +7,15 @@ import { ROLE } from "../utils/constants";
 import BackButton from "../components/common/BackButton";
 import { getMajorTheme } from "../utils/uploadProductScreen/uploadRegistry";
 import { Icons } from "../components/common/Icon";
-
+import useMajorName from "../hooks/common/useMajorName";
 const ProfileScreen = () => {
   useTitle("Hồ sơ cá nhân");
   const { user, setUser } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { majorName } = useMajorName(user?.major_id);
   // Lấy theme dựa trên major_id của user
-  const theme = getMajorTheme(user?.major_id);
+  const theme = getMajorTheme(majorName);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",

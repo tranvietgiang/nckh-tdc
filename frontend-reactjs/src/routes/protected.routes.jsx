@@ -47,15 +47,6 @@ function RoleRoutes() {
         }
       />
 
-      {/* <Route
-        path="/upload-product-ai"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
-            <NewProduct />
-          </ProtectedRoute>
-        }
-      /> */}
-
       <Route
         path="/product-detail"
         element={

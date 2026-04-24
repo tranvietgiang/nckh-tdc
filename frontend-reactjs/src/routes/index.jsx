@@ -3,6 +3,7 @@ import Login from "../pages/auth/Login";
 import GuestRoute from "./guest.route";
 import RoleRoutes from "./protected.routes";
 import VisitorScreen from "../pages/visitorScreen/VisitorScreen";
+import VisitorDetailScreen from "../pages/visitorScreen/VisitorDetailScreen";
 import NotFoundPage from "../pages/notFoundScreen/NotFoundScreen";
 import Profile from "../layouts/ProfileLayout";
 function AppRoutes() {
@@ -19,6 +20,7 @@ function AppRoutes() {
         />
 
         <Route path="/nckh-visitor" element={<VisitorScreen />} />
+        <Route path="/nckh-visitor-detail" element={<VisitorDetailScreen />} />
 
         <Route path="/nckh-profile" element={<Profile />} />
 
