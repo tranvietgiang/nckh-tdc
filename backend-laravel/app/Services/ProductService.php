@@ -35,4 +35,9 @@ class ProductService extends BaseRepository
 
         return $this->productRepository->productViewIdTeacher($productId);
     }
+
+    public function getProductsVisitor(): array
+    {
+        return $this->productRepository->getProductsVisitor();
+    }
 }

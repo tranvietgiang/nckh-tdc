@@ -168,11 +168,13 @@ const ProfileScreen = () => {
         <BackButton />
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           {/* Cover Image - Sử dụng gradient từ theme */}
-          <div className={`h-32 bg-gradient-to-r ${theme.gradient} relative`}>
+          <div
+            className={`h-32 bg-gradient-to-r ${theme?.headerGradient} relative`}
+          >
             <div className="absolute -bottom-12 left-6 sm:left-8">
               <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-2xl shadow-lg flex items-center justify-center p-1">
                 <div
-                  className={`w-full h-full bg-gradient-to-br ${theme.gradient} rounded-xl flex items-center justify-center`}
+                  className={`w-full h-full bg-gradient-to-br ${theme?.headerGradient} rounded-xl flex items-center justify-center`}
                 >
                   <span className="text-white text-2xl sm:text-3xl font-bold">
                     {user?.name?.charAt(0) || "U"}
@@ -258,7 +260,7 @@ const ProfileScreen = () => {
         <div className="mt-6 bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 sm:px-8 py-4 border-b border-gray-100">
             <h3
-              className={`text-lg font-semibold flex items-center gap-2 ${theme.text}`}
+              className={`text-lg font-semibold flex items-center gap-2 ${theme?.textColor}`}
             >
               <Icons.Info className="w-5 h-5" />
               Thông tin cá nhân
@@ -406,7 +408,7 @@ const ProfileScreen = () => {
           <div className="mt-6 bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 sm:px-8 py-4 border-b border-gray-100">
               <h3
-                className={`text-lg font-semibold flex items-center gap-2 ${theme.text}`}
+                className={`text-lg font-semibold flex items-center gap-2 ${theme?.textColor}`}
               >
                 <Icons.Chart className="w-5 h-5" />
                 Thống kê sản phẩm
@@ -445,7 +447,7 @@ const ProfileScreen = () => {
         <div className="mt-6 bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 sm:px-8 py-4 border-b border-gray-100">
             <h3
-              className={`text-lg font-semibold flex items-center gap-2 ${theme.text}`}
+              className={`text-lg font-semibold flex items-center gap-2 ${theme?.textColor}`}
             >
               <Icons.System className="w-5 h-5" />
               Thông tin hệ thống

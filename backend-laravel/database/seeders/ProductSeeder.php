@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use App\Models\ProductAi;
@@ -254,18 +255,34 @@ class ProductSeeder extends Seeder
 
     private function createProduct($title, $description, $majorId)
     {
-        $user = User::first();
+        $student = User::where('role', 'student')->inRandomOrder()->first();
+
+        $teacher = User::where('role', 'teacher')->inRandomOrder()->first();
+
+        // fallback nếu chưa có data
+        if (!$student) {
+            $student = User::first();
+        }
+
+        if (!$teacher) {
+            $teacher = $student;
+        }
+        $submittedAt = now()->subDays(rand(10, 30));
+        $approvedAt  = (clone $submittedAt)->addDays(rand(1, 7));
+        $defaultThumbnail = 'https://res.cloudinary.com/daiuu991p/image/upload/v1776749410/products/yibv8mxgzsy4elnxljoj.jpg';
 
         return Product::create([
             'title' => $title,
             'description' => $description,
-            'thumbnail' => 'uploads/default.jpg',
+            'thumbnail' => $defaultThumbnail,
             'status' => 'approved',
-            'user_id' => $user->user_id,
+            'user_id' => $student->user_id,
             'major_id' => $majorId,
-            'cate_id' => 1,
-            'approved_by' => $user->user_id,
-            'approved_at' => now(),
+            'cate_id' => Category::inRandomOrder()->value('cate_id'),
+            'approved_by' => $teacher->user_id,
+            'submitted_at' => $submittedAt,   // ngày nộp sản phẩm
+            'approved_at' => $approvedAt,   // ngày duyệt sau
+
         ]);
     }
 }

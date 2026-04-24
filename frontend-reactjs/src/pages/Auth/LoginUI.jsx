@@ -347,7 +347,7 @@ export const LoginUI = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#C8102E] text-white py-3.5 rounded-xl font-bold text-base transition-all duration-300 hover:bg-[#a00e27] hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-[#003087] text-white py-3.5 rounded-xl font-bold text-base transition-all duration-300 hover:bg-[#003087] hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

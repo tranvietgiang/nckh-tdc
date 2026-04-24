@@ -20,10 +20,6 @@ return new class extends Migration
 
             $table->string('thumbnail')->nullable();
 
-            $table->string('github_link')->nullable();
-
-            $table->string('demo_link')->nullable();
-
             $table->enum('status', ['pending', 'approved', 'rejected'])
                 ->default('pending');
 

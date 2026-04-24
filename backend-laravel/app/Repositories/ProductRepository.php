@@ -62,7 +62,6 @@ class ProductRepository extends BaseRepository
             ->get();
 
         $tags = DB::table('product_tags')
-            ->join('tags', 'product_tags.tag_id', '=', 'tags.tag_id')
             ->where('product_tags.product_id', $productId)
             ->select('tags.tag_id', 'tags.tag_name')
             ->get();
@@ -293,5 +292,66 @@ class ProductRepository extends BaseRepository
         return Product::where('product_id', $productId)
             ->where('major_id', $majorId)
             ->first();
+    }
+
+    public function getProductsVisitor(): array
+    {
+        return DB::table('products as p')
+            ->join('majors as m', 'p.major_id', '=', 'm.major_id')
+            ->leftJoin('product_statistics as s', 'p.product_id', '=', 's.product_id')
+            ->leftJoin('categories as c', 'p.cate_id', '=', 'c.cate_id')
+            ->leftJoin('users as u', 'p.user_id', '=', 'u.user_id')
+            ->leftJoin('users as gv', 'p.approved_by', '=', 'gv.user_id')
+            ->where('p.status', 'approved')
+            ->orderByDesc('p.created_at')
+            ->select(
+                'p.product_id as id',
+                'p.title',
+                'p.description',
+                'p.thumbnail',
+                'p.created_at',
+                'p.cate_id',
+
+                'm.major_id',
+                'm.major_name as major',
+
+                'u.name as student',
+                'u.user_id as studentId',
+
+                'gv.name as advisor',
+
+                'c.category_name as type',
+
+                's.views',
+                's.likes'
+            )
+            ->get()
+            ->map(fn($p) => [
+                'id' => $p->id,
+                'title' => $p->title,
+                'cate_id' => $p->cate_id,
+                'description' => $p->description,
+                'thumbnail' => $p->thumbnail,
+
+                'year' => $p->created_at
+                    ? date('Y', strtotime($p->created_at))
+                    : null,
+
+                //sv
+                'student' => $p->student ?? 'Ẩn danh',
+                'studentId' => $p->studentId ?? null,
+
+                'major_id' => $p->major_id,
+                'major' => $p->major,
+
+                'type' => $p->type ?? null,
+
+                'views' => (int) ($p->views ?? 0),
+                'likes' => (int) ($p->likes ?? 0),
+
+                //gv duyệt
+                'advisor' => $p->advisor ?? null,
+            ])
+            ->toArray();
     }
 }

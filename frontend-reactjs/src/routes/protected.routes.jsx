@@ -8,11 +8,6 @@ import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
 import TeacherProductDetailScreen from "../pages/ProductDetailScreen/TeacherProductDetailScreen";
 import TeacherScreen from "../pages/teacher/TeacherScreen";
-// import NewProduct from "../pages/uploadProductScreen/NewProduct";
-// import UploadProductForm_AI from "../components/uploadProductScreen/UploadProductForm_AI";
-// import UploadProductForm_Graphic from "../components/uploadProductScreen/UploadProductForm_Graphic";
-// import UploadProductForm_Network from "../components/uploadProductScreen/UploadProductForm_Network";
-
 function RoleRoutes() {
   return (
     <Routes>

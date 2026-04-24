@@ -23,7 +23,7 @@ const ProductDetailScreen = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div
-            className={`w-16 h-16 border-4 border-${theme.primary}-600 border-t-transparent rounded-full animate-spin mx-auto mb-4`}
+            className={`w-16 h-16 border-4 border-b-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4`}
           ></div>
           <p className="text-gray-600">Đang tải thông tin sản phẩm...</p>
         </div>
@@ -88,7 +88,7 @@ const ProductDetailScreen = () => {
             </a>
             <span className="text-gray-400">›</span>
             <span
-              className={`font-medium ${theme.text} truncate flex items-center gap-1`}
+              className={`font-medium ${theme?.textColor} truncate flex items-center gap-1`}
             >
               <Icons.FileText />
               {product.title}
@@ -98,7 +98,7 @@ const ProductDetailScreen = () => {
 
         {/* Header Card */}
         <div
-          className={`bg-gradient-to-r ${theme?.gradient} rounded-2xl shadow-xl overflow-hidden mb-6`}
+          className={`bg-gradient-to-r ${theme?.headerGradient} rounded-2xl shadow-xl overflow-hidden mb-6`}
         >
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -175,12 +175,12 @@ const ProductDetailScreen = () => {
                     {product.activity_logs?.shares || 0} lượt chia sẻ
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-white/90">
+                {/* <div className="flex items-center gap-2 text-white/90">
                   <Icons.Download />
                   <span className="text-sm font-medium">
                     {product.activity_logs?.downloads || 0} lượt tải
                   </span>
-                </div>
+                </div> */}
               </div>
             )}
 
@@ -204,7 +204,7 @@ const ProductDetailScreen = () => {
             {/* Images Section */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2
-                className={`text-lg font-bold mb-4 ${theme.text} border-l-4 ${theme.border} pl-3 flex items-center gap-2`}
+                className={`text-lg font-bold mb-4 ${theme?.textColor} border-l-4 ${theme?.border} pl-3 flex items-center gap-2`}
               >
                 <Icons.Image />
                 Hình ảnh sản phẩm

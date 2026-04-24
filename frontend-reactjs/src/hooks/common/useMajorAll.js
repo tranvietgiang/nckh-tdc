@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { majorApi } from "../../api";
 
 export default function useMajorAll() {
-  const [majors, setMajors] = useState([]);
+  const [majorAll, setMajorAll] = useState([]);
   const [loadingMajorAll, setLoading] = useState(true);
   useEffect(() => {
     const fetchMajors = async () => {
       setLoading(true);
       try {
         const res = await majorApi.getAll();
-        setMajors(res.majors);
+        setMajorAll(res);
+        console.log(res);
       } catch (err) {
         console.error(err);
       } finally {
@@ -20,5 +21,5 @@ export default function useMajorAll() {
     fetchMajors();
   }, []);
 
-  return { majors, loadingMajorAll };
+  return { majorAll, loadingMajorAll };
 }
