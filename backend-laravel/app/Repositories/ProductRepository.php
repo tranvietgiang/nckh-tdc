@@ -63,7 +63,7 @@ class ProductRepository extends BaseRepository
 
         $tags = DB::table('product_tags')
             ->where('product_tags.product_id', $productId)
-            ->select('tags.tag_id', 'tags.tag_name')
+            ->select('product_tags.product_tag_id', 'product_tags.tag_name')
             ->get();
 
         $reviews = DB::table('reviews')
