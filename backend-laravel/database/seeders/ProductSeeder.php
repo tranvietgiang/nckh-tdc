@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Major;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use App\Models\ProductAi;
@@ -650,6 +651,10 @@ class ProductSeeder extends Seeder
         $student = User::where('role', 'student')->inRandomOrder()->first();
         $teacher = User::where('role', 'teacher')->inRandomOrder()->first();
 
+        $majorID = Major::join('products', 'majors.major_id', '=', 'product.major_id')
+            ->join('users', 'majors.major_id', '=', 'users.major_id')
+            ->select('majors.major_id');
+
         if (!$student) {
             $student = User::first();
         }
@@ -666,7 +671,7 @@ class ProductSeeder extends Seeder
             'thumbnail' => $thumbnail,
             'status' => $this->getRandomStatus(),
             'user_id' => $student->user_id,
-            'major_id' => $majorId,
+            'major_id' => $student->major_id,
             'cate_id' => Category::inRandomOrder()->value('cate_id'),
             'approved_by' => $teacher->user_id,
             'submitted_at' => $submittedAt,

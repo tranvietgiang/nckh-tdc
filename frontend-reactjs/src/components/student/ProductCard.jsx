@@ -93,7 +93,7 @@ const ProductCard = ({
           <span
             className={`px-2 py-1 text-xs font-medium rounded-md ${theme.badgeBg} text-white shadow-sm`}
           >
-            {majorName || "CNTT"}
+            {majorName}
           </span>
         </div>
       </div>
@@ -111,7 +111,7 @@ const ProductCard = ({
           onClick={() => onViewDetail(product.product_id)}
           className={`font-semibold text-slate-800 mb-2 line-clamp-1 cursor-pointer ${theme.hoverText} transition`}
         >
-          {product.title}
+          {product.title} -{product.product_id}
         </h3>
 
         <p className="text-sm text-slate-500 mb-3 line-clamp-2">

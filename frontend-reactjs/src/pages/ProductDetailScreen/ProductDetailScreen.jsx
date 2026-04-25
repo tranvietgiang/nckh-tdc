@@ -12,6 +12,7 @@ const ProductDetailScreen = () => {
   const { state } = useLocation();
   const id = state?.productId;
 
+  console.log(id);
   const { product, loading, error } = useProductDetail(id);
   const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
