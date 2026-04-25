@@ -3,9 +3,10 @@ import Login from "../pages/auth/Login";
 import GuestRoute from "./guest.route";
 import RoleRoutes from "./protected.routes";
 import VisitorScreen from "../pages/visitorScreen/VisitorScreen";
-import VisitorDetailScreen from "../pages/visitorScreen/VisitorDetailScreen";
+// import VisitorDetailScreen from "../pages/visitorScreen/VisitorDetailScreen";
 import NotFoundPage from "../pages/notFoundScreen/NotFoundScreen";
 import Profile from "../layouts/ProfileLayout";
+import Dh from "../pages/visitorScreen/MajorDetailForVisitor/GraphicDetailScreen";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -21,7 +22,8 @@ function AppRoutes() {
 
         <Route path="/nckh-visitor" element={<VisitorScreen />} />
 
-        <Route path="/visitor-detail" element={<VisitorDetailScreen />} />
+        {/* <Route path="/visitor-detail" element={<VisitorDetailScreen />} /> */}
+        <Route path="/visitor-detail" element={<Dh />} />
 
         <Route path="/nckh-profile" element={<Profile />} />
 
