@@ -16,8 +16,9 @@ const ProductDetailScreen = () => {
   const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
 
-  const theme = getMajorTheme(product?.major?.major_id);
+  const theme = getMajorTheme(product?.major?.major_code);
 
+  // console.log(theme);
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -72,7 +73,7 @@ const ProductDetailScreen = () => {
         <div className="mb-6">
           <nav className="flex items-center gap-2 text-sm">
             <a
-              href="/"
+              href="/nckh-student"
               className="text-gray-500 hover:text-gray-700 transition flex items-center gap-1"
             >
               <Icons.Home />
@@ -80,7 +81,7 @@ const ProductDetailScreen = () => {
             </a>
             <span className="text-gray-400">›</span>
             <a
-              href="/student"
+              href="/nckh-student"
               className="text-gray-500 hover:text-gray-700 transition flex items-center gap-1"
             >
               <Icons.Users />
