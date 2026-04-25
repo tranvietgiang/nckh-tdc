@@ -7,6 +7,7 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Requests\ProductViewRequest;
 use Illuminate\Http\Request;
 use App\Services\ProductService;
+use BcMath\Number;
 
 class ProductController extends Controller
 {
@@ -65,7 +66,8 @@ class ProductController extends Controller
 
     public function getVisitorProductById($id)
     {
-        $result = $this->productService->getVisitorProductById($id);
+        $intId = (int) $id;
+        $result = $this->productService->getVisitorProductById($intId);
         return response()->json(
             $result
         );

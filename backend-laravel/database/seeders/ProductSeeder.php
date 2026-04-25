@@ -638,6 +638,12 @@ class ProductSeeder extends Seeder
     | Product chung
     |--------------------------------------------------------------------------
     */
+    private function getRandomStatus(): string
+    {
+        $statuses = ['pending', 'approved', 'rejected'];
+
+        return $statuses[array_rand($statuses)];
+    }
 
     private function createProduct($title, $description, $majorId, $thumbnail)
     {
@@ -658,7 +664,7 @@ class ProductSeeder extends Seeder
             'title' => $title,
             'description' => $description,
             'thumbnail' => $thumbnail,
-            'status' => 'approved',
+            'status' => $this->getRandomStatus(),
             'user_id' => $student->user_id,
             'major_id' => $majorId,
             'cate_id' => Category::inRandomOrder()->value('cate_id'),
