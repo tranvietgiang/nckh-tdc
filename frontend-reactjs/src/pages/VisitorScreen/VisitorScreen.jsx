@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
 import useMajorAll from "../../hooks/common/useMajorAll";
@@ -29,7 +29,7 @@ const majorIcons = {
   "Thiết kế đồ họa": "🎨",
 };
 
-const VisitorScreen = () => {
+export default function VisitorScreen() {
   const [likedProducts, setLikedProducts] = useState({});
   const [selectedMajor, setSelectedMajor] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
@@ -56,11 +56,6 @@ const VisitorScreen = () => {
       [id]: !prev[id],
     }));
   };
-
-  // reset page khi đổi filter
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedMajor, sortBy]);
 
   const filteredProducts = useMemo(() => {
     return [...productVisitor]
@@ -230,7 +225,10 @@ const VisitorScreen = () => {
             <select
               className="px-4 py-2.5 bg-gray-50 rounded-md outline-none text-gray-600 text-sm border-0 cursor-pointer"
               value={selectedMajor}
-              onChange={(e) => setSelectedMajor(e.target.value)}
+              onChange={(e) => {
+                setSelectedMajor(e.target.value);
+                setCurrentPage(1);
+              }}
               disabled={loadingMajorAll}
             >
               {loadingMajorAll ? (
@@ -455,6 +453,4 @@ const VisitorScreen = () => {
       </footer>
     </div>
   );
-};
-
-export default VisitorScreen;
+}

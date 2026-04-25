@@ -1,25 +1,44 @@
 export const detectMajorKey = (majorName) => {
-  const majorMap = {
-    // AI - Artificial Intelligence
-    "Artificial Intelligence": "ai",
-    AI: "ai",
-    "Trí tuệ nhân tạo": "ai",
+  const value = String(majorName).trim().toLowerCase();
 
-    // CNTT - Công nghệ thông tin
-    "Công nghệ thông tin": "cntt",
-    "Information Technology": "cntt",
-    IT: "cntt",
+  // AI
+  if (
+    value === "ai" ||
+    value.includes("artificial intelligence") ||
+    value.includes("trí tuệ nhân tạo")
+  ) {
+    return "ai";
+  }
 
-    // MMT - Mạng máy tính
-    "Mạng máy tính": "mmt",
-    "Computer Network": "mmt",
-    Network: "mmt",
+  // CNTT
+  if (
+    value === "cntt" ||
+    value === "it" ||
+    value.includes("công nghệ thông tin") ||
+    value.includes("information technology")
+  ) {
+    return "cntt";
+  }
 
-    // TKĐH - Thiết kế đồ họa
-    "Thiết kế đồ họa": "tkdh",
-    "Graphic Design": "tkdh",
-    Design: "tkdh",
-  };
+  // MMT
+  if (
+    value === "mmt" ||
+    value.includes("mạng máy tính") ||
+    value.includes("computer network") ||
+    value.includes("network")
+  ) {
+    return "mmt";
+  }
 
-  return majorMap[majorName]; // Default về CNTT
+  // TKĐH
+  if (
+    value === "tkdh" ||
+    value.includes("thiết kế đồ họa") ||
+    value.includes("graphic design") ||
+    value.includes("design")
+  ) {
+    return "tkdh";
+  }
+
+  return null;
 };
