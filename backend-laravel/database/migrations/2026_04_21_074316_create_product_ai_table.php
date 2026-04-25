@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('dataset_used', 100);
             $table->decimal('accuracy_score', 5, 2)->nullable();
 
-            $table->string('github_link', 255)->nullable();
-            $table->string('demo_link', 255)->nullable();
             $table->timestamps();
         });
     }

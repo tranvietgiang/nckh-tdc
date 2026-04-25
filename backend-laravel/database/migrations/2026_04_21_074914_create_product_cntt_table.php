@@ -21,8 +21,6 @@ return new class extends Migration
             $table->string('programming_language', 50);
             $table->string('framework', 100);
             $table->string('database_used', 100);
-            $table->string('github_link', 255)->nullable();
-            $table->string('demo_link', 255)->nullable();
 
             $table->timestamps();
         });

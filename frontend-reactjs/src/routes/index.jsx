@@ -21,10 +21,7 @@ function AppRoutes() {
 
         <Route path="/nckh-visitor" element={<VisitorScreen />} />
 
-        <Route
-          path="/visitor-product-detail"
-          element={<VisitorDetailScreen />}
-        />
+        <Route path="/visitor-detail" element={<VisitorDetailScreen />} />
 
         <Route path="/nckh-profile" element={<Profile />} />
 

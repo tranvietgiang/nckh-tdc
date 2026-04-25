@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
+
             $table->id('product_id');
 
             $table->string('title');
@@ -36,6 +37,12 @@ return new class extends Migration
 
             $table->string("approved_by", 15)->nullable();
 
+            $table->string("awards", 255)->nullable();
+
+            $table->string("github_link", 500)->nullable();
+
+            $table->string("demo_link", 500)->nullable();
+
             $table->foreign("approved_by")
                 ->references("user_id")
                 ->on("users")
@@ -45,6 +52,7 @@ return new class extends Migration
             $table->date('submitted_at')->nullable();
 
             $table->timestamp('approved_at')->nullable();
+
             $table->timestamps();
         });
     }

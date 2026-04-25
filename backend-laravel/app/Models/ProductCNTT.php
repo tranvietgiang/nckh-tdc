@@ -17,7 +17,5 @@ class ProductCNTT extends Model
         'programming_language',
         'framework',
         'database_used',
-        'github_link',
-        'demo_link',
     ];
 }

@@ -35,28 +35,6 @@ const VisitorDetailScreen = () => {
       title: "Hệ thống quản lý thực tập doanh nghiệp thông minh",
       description:
         "Nền tảng kết nối sinh viên với doanh nghiệp, theo dõi tiến độ thực tập và đánh giá kết quả tự động",
-      fullDescription: `
-        ## 📌 Tổng quan dự án
-        
-        Dự án xây dựng hệ thống quản lý thực tập cho sinh viên Khoa Công Nghệ Thông Tin, giúp kết nối doanh nghiệp và nhà trường.
-        
-        ## 🎯 Mục tiêu
-        - Tự động hóa quy trình đăng ký thực tập
-        - Theo dõi tiến độ thực tập theo thời gian thực
-        - Đánh giá kết quả thực tập trực tuyến
-        - Báo cáo thống kê chi tiết
-        
-        ## 🛠️ Công nghệ sử dụng
-        - Frontend: ReactJS, TailwindCSS, Redux Toolkit
-        - Backend: Spring Boot, Java
-        - Database: PostgreSQL, Redis
-        - Deployment: Docker, AWS EC2
-        
-        ## 📊 Kết quả đạt được
-        - 500+ sinh viên sử dụng
-        - 50+ doanh nghiệp tham gia
-        - Giảm 70% thời gian xử lý thủ tục
-      `,
       thumbnail:
         "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop",
       images: [
@@ -86,7 +64,6 @@ const VisitorDetailScreen = () => {
       views: 1247,
       likes: 89,
       advisor: "TS. Lê Văn Hoàng",
-      score: 9.2,
       collaborators: ["Trần Văn Bình", "Lê Thị Lan"],
       technologies: ["ReactJS", "Spring Boot", "PostgreSQL", "Docker", "Redis"],
       github: "https://github.com/tdc/internship-management",
@@ -109,241 +86,220 @@ const VisitorDetailScreen = () => {
         },
       ],
     },
-    2: {
-      // AI
-      id: 2,
-      title: "Trợ lý ảo AI hỗ trợ học tập thông minh",
-      description:
-        "Chatbot sử dụng NLP và Machine Learning để trả lời câu hỏi, gợi ý tài liệu học tập cho sinh viên",
-      fullDescription: `
-        ## 📌 Tổng quan dự án
-        
-        Trợ lý ảo AI giúp sinh viên tra cứu thông tin học tập, lịch thi, tài liệu môn học 24/7.
-        
-        ## 🎯 Mục tiêu
-        - Hỗ trợ sinh viên tra cứu thông tin nhanh chóng
-        - Gợi ý tài liệu học tập dựa trên sở thích
-        - Tích hợp với hệ thống đào tạo của trường
-        
-        ## 🛠️ Công nghệ sử dụng
-        - Frontend: ReactJS, TailwindCSS
-        - Backend: Python, FastAPI
-        - AI: BERT, TensorFlow, PyTorch
-        - Database: MongoDB, Elasticsearch
-        
-        ## 📊 Kết quả đạt được
-        - Xử lý 10,000+ câu hỏi mỗi ngày
-        - Độ chính xác 96%
-        - Thời gian phản hồi trung bình 1.5 giây
-      `,
-      thumbnail:
-        "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
-      images: [
-        {
-          product_image_id: 1,
-          image_url:
-            "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
-        },
-        {
-          product_image_id: 2,
-          image_url:
-            "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&h=450&fit=crop",
-        },
-        {
-          product_image_id: 3,
-          image_url:
-            "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=800&h=450&fit=crop",
-        },
-      ],
-      year: "2024",
-      student: "Trần Thảo Vy",
-      studentId: "10221045",
-      class: "AIK20",
-      major_id: 2,
-      major: "Trí tuệ nhân tạo",
-      type: "Đồ án tốt nghiệp",
-      views: 2103,
-      likes: 156,
-      advisor: "TS. Nguyễn Thị Minh",
-      score: 9.5,
-      collaborators: ["Lê Hoàng Nam", "Phạm Thị Hà"],
-      technologies: ["Python", "TensorFlow", "BERT", "FastAPI", "MongoDB"],
-      github: "https://github.com/tdc/ai-assistant",
-      demo: "https://ai-assistant.tdc.edu.vn",
-      awards: [
-        "🏆 Giải Nhất Sinh viên Nghiên cứu Khoa học 2024",
-        "🎖️ Giải Ba Cuộc thi Khởi nghiệp Công nghệ",
-      ],
-      feedback: [
-        {
-          name: "TS. Nguyễn Thị Minh",
-          role: "Giảng viên hướng dẫn",
-          content:
-            "Sản phẩm AI xuất sắc, có tiềm năng phát triển thành ứng dụng thực tế",
-        },
-        {
-          name: "PGS.TS. Lê Hoàng Long",
-          role: "Phó Trưởng khoa",
-          content: "Giải pháp hỗ trợ học tập hiệu quả",
-        },
-      ],
-    },
-    3: {
-      // Mạng máy tính
-      id: 3,
-      title: "Hệ thống giám sát an ninh mạng thông minh",
-      description:
-        "IDS/IPS phát hiện và ngăn chặn tấn công mạng, bảo vệ hệ thống đào tạo trực tuyến",
-      fullDescription: `
-        ## 📌 Tổng quan dự án
-        
-        Hệ thống giám sát an ninh mạng sử dụng Machine Learning để phát hiện các cuộc tấn công DDoS, xâm nhập trái phép.
-        
-        ## 🎯 Mục tiêu
-        - Phát hiện tấn công mạng theo thời gian thực
-        - Tự động chặn IP độc hại
-        - Báo cáo phân tích lưu lượng mạng
-        - Tích hợp với hệ thống cảnh báo
-        
-        ## 🛠️ Công nghệ sử dụng
-        - Frontend: ReactJS, Chart.js
-        - Backend: Node.js, Express
-        - Machine Learning: Python, Scikit-learn
-        - Network: Snort, Wireshark, Zeek
-        
-        ## 📊 Kết quả đạt được
-        - Phát hiện 99.5% tấn công
-        - Xử lý 1,000,000+ gói tin/giây
-        - Giảm 80% thời gian phản ứng
-      `,
-      thumbnail:
-        "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop",
-      images: [
-        {
-          product_image_id: 1,
-          image_url:
-            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop",
-        },
-        {
-          product_image_id: 2,
-          image_url:
-            "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=450&fit=crop",
-        },
-      ],
-      year: "2024",
-      student: "Lê Hoàng Phúc",
-      studentId: "10221088",
-      class: "MMTK19",
-      major_id: 3,
-      major: "Mạng máy tính",
-      type: "Đồ án chuyên ngành",
-      views: 1876,
-      likes: 124,
-      advisor: "TS. Nguyễn Thành Nam",
-      score: 9.4,
-      collaborators: ["Phạm Quốc Bảo"],
-      technologies: ["Node.js", "Python", "Snort", "Wireshark", "Scikit-learn"],
-      github: "https://github.com/tdc/network-security",
-      demo: "https://security.tdc.edu.vn",
-      awards: [
-        "🏆 Giải Nhì Hội thi An toàn thông tin 2024",
-        "🎖️ Đề tài tiềm năng cấp Bộ",
-      ],
-      feedback: [
-        {
-          name: "TS. Nguyễn Thành Nam",
-          role: "Giảng viên hướng dẫn",
-          content:
-            "Giải pháp an ninh mạng toàn diện, có thể triển khai thực tế",
-        },
-      ],
-    },
-    4: {
-      // Đồ họa
-      id: 4,
-      title: "Bộ nhận diện thương hiệu TDC Creative Hub",
-      description:
-        "Thiết kế bộ nhận diện thương hiệu và ấn phẩm truyền thông cho không gian sáng tạo của sinh viên",
-      fullDescription: `
-        ## 📌 Tổng quan dự án
-        
-        Dự án thiết kế bộ nhận diện thương hiệu hoàn chỉnh cho Creative Hub - không gian sáng tạo dành cho sinh viên TDC.
-        
-        ## 🎯 Mục tiêu
-        - Xây dựng hệ thống nhận diện thương hiệu chuyên nghiệp
-        - Thiết kế ấn phẩm truyền thông đa dạng
-        - Tạo phong cách riêng cho Creative Hub
-        - Ứng dụng trên nhiều nền tảng
-        
-        ## 🛠️ Công nghệ sử dụng
-        - Thiết kế: Adobe Illustrator, Photoshop
-        - 3D: Blender, Cinema 4D
-        - Mockup: Adobe Dimension
-        - Video: After Effects, Premiere Pro
-        
-        ## 📊 Kết quả đạt được
-        - 50+ ấn phẩm thiết kế
-        - 10+ video giới thiệu
-        - Được ứng dụng chính thức tại trường
-      `,
-      thumbnail:
-        "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
-      images: [
-        {
-          product_image_id: 1,
-          image_url:
-            "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
-        },
-        {
-          product_image_id: 2,
-          image_url:
-            "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&h=450&fit=crop",
-        },
-        {
-          product_image_id: 3,
-          image_url:
-            "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&h=450&fit=crop",
-        },
-      ],
-      year: "2024",
-      student: "Phạm Hoàng My",
-      studentId: "10221123",
-      class: "TKĐHK20",
-      major_id: 4,
-      major: "Thiết kế đồ họa",
-      type: "Đồ án tốt nghiệp",
-      views: 2341,
-      likes: 203,
-      advisor: "ThS. Trần Thị Thu Hà",
-      score: 9.3,
-      collaborators: ["Ngô Thị Lan Anh", "Vũ Hoàng Nam"],
-      technologies: [
-        "Illustrator",
-        "Photoshop",
-        "Blender",
-        "After Effects",
-        "Premiere Pro",
-      ],
-      behance: "https://behance.net/tdc/creative-hub",
-      awards: [
-        "🏆 Giải Nhất Triển lãm Đồ họa Sinh viên 2024",
-        "🎖️ Tác phẩm xuất sắc nhất tháng",
-      ],
-      feedback: [
-        {
-          name: "ThS. Trần Thị Thu Hà",
-          role: "Giảng viên hướng dẫn",
-          content:
-            "Bộ nhận diện chuyên nghiệp, sáng tạo và có tính ứng dụng cao",
-        },
-        {
-          name: "TS. Lê Minh Quân",
-          role: "Trưởng phòng Truyền thông",
-          content:
-            "Sản phẩm được sử dụng chính thức cho các hoạt động của trường",
-        },
-      ],
-    },
+    // 2: {
+    //   // AI
+    //   id: 2,
+    //   title: "Trợ lý ảo AI hỗ trợ học tập thông minh",
+    //   description:
+    //     "Chatbot sử dụng NLP và Machine Learning để trả lời câu hỏi, gợi ý tài liệu học tập cho sinh viên",
+    //   thumbnail:
+    //     "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
+    //   images: [
+    //     {
+    //       product_image_id: 1,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop",
+    //     },
+    //     {
+    //       product_image_id: 2,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&h=450&fit=crop",
+    //     },
+    //     {
+    //       product_image_id: 3,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=800&h=450&fit=crop",
+    //     },
+    //   ],
+    //   year: "2024",
+    //   student: "Trần Thảo Vy",
+    //   studentId: "10221045",
+    //   class: "AIK20",
+    //   major_id: 2,
+    //   major: "Trí tuệ nhân tạo",
+    //   type: "Đồ án tốt nghiệp",
+    //   views: 2103,
+    //   likes: 156,
+    //   advisor: "TS. Nguyễn Thị Minh",
+    //   score: 9.5,
+    //   collaborators: ["Lê Hoàng Nam", "Phạm Thị Hà"],
+    //   technologies: ["Python", "TensorFlow", "BERT", "FastAPI", "MongoDB"],
+    //   github: "https://github.com/tdc/ai-assistant",
+    //   demo: "https://ai-assistant.tdc.edu.vn",
+    //   awards: [
+    //     "🏆 Giải Nhất Sinh viên Nghiên cứu Khoa học 2024",
+    //     "🎖️ Giải Ba Cuộc thi Khởi nghiệp Công nghệ",
+    //   ],
+    //   feedback: [
+    //     {
+    //       name: "TS. Nguyễn Thị Minh",
+    //       role: "Giảng viên hướng dẫn",
+    //       content:
+    //         "Sản phẩm AI xuất sắc, có tiềm năng phát triển thành ứng dụng thực tế",
+    //     },
+    //     {
+    //       name: "PGS.TS. Lê Hoàng Long",
+    //       role: "Phó Trưởng khoa",
+    //       content: "Giải pháp hỗ trợ học tập hiệu quả",
+    //     },
+    //   ],
+    // },
+    // 3: {
+    //   // Mạng máy tính
+    //   id: 3,
+    //   title: "Hệ thống giám sát an ninh mạng thông minh",
+    //   description:
+    //     "IDS/IPS phát hiện và ngăn chặn tấn công mạng, bảo vệ hệ thống đào tạo trực tuyến",
+    //   fullDescription: `
+    //     ## 📌 Tổng quan dự án
+
+    //     Hệ thống giám sát an ninh mạng sử dụng Machine Learning để phát hiện các cuộc tấn công DDoS, xâm nhập trái phép.
+
+    //     ## 🎯 Mục tiêu
+    //     - Phát hiện tấn công mạng theo thời gian thực
+    //     - Tự động chặn IP độc hại
+    //     - Báo cáo phân tích lưu lượng mạng
+    //     - Tích hợp với hệ thống cảnh báo
+
+    //     ## 🛠️ Công nghệ sử dụng
+    //     - Frontend: ReactJS, Chart.js
+    //     - Backend: Node.js, Express
+    //     - Machine Learning: Python, Scikit-learn
+    //     - Network: Snort, Wireshark, Zeek
+
+    //     ## 📊 Kết quả đạt được
+    //     - Phát hiện 99.5% tấn công
+    //     - Xử lý 1,000,000+ gói tin/giây
+    //     - Giảm 80% thời gian phản ứng
+    //   `,
+    //   thumbnail:
+    //     "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop",
+    //   images: [
+    //     {
+    //       product_image_id: 1,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=450&fit=crop",
+    //     },
+    //     {
+    //       product_image_id: 2,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=450&fit=crop",
+    //     },
+    //   ],
+    //   year: "2024",
+    //   student: "Lê Hoàng Phúc",
+    //   studentId: "10221088",
+    //   class: "MMTK19",
+    //   major_id: 3,
+    //   major: "Mạng máy tính",
+    //   type: "Đồ án chuyên ngành",
+    //   views: 1876,
+    //   likes: 124,
+    //   advisor: "TS. Nguyễn Thành Nam",
+    //   score: 9.4,
+    //   collaborators: ["Phạm Quốc Bảo"],
+    //   technologies: ["Node.js", "Python", "Snort", "Wireshark", "Scikit-learn"],
+    //   github: "https://github.com/tdc/network-security",
+    //   demo: "https://security.tdc.edu.vn",
+    //   awards: [
+    //     "🏆 Giải Nhì Hội thi An toàn thông tin 2024",
+    //     "🎖️ Đề tài tiềm năng cấp Bộ",
+    //   ],
+    //   feedback: [
+    //     {
+    //       name: "TS. Nguyễn Thành Nam",
+    //       role: "Giảng viên hướng dẫn",
+    //       content:
+    //         "Giải pháp an ninh mạng toàn diện, có thể triển khai thực tế",
+    //     },
+    //   ],
+    // },
+    // 4: {
+    //   // Đồ họa
+    //   id: 4,
+    //   title: "Bộ nhận diện thương hiệu TDC Creative Hub",
+    //   description:
+    //     "Thiết kế bộ nhận diện thương hiệu và ấn phẩm truyền thông cho không gian sáng tạo của sinh viên",
+    //   fullDescription: `
+    //     ## 📌 Tổng quan dự án
+
+    //     Dự án thiết kế bộ nhận diện thương hiệu hoàn chỉnh cho Creative Hub - không gian sáng tạo dành cho sinh viên TDC.
+
+    //     ## 🎯 Mục tiêu
+    //     - Xây dựng hệ thống nhận diện thương hiệu chuyên nghiệp
+    //     - Thiết kế ấn phẩm truyền thông đa dạng
+    //     - Tạo phong cách riêng cho Creative Hub
+    //     - Ứng dụng trên nhiều nền tảng
+
+    //     ## 🛠️ Công nghệ sử dụng
+    //     - Thiết kế: Adobe Illustrator, Photoshop
+    //     - 3D: Blender, Cinema 4D
+    //     - Mockup: Adobe Dimension
+    //     - Video: After Effects, Premiere Pro
+
+    //     ## 📊 Kết quả đạt được
+    //     - 50+ ấn phẩm thiết kế
+    //     - 10+ video giới thiệu
+    //     - Được ứng dụng chính thức tại trường
+    //   `,
+    //   thumbnail:
+    //     "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
+    //   images: [
+    //     {
+    //       product_image_id: 1,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=450&fit=crop",
+    //     },
+    //     {
+    //       product_image_id: 2,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&h=450&fit=crop",
+    //     },
+    //     {
+    //       product_image_id: 3,
+    //       image_url:
+    //         "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&h=450&fit=crop",
+    //     },
+    //   ],
+    //   year: "2024",
+    //   student: "Phạm Hoàng My",
+    //   studentId: "10221123",
+    //   class: "TKĐHK20",
+    //   major_id: 4,
+    //   major: "Thiết kế đồ họa",
+    //   type: "Đồ án tốt nghiệp",
+    //   views: 2341,
+    //   likes: 203,
+    //   advisor: "ThS. Trần Thị Thu Hà",
+    //   score: 9.3,
+    //   collaborators: ["Ngô Thị Lan Anh", "Vũ Hoàng Nam"],
+    //   technologies: [
+    //     "Illustrator",
+    //     "Photoshop",
+    //     "Blender",
+    //     "After Effects",
+    //     "Premiere Pro",
+    //   ],
+    //   behance: "https://behance.net/tdc/creative-hub",
+    //   awards: [
+    //     "🏆 Giải Nhất Triển lãm Đồ họa Sinh viên 2024",
+    //     "🎖️ Tác phẩm xuất sắc nhất tháng",
+    //   ],
+    //   feedback: [
+    //     {
+    //       name: "ThS. Trần Thị Thu Hà",
+    //       role: "Giảng viên hướng dẫn",
+    //       content:
+    //         "Bộ nhận diện chuyên nghiệp, sáng tạo và có tính ứng dụng cao",
+    //     },
+    //     {
+    //       name: "TS. Lê Minh Quân",
+    //       role: "Trưởng phòng Truyền thông",
+    //       content:
+    //         "Sản phẩm được sử dụng chính thức cho các hoạt động của trường",
+    //     },
+    //   ],
+    // },
   };
 
   // Mock related products
@@ -553,7 +509,6 @@ const VisitorDetailScreen = () => {
             <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="flex border-b border-gray-200">
                 {[
-                  { id: "overview", label: "📋 Tổng quan" },
                   { id: "tech", label: "🛠️ Công nghệ" },
                   { id: "team", label: "👥 Nhóm thực hiện" },
                   { id: "feedback", label: "💬 Đánh giá" },
