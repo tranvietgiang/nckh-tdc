@@ -9,11 +9,18 @@ class ProductStatisticSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::table('product_statistics')->truncate();
+
         $rows = [];
 
-        for ($productId = 1; $productId <= 40; $productId++) {
+        $products = DB::table('products')
+            ->select('product_id')
+            ->get();
+
+        foreach ($products as $p) {
+
             $rows[] = [
-                'product_id'   => $productId,
+                'product_id'   => $p->product_id,
                 'views'        => rand(100, 5000),
                 'likes'        => rand(10, 500),
                 'downloads'    => rand(0, 300),

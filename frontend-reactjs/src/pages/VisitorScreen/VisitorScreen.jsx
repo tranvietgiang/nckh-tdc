@@ -47,7 +47,7 @@ const VisitorScreen = () => {
   const { productVisitor, loadingVisitor, errorVisitor } = useVisitorProduct();
 
   const handleViewDetail = (id) => {
-    navigate("/visitor-product-detail", { state: { productId: id } });
+    navigate("/visitor-detail", { state: { productId: id } });
   };
 
   const handleLike = (id) => {

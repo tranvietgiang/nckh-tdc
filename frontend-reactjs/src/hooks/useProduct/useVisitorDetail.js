@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { productApi } from "../../api";
 import { toast } from "react-toastify";
-export default function useVisitorProduct() {
+export default function useVisitorProduct(id) {
   const [productVisitorDetail, setProductAll] = useState([]);
   const [loadingVisitorDetail, setLoading] = useState(false);
   const [errorVisitorDetail, setError] = useState(null);
@@ -11,7 +11,7 @@ export default function useVisitorProduct() {
     const getVisitorProducts = async () => {
       try {
         setLoading(true);
-        const res = await productApi.getVisitorProductById();
+        const res = await productApi.getVisitorProductById(id);
         toast.success("Tải dữ chi tiết thành công", { toastId });
         setProductAll(res || []);
       } catch (error) {

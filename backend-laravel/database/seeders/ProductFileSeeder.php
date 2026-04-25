@@ -9,151 +9,92 @@ class ProductFileSeeder extends Seeder
 {
     public function run(): void
     {
+        DB::table('product_files')->truncate();
+
         $rows = [];
         $fileId = 1;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Product 1 -> 10 : AI
-        |--------------------------------------------------------------------------
-        */
+        $products = DB::table('products as p')
+            ->join('majors as m', 'p.major_id', '=', 'm.major_id')
+            ->select('p.product_id', 'm.major_name')
+            ->get();
 
-        for ($productId = 1; $productId <= 10; $productId++) {
+        foreach ($products as $p) {
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/ai/product_$productId/report.pdf",
-                'file_type' => 'pdf',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            $major = strtolower(trim($p->major_name ?? ''));
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/ai/product_$productId/model.zip",
-                'file_type' => 'zip',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            // ================= DETECT MAJOR (GIỐNG FRONTEND) =================
+            $isAI = $major === 'ai'
+                || str_contains($major, 'artificial intelligence')
+                || str_contains($major, 'trí tuệ nhân tạo');
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/ai/product_$productId/demo.pptx",
-                'file_type' => 'pptx',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
+            $isCNTT = $major === 'cntt'
+                || str_contains($major, 'công nghệ thông tin')
+                || str_contains($major, 'information technology');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Product 11 -> 20 : CNTT
-        |--------------------------------------------------------------------------
-        */
+            $isMMT = $major === 'mmt'
+                || str_contains($major, 'mạng máy tính')
+                || str_contains($major, 'network');
 
-        for ($productId = 11; $productId <= 20; $productId++) {
+            $isGRAPHIC = $major === 'tkdh'
+                || str_contains($major, 'thiết kế đồ họa')
+                || str_contains($major, 'graphic');
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/cntt/product_$productId/report.pdf",
-                'file_type' => 'pdf',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            // ================= PATH BASE =================
+            $base = match (true) {
+                $isAI => 'ai',
+                $isCNTT => 'cntt',
+                $isMMT => 'mmt',
+                $isGRAPHIC => 'graphic',
+                default => 'other'
+            };
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/cntt/product_$productId/source.zip",
-                'file_type' => 'zip',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            // ================= FILE TEMPLATE =================
+            $files = [];
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/cntt/product_$productId/slide.pptx",
-                'file_type' => 'pptx',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
+            if ($isAI) {
+                $files = [
+                    ['report.pdf', 'pdf'],
+                    ['model.zip', 'zip'],
+                    ['demo.pptx', 'pptx'],
+                ];
+            }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Product 21 -> 30 : MMT
-        |--------------------------------------------------------------------------
-        */
+            if ($isCNTT) {
+                $files = [
+                    ['report.pdf', 'pdf'],
+                    ['source.zip', 'zip'],
+                    ['slide.pptx', 'pptx'],
+                ];
+            }
 
-        for ($productId = 21; $productId <= 30; $productId++) {
+            if ($isMMT) {
+                $files = [
+                    ['report.pdf', 'pdf'],
+                    ['config.zip', 'zip'],
+                    ['topology.pkt', 'pkt'],
+                ];
+            }
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/mmt/product_$productId/report.pdf",
-                'file_type' => 'pdf',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            if ($isGRAPHIC) {
+                $files = [
+                    ['report.pdf', 'pdf'],
+                    ['source.psd', 'psd'],
+                    ['mockup.ai', 'ai'],
+                ];
+            }
 
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/mmt/product_$productId/config.zip",
-                'file_type' => 'zip',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/mmt/product_$productId/topology.pkt",
-                'file_type' => 'pkt',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Product 31 -> 40 : Graphic
-        |--------------------------------------------------------------------------
-        */
-
-        for ($productId = 31; $productId <= 40; $productId++) {
-
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/graphic/product_$productId/report.pdf",
-                'file_type' => 'pdf',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/graphic/product_$productId/source.psd",
-                'file_type' => 'psd',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-            $rows[] = [
-                'product_file_id' => $fileId++,
-                'product_id' => $productId,
-                'file_url' => "/storage/products/graphic/product_$productId/mockup.ai",
-                'file_type' => 'ai',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+            // ================= INSERT FILES =================
+            foreach ($files as $f) {
+                $rows[] = [
+                    'product_file_id' => $fileId++,
+                    'product_id' => $p->product_id,
+                    'file_url' => "/storage/products/$base/product_{$p->product_id}/{$f[0]}",
+                    'file_type' => $f[1],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
 
         DB::table('product_files')->insert($rows);

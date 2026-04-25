@@ -355,66 +355,189 @@ class ProductRepository extends BaseRepository
             ->toArray();
     }
 
-
-    public function getVisitorProductById($productId): array
+    public function getVisitorProductById($id): array
     {
-        return DB::table('products as p')
+        // ================= 1. GET PRODUCT =================
+        $product = DB::table('products as p')
             ->join('majors as m', 'p.major_id', '=', 'm.major_id')
             ->leftJoin('product_statistics as s', 'p.product_id', '=', 's.product_id')
             ->leftJoin('categories as c', 'p.cate_id', '=', 'c.cate_id')
             ->leftJoin('users as u', 'p.user_id', '=', 'u.user_id')
             ->leftJoin('users as gv', 'p.approved_by', '=', 'gv.user_id')
+            ->where('p.product_id', $id)
             ->where('p.status', 'approved')
-            ->where('p.product_id', $productId)
-            ->orderByDesc('p.created_at')
             ->select(
-                'p.product_id as id',
-                'p.title',
-                'p.description',
-                'p.thumbnail',
-                'p.created_at',
-                'p.cate_id',
-
-                'm.major_id',
+                'p.*',
                 'm.major_name as major',
-
                 'u.name as student',
                 'u.user_id as studentId',
-
                 'gv.name as advisor',
-
                 'c.category_name as type',
-
                 's.views',
                 's.likes'
             )
+            ->first();
+
+        if (!$product) return [];
+
+        $productId = $product->product_id;
+
+        // ================= 2. IMAGES =================
+        $images = DB::table('product_images')
+            ->where('product_id', $productId)
+            ->select('product_image_id', 'image_url')
             ->get()
-            ->map(fn($p) => [
-                'id' => $p->id,
-                'title' => $p->title,
-                'cate_id' => $p->cate_id,
-                'description' => $p->description,
-                'thumbnail' => $p->thumbnail,
-
-                'year' => $p->created_at
-                    ? date('Y', strtotime($p->created_at))
-                    : null,
-
-                //sv
-                'student' => $p->student ?? 'Ẩn danh',
-                'studentId' => $p->studentId ?? null,
-
-                'major_id' => $p->major_id,
-                'major' => $p->major,
-
-                'type' => $p->type ?? null,
-
-                'views' => (int) ($p->views ?? 0),
-                'likes' => (int) ($p->likes ?? 0),
-
-                //gv duyệt
-                'advisor' => $p->advisor ?? null,
+            ->map(fn($i) => [
+                'product_image_id' => $i->product_image_id,
+                'image_url' => $i->image_url,
             ])
             ->toArray();
+
+        // ================= 3. TAGS =================
+        $tags = DB::table('product_tags')
+            ->where('product_id', $productId)
+            ->pluck('tag_name')
+            ->toArray();
+
+        // ================= 4. REVIEWS =================
+        $reviews = DB::table('reviews')
+            ->where('product_id', $productId)
+            ->select('comment', 'teacher_id')
+            ->get()
+            ->toArray();
+
+        // ================= 4. DETECT MAJOR =================
+        $major = strtolower(trim($product->major ?? ''));
+
+        $isAI = str_contains($major, 'ai')
+            || str_contains($major, 'trí tuệ')
+            || str_contains($major, 'artificial');
+
+        $isCNTT = str_contains($major, 'cntt')
+            || str_contains($major, 'công nghệ thông tin');
+
+        $isMMT = str_contains($major, 'mmt')
+            || str_contains($major, 'mạng')
+            || str_contains($major, 'network');
+
+        $isGRAPHIC = str_contains($major, 'tkdh')
+            || str_contains($major, 'graphic')
+            || str_contains($major, 'thiết kế');
+
+        // ================= 5. GET MAJOR DETAIL =================
+        $detail = null;
+
+        if ($isCNTT) {
+            $detail = DB::table('product_cntt')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        if ($isAI) {
+            $detail = DB::table('product_ai')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        if ($isMMT) {
+            $detail = DB::table('product_mmt')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        if ($isGRAPHIC) {
+            $detail = DB::table('product_graphic')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        // ================= 6. TECHNOLOGIES =================
+        $technologies = [];
+
+        if ($isCNTT && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->programming_language ?? null,
+                $detail->framework ?? null,
+                $detail->database_used ?? null,
+            ]));
+        }
+
+        if ($isAI && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->model_used ?? null,
+                $detail->framework ?? null,
+                $detail->language ?? null,
+                $detail->dataset_used ?? null,
+            ]));
+        }
+
+        if ($isMMT && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->simulation_tool ?? null,
+                $detail->network_protocol ?? null,
+                $detail->topology_type ?? null,
+            ]));
+        }
+
+        if ($isGRAPHIC && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->design_type ?? null,
+                $detail->tools_used ?? null,
+            ]));
+        }
+
+        // ================= 7. RESOURCES =================
+        $resources = [
+            'github' => $product->github_link ?? null,
+            'demo' => $product->demo_link ?? null,
+            'drive' => $detail->drive_link ?? null,
+            'behance' => $detail->behance_link ?? null,
+            'config_file' => $detail->config_file ?? null,
+        ];
+
+        // ================= 8. RETURN =================
+        return [
+            'id' => $product->product_id,
+            'title' => $product->title,
+            'description' => $product->description,
+            'thumbnail' => $product->thumbnail,
+
+            'images' => $images,
+
+            'year' => $product->created_at
+                ? date('Y', strtotime($product->created_at))
+                : null,
+
+            'approved_at' => $product->approved_at
+                ? date('Y-m-d H:i:s', strtotime($product->approved_at))
+                : null,
+
+            'student' => $product->student ?? 'Ẩn danh',
+            'studentId' => $product->studentId,
+
+            'major_id' => $product->major_id,
+            'major' => $product->major,
+
+            'type' => $product->type,
+
+            'views' => (int) ($product->views ?? 0),
+            'likes' => (int) ($product->likes ?? 0),
+
+            'advisor' => $product->advisor,
+
+            'technologies' => $technologies,
+
+            'resources' => $resources,
+
+            'awards' => $product->awards
+                ? json_decode($product->awards, true)
+                : [],
+
+            'feedback' => array_map(fn($r) => $r->comment, $reviews),
+
+            'tags' => $tags,
+
+            'major_detail' => $detail,
+        ];
     }
 }

@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TeacherController;
