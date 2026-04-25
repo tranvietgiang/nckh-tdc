@@ -1,29 +1,43 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react"; // ✅ bỏ useEffect
+import { useNavigate } from "react-router-dom";
 import BackButton from "../../../components/common/BackButton";
-import { getMajorTheme } from "../../../utils/uploadProductScreen/uploadRegistry";
-import useMajorName from "../../../hooks/common/useMajorName";
 import useImageViewer from "../../../shared/useImageViewer";
 import { Icons } from "../../../components/common/Icon";
-import useVisitorProduct from "../../../hooks/useProduct/useVisitorDetail";
 
-const GraphicDetailScreen = () => {
+const GraphicDetailScreen = ({
+  productVisitorDetail,
+  loadingVisitorDetail,
+  errorVisitorDetail,
+  theme, // theme từ file getTheme
+}) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("showcase");
+  const [isLiked, setIsLiked] = useState(false);
+  // ✅ Khởi tạo trực tiếp, không cần useEffect
+  const [likeCount, setLikeCount] = useState(productVisitorDetail?.likes || 0);
   const { openViewer, ImageViewerModal } = useImageViewer();
 
-  const location = useLocation();
-  const id = location.state?.productId;
-
-  const { productVisitorDetail, visitorProductLoading, visitorProductError } =
-    useVisitorProduct(id);
-
-  const theme = getMajorTheme(useMajorName(productVisitorDetail?.major));
-
-  console.log(productVisitorDetail);
   const majorDetail = productVisitorDetail?.major_detail || {};
 
-  if (visitorProductLoading) {
+  const handleLike = () => {
+    if (isLiked) {
+      setLikeCount(likeCount - 1);
+    } else {
+      setLikeCount(likeCount + 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
+  // Color palette từ theme
+  const colorPalette = [
+    theme.bgColor,
+    "#F472B6",
+    "#FB7185",
+    "#1F2937",
+    "#9CA3AF",
+  ];
+
+  if (loadingVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-white to-rose-50">
         <div className="text-center">
@@ -34,7 +48,7 @@ const GraphicDetailScreen = () => {
     );
   }
 
-  if (visitorProductError || !productVisitorDetail) {
+  if (errorVisitorDetail || !productVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-white to-rose-50">
         <div className="text-center">
@@ -51,27 +65,22 @@ const GraphicDetailScreen = () => {
     );
   }
 
-  // Color palette từ theme
-  const colorPalette = [
-    theme.textColor,
-    "#F472B6",
-    "#FB7185",
-    "#1F2937",
-    "#9CA3AF",
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50">
       <ImageViewerModal />
 
-      {/* Header Gradient */}
-      <div className="relative bg-gradient-to-r from-pink-700 via-pink-600 to-rose-600 text-white">
+      {/* Header Gradient - dùng theme.headerGradient */}
+      <div
+        className={`relative bg-gradient-to-r ${theme.headerGradient} text-white`}
+      >
         <div className="absolute inset-0 bg-black/10"></div>
         <header className="relative z-10 container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <BackButton variant="light" />
             <div className="flex gap-3">
-              <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
+              <span
+                className={`px-3 py-1.5 ${theme.badgeBg} backdrop-blur-sm rounded-full text-xs font-medium`}
+              >
                 🎨 {majorDetail.design_type || "Branding"} Design
               </span>
               <button
@@ -98,10 +107,17 @@ const GraphicDetailScreen = () => {
                 <Icons.Eye className="w-4 h-4" />{" "}
                 {productVisitorDetail?.views?.toLocaleString()} lượt xem
               </div>
-              <div className="flex items-center gap-2">
-                <Icons.Heart className="w-4 h-4" />{" "}
-                {productVisitorDetail?.likes?.toLocaleString()} yêu thích
-              </div>
+              <button
+                onClick={handleLike}
+                className="flex items-center gap-2 transition-transform hover:scale-110"
+              >
+                {isLiked ? (
+                  <Icons.Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                ) : (
+                  <Icons.Heart className="w-4 h-4" />
+                )}
+                <span>{likeCount?.toLocaleString()} yêu thích</span>
+              </button>
               <div className="flex items-center gap-2">
                 📅 {productVisitorDetail?.year}
               </div>
@@ -115,8 +131,7 @@ const GraphicDetailScreen = () => {
         {/* Design Type Banner */}
         <div className="bg-white rounded-2xl shadow-lg p-4 mb-8 text-center mt-[100px]">
           <span
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold"
-            style={{ backgroundColor: theme.lightBg, color: theme.textColor }}
+            className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-semibold ${theme.lightBg} ${theme.textColor}`}
           >
             <span className="text-xl">🎯</span>{" "}
             {majorDetail.design_type || "Branding Identity"} Design
@@ -212,7 +227,9 @@ const GraphicDetailScreen = () => {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                     style={
-                      activeTab === tab.id ? { color: theme.textColor } : {}
+                      activeTab === tab.id
+                        ? { color: theme.textColor.replace("text-", "") }
+                        : {}
                     }
                   >
                     {tab.label}
@@ -240,7 +257,9 @@ const GraphicDetailScreen = () => {
                           </div>
                         ))}
                     </div>
-                    <div className="p-4 rounded-xl bg-gradient-to-r from-pink-50 to-rose-50">
+                    <div
+                      className={`p-4 rounded-xl bg-gradient-to-r ${theme.lightBg}`}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-xl">✨</span>
                         <span className="font-semibold text-gray-800">
@@ -265,11 +284,7 @@ const GraphicDetailScreen = () => {
                         {productVisitorDetail?.technologies?.map((tool, i) => (
                           <span
                             key={i}
-                            className="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
-                            style={{
-                              backgroundColor: theme.lightBg,
-                              color: theme.textColor,
-                            }}
+                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105 ${theme.lightBg} ${theme.textColor}`}
                           >
                             {tool}
                           </span>
@@ -282,11 +297,13 @@ const GraphicDetailScreen = () => {
                           href={productVisitorDetail.resources.behance}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group"
+                          className={`flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group ${theme.hoverBg}`}
                         >
                           <span className="text-2xl">🎨</span>
                           <div className="flex-1">
-                            <div className="font-medium text-gray-800 group-hover:text-pink-600 transition">
+                            <div
+                              className={`font-medium text-gray-800 ${theme.hoverText} transition`}
+                            >
                               Behance Portfolio
                             </div>
                             <div className="text-xs text-gray-400">
@@ -303,11 +320,13 @@ const GraphicDetailScreen = () => {
                           href={productVisitorDetail.resources.drive}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group"
+                          className={`flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group ${theme.hoverBg}`}
                         >
                           <span className="text-2xl">📁</span>
                           <div className="flex-1">
-                            <div className="font-medium text-gray-800 group-hover:text-pink-600 transition">
+                            <div
+                              className={`font-medium text-gray-800 ${theme.hoverText} transition`}
+                            >
                               Google Drive
                             </div>
                             <div className="text-xs text-gray-400">
@@ -325,10 +344,11 @@ const GraphicDetailScreen = () => {
 
                 {activeTab === "team" && (
                   <div className="space-y-6">
-                    <div className="flex items-center gap-5 p-5 rounded-xl bg-gradient-to-r from-pink-50 to-rose-50">
+                    <div
+                      className={`flex items-center gap-5 p-5 rounded-xl bg-gradient-to-r ${theme.lightBg}`}
+                    >
                       <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg"
-                        style={{ backgroundColor: theme.bgColor }}
+                        className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg ${theme.buttonBg}`}
                       >
                         {productVisitorDetail?.student?.charAt(0)}
                       </div>
@@ -339,10 +359,7 @@ const GraphicDetailScreen = () => {
                         <p className="text-sm text-gray-500">
                           MSSV: {productVisitorDetail?.studentId}
                         </p>
-                        <p
-                          className="text-sm mt-1"
-                          style={{ color: theme.textColor }}
-                        >
+                        <p className={`text-sm mt-1 ${theme.textColor}`}>
                           🎨 Graphic Designer
                         </p>
                       </div>
@@ -401,10 +418,7 @@ const GraphicDetailScreen = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-500">Ngành</span>
-                  <span
-                    className="font-medium"
-                    style={{ color: theme.textColor }}
-                  >
+                  <span className={`font-medium ${theme.textColor}`}>
                     {productVisitorDetail?.major}
                   </span>
                 </div>
@@ -424,8 +438,7 @@ const GraphicDetailScreen = () => {
 
               <div className="flex gap-3 mt-6">
                 <button
-                  className="flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-medium text-center transition-all hover:shadow-lg"
-                  style={{ backgroundColor: theme.bgColor }}
+                  className={`flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-medium text-center transition-all hover:shadow-lg ${theme.buttonBg}`}
                 >
                   🎨 Xem Portfolio
                 </button>
@@ -441,7 +454,7 @@ const GraphicDetailScreen = () => {
                   {productVisitorDetail.tags.map((tag, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:scale-105 transition-transform"
+                      className={`px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:scale-105 transition-transform ${theme.hoverBg} ${theme.hoverText}`}
                     >
                       #{tag}
                     </span>
@@ -472,11 +485,9 @@ const GraphicDetailScreen = () => {
         </div>
       </main>
 
+      {/* Footer */}
       <footer
-        className="mt-16 py-8 text-white"
-        style={{
-          background: `linear-gradient(135deg, ${theme.bgColor} 0%, #BE185D 100%)`,
-        }}
+        className={`mt-16 py-8 text-white bg-gradient-to-r ${theme.headerGradient}`}
       >
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm">

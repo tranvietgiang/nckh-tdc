@@ -15,7 +15,6 @@ import {
   Award,
   Zap,
 } from "lucide-react";
-
 const programs = [
   {
     name: "Công nghệ thông tin",
@@ -58,6 +57,7 @@ export const LoginUI = ({
   setRemember,
   loading,
   handleLogin,
+  navigate,
 }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#003087]/5 via-white to-[#C8102E]/5 font-['Inter'] overflow-hidden">
@@ -338,7 +338,11 @@ export const LoginUI = ({
                     Ghi nhớ đăng nhập
                   </span>
                 </label>
-                <a href="#" className="text-sm text-[#C8102E] hover:underline">
+                <a
+                  onClick={() => navigate("/forgot")}
+                  href=""
+                  className="text-sm text-[#C8102E] hover:underline"
+                >
                   Quên mật khẩu?
                 </a>
               </div>

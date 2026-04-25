@@ -1,27 +1,32 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BackButton from "../../../components/common/BackButton";
-import { getMajorTheme } from "../../../utils/uploadProductScreen/uploadRegistry";
-import useMajorName from "../../../hooks/common/useMajorName";
 import useImageViewer from "../../../shared/useImageViewer";
 import { Icons } from "../../../components/common/Icon";
-import useVisitorProduct from "../../../hooks/useProduct/useVisitorDetail";
 
-const NetworkDetailScreen = () => {
+const NetworkDetailScreen = ({
+  productVisitorDetail,
+  loadingVisitorDetail,
+  errorVisitorDetail,
+  theme,
+}) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("topology");
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(productVisitorDetail?.likes || 0);
   const { openViewer, ImageViewerModal } = useImageViewer();
-
-  const location = useLocation();
-  const id = location.state?.productId;
-
-  const { productVisitorDetail, visitorProductLoading, visitorProductError } =
-    useVisitorProduct(id);
-
-  const theme = getMajorTheme(useMajorName(productVisitorDetail?.major));
   const majorDetail = productVisitorDetail?.major_detail || {};
 
-  if (visitorProductLoading) {
+  const handleLike = () => {
+    if (isLiked) {
+      setLikeCount(likeCount - 1);
+    } else {
+      setLikeCount(likeCount + 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
+  if (loadingVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-teal-50">
         <div className="text-center">
@@ -32,7 +37,7 @@ const NetworkDetailScreen = () => {
     );
   }
 
-  if (visitorProductError || !productVisitorDetail) {
+  if (errorVisitorDetail || !productVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-teal-50">
         <div className="text-center">
@@ -54,13 +59,17 @@ const NetworkDetailScreen = () => {
       <ImageViewerModal />
 
       {/* Header Gradient */}
-      <div className="relative bg-gradient-to-r from-green-700 via-green-600 to-teal-600 text-white">
+      <div
+        className={`relative bg-gradient-to-r ${theme.headerGradient} text-white`}
+      >
         <div className="absolute inset-0 bg-black/10"></div>
         <header className="relative z-10 container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <BackButton variant="light" />
             <div className="flex gap-3">
-              <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
+              <span
+                className={`px-3 py-1.5 ${theme.badgeBg} backdrop-blur-sm rounded-full text-xs font-medium`}
+              >
                 🌐 {majorDetail.topology_type || "Mesh"} Network
               </span>
               <button
@@ -87,10 +96,17 @@ const NetworkDetailScreen = () => {
                 <Icons.Eye className="w-4 h-4" />{" "}
                 {productVisitorDetail?.views?.toLocaleString()} lượt xem
               </div>
-              <div className="flex items-center gap-2">
-                <Icons.Heart className="w-4 h-4" />{" "}
-                {productVisitorDetail?.likes?.toLocaleString()} yêu thích
-              </div>
+              <button
+                onClick={handleLike}
+                className="flex items-center gap-2 transition-transform hover:scale-110"
+              >
+                {isLiked ? (
+                  <Icons.Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                ) : (
+                  <Icons.Heart className="w-4 h-4" />
+                )}
+                <span>{likeCount?.toLocaleString()} yêu thích</span>
+              </button>
               <div className="flex items-center gap-2">
                 📅 {productVisitorDetail?.year}
               </div>
@@ -126,10 +142,7 @@ const NetworkDetailScreen = () => {
               className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <div className="text-3xl mb-2">{stat.icon}</div>
-              <div
-                className="text-lg font-bold truncate"
-                style={{ color: theme.textColor }}
-              >
+              <div className={`text-lg font-bold truncate ${theme.textColor}`}>
                 {stat.value}
               </div>
               <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
@@ -199,8 +212,7 @@ const NetworkDetailScreen = () => {
                   {/* Center Node */}
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div
-                      className="w-20 h-20 rounded-full flex items-center justify-center text-white shadow-lg"
-                      style={{ backgroundColor: theme.bgColor }}
+                      className={`w-20 h-20 rounded-full flex items-center justify-center text-white shadow-lg ${theme.buttonBg}`}
                     >
                       <span className="text-2xl">🌐</span>
                     </div>
@@ -258,7 +270,9 @@ const NetworkDetailScreen = () => {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                     style={
-                      activeTab === tab.id ? { color: theme.textColor } : {}
+                      activeTab === tab.id
+                        ? { color: theme.textColor.replace("text-", "") }
+                        : {}
                     }
                   >
                     {tab.label}
@@ -329,11 +343,7 @@ const NetworkDetailScreen = () => {
                         .map((tag, i) => (
                           <span
                             key={i}
-                            className="px-3 py-1.5 rounded-lg text-sm font-medium"
-                            style={{
-                              backgroundColor: theme.lightBg,
-                              color: theme.textColor,
-                            }}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium ${theme.lightBg} ${theme.textColor}`}
                           >
                             #{tag}
                           </span>
@@ -362,10 +372,11 @@ const NetworkDetailScreen = () => {
 
                 {activeTab === "team" && (
                   <div className="space-y-6">
-                    <div className="flex items-center gap-5 p-5 rounded-xl bg-gradient-to-r from-green-50 to-teal-50">
+                    <div
+                      className={`flex items-center gap-5 p-5 rounded-xl bg-gradient-to-r ${theme.lightBg}`}
+                    >
                       <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg"
-                        style={{ backgroundColor: theme.bgColor }}
+                        className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg ${theme.buttonBg}`}
                       >
                         {productVisitorDetail?.student?.charAt(0)}
                       </div>
@@ -376,10 +387,7 @@ const NetworkDetailScreen = () => {
                         <p className="text-sm text-gray-500">
                           MSSV: {productVisitorDetail?.studentId}
                         </p>
-                        <p
-                          className="text-sm mt-1"
-                          style={{ color: theme.textColor }}
-                        >
+                        <p className={`text-sm mt-1 ${theme.textColor}`}>
                           🌐 Network Engineer
                         </p>
                       </div>
@@ -438,10 +446,7 @@ const NetworkDetailScreen = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-500">Ngành</span>
-                  <span
-                    className="font-medium"
-                    style={{ color: theme.textColor }}
-                  >
+                  <span className={`font-medium ${theme.textColor}`}>
                     {productVisitorDetail?.major}
                   </span>
                 </div>
@@ -461,8 +466,7 @@ const NetworkDetailScreen = () => {
 
               <div className="flex gap-3 mt-6">
                 <button
-                  className="flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-medium text-center transition-all hover:shadow-lg"
-                  style={{ backgroundColor: theme.bgColor }}
+                  className={`flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-medium text-center transition-all hover:shadow-lg ${theme.buttonBg}`}
                 >
                   🔍 Scan Network
                 </button>
@@ -503,7 +507,7 @@ const NetworkDetailScreen = () => {
                   {productVisitorDetail.tags.map((tag, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:scale-105 transition-transform"
+                      className={`px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:scale-105 transition-transform ${theme.hoverBg} ${theme.hoverText}`}
                     >
                       #{tag}
                     </span>
@@ -515,11 +519,9 @@ const NetworkDetailScreen = () => {
         </div>
       </main>
 
+      {/* Footer */}
       <footer
-        className="mt-16 py-8 text-white"
-        style={{
-          background: `linear-gradient(135deg, ${theme.bgColor} 0%, #065F46 100%)`,
-        }}
+        className={`mt-16 py-8 text-white bg-gradient-to-r ${theme.headerGradient}`}
       >
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm">

@@ -369,6 +369,7 @@ class ProductRepository extends BaseRepository
             ->select(
                 'p.*',
                 'm.major_name as major',
+                'm.major_code',
                 'u.name as student',
                 'u.user_id as studentId',
                 'gv.name as advisor',
@@ -517,6 +518,7 @@ class ProductRepository extends BaseRepository
 
             'major_id' => $product->major_id,
             'major' => $product->major,
+            'major_code' => $product->major_code,
 
             'type' => $product->type,
 

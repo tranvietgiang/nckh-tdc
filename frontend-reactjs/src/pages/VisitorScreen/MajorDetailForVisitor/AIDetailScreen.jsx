@@ -1,27 +1,34 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react"; // ✅ bỏ useEffect
+import { useNavigate } from "react-router-dom";
 import BackButton from "../../../components/common/BackButton";
-import { getMajorTheme } from "../../../utils/uploadProductScreen/uploadRegistry";
-import useMajorName from "../../../hooks/common/useMajorName";
 import useImageViewer from "../../../shared/useImageViewer";
 import { Icons } from "../../../components/common/Icon";
-import useVisitorProduct from "../../../hooks/useProduct/useVisitorDetail";
 
-const AIDetailScreen = () => {
+const AIDetailScreen = ({
+  productVisitorDetail,
+  loadingVisitorDetail,
+  errorVisitorDetail,
+  theme, // theme từ file getTheme
+}) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("model");
+  const [isLiked, setIsLiked] = useState(false);
+  // ✅ Khởi tạo trực tiếp, không cần useEffect
+  const [likeCount, setLikeCount] = useState(productVisitorDetail?.likes || 0);
   const { openViewer, ImageViewerModal } = useImageViewer();
 
-  const location = useLocation();
-  const id = location.state?.productId;
-
-  const { productVisitorDetail, visitorProductLoading, visitorProductError } =
-    useVisitorProduct(id);
-
-  const theme = getMajorTheme(useMajorName(productVisitorDetail?.major));
   const majorDetail = productVisitorDetail?.major_detail || {};
 
-  if (visitorProductLoading) {
+  const handleLike = () => {
+    if (isLiked) {
+      setLikeCount(likeCount - 1);
+    } else {
+      setLikeCount(likeCount + 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
+  if (loadingVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50">
         <div className="text-center">
@@ -32,7 +39,7 @@ const AIDetailScreen = () => {
     );
   }
 
-  if (visitorProductError || !productVisitorDetail) {
+  if (errorVisitorDetail || !productVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50">
         <div className="text-center">
@@ -53,14 +60,18 @@ const AIDetailScreen = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
       <ImageViewerModal />
 
-      {/* Header Gradient */}
-      <div className="relative bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 text-white">
+      {/* Header Gradient - dùng theme.headerGradient */}
+      <div
+        className={`relative bg-gradient-to-r ${theme.headerGradient} text-white`}
+      >
         <div className="absolute inset-0 bg-black/10"></div>
         <header className="relative z-10 container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <BackButton variant="light" />
             <div className="flex gap-3">
-              <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium">
+              <span
+                className={`px-3 py-1.5 ${theme.badgeBg} backdrop-blur-sm rounded-full text-xs font-medium`}
+              >
                 🤖 AI • {majorDetail.model_used || "Deep Learning"}
               </span>
               <button
@@ -87,10 +98,17 @@ const AIDetailScreen = () => {
                 <Icons.Eye className="w-4 h-4" />{" "}
                 {productVisitorDetail?.views?.toLocaleString()} lượt xem
               </div>
-              <div className="flex items-center gap-2">
-                <Icons.Heart className="w-4 h-4" />{" "}
-                {productVisitorDetail?.likes?.toLocaleString()} yêu thích
-              </div>
+              <button
+                onClick={handleLike}
+                className="flex items-center gap-2 transition-transform hover:scale-110"
+              >
+                {isLiked ? (
+                  <Icons.Heart className="w-4 h-4 fill-red-500 text-red-500" />
+                ) : (
+                  <Icons.Heart className="w-4 h-4" />
+                )}
+                <span>{likeCount?.toLocaleString()} yêu thích</span>
+              </button>
               <div className="flex items-center gap-2">
                 📅 {productVisitorDetail?.year}
               </div>
@@ -101,14 +119,13 @@ const AIDetailScreen = () => {
       </div>
 
       <main className="container mx-auto px-4 -mt-8">
-        {/* Stats Cards - Đẹp hơn */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             {
               icon: "🎯",
               value: majorDetail.accuracy_score || "99.1%",
               label: "Độ chính xác",
-              suffix: "%",
             },
             {
               icon: "📊",
@@ -131,10 +148,7 @@ const AIDetailScreen = () => {
               className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <div className="text-3xl mb-2">{stat.icon}</div>
-              <div
-                className="text-2xl font-bold"
-                style={{ color: theme.textColor }}
-              >
+              <div className={`text-2xl font-bold ${theme.textColor}`}>
                 {stat.value}
               </div>
               <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
@@ -145,7 +159,7 @@ const AIDetailScreen = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Main Image - Carousel Style */}
+            {/* Main Image */}
             <div
               className="bg-white rounded-2xl overflow-hidden shadow-lg group cursor-pointer relative"
               onClick={() => openViewer(productVisitorDetail?.thumbnail)}
@@ -193,7 +207,7 @@ const AIDetailScreen = () => {
               </div>
             )}
 
-            {/* Tabs - Modern Pill Style */}
+            {/* Tabs */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="flex gap-1 p-2 bg-gray-50/80 border-b">
                 {[
@@ -211,7 +225,9 @@ const AIDetailScreen = () => {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                     style={
-                      activeTab === tab.id ? { color: theme.textColor } : {}
+                      activeTab === tab.id
+                        ? { color: theme.textColor.replace("text-", "") }
+                        : {}
                     }
                   >
                     {tab.label}
@@ -230,11 +246,7 @@ const AIDetailScreen = () => {
                         {productVisitorDetail?.technologies?.map((tech, i) => (
                           <span
                             key={i}
-                            className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:scale-105"
-                            style={{
-                              backgroundColor: theme.lightBg,
-                              color: theme.textColor,
-                            }}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:scale-105 ${theme.lightBg} ${theme.textColor}`}
                           >
                             {tech}
                           </span>
@@ -275,11 +287,10 @@ const AIDetailScreen = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="p-5 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 text-center">
-                      <div
-                        className="text-4xl font-bold"
-                        style={{ color: theme.textColor }}
-                      >
+                    <div
+                      className={`p-5 rounded-xl bg-gradient-to-r ${theme.lightBg} text-center`}
+                    >
+                      <div className={`text-4xl font-bold ${theme.textColor}`}>
                         {majorDetail.accuracy_score || "99.1"}%
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
@@ -310,10 +321,7 @@ const AIDetailScreen = () => {
                         className="flex justify-between items-center p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
                       >
                         <span className="text-gray-600">{item.label}</span>
-                        <span
-                          className="font-semibold"
-                          style={{ color: theme.textColor }}
-                        >
+                        <span className={`font-semibold ${theme.textColor}`}>
                           {item.value}
                         </span>
                       </div>
@@ -323,10 +331,11 @@ const AIDetailScreen = () => {
 
                 {activeTab === "team" && (
                   <div className="space-y-6">
-                    <div className="flex items-center gap-5 p-5 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50">
+                    <div
+                      className={`flex items-center gap-5 p-5 rounded-xl bg-gradient-to-r ${theme.lightBg}`}
+                    >
                       <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg"
-                        style={{ backgroundColor: theme.bgColor }}
+                        className={`w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg ${theme.buttonBg}`}
                       >
                         {productVisitorDetail?.student?.charAt(0)}
                       </div>
@@ -337,10 +346,7 @@ const AIDetailScreen = () => {
                         <p className="text-sm text-gray-500">
                           MSSV: {productVisitorDetail?.studentId}
                         </p>
-                        <p
-                          className="text-sm mt-1"
-                          style={{ color: theme.textColor }}
-                        >
+                        <p className={`text-sm mt-1 ${theme.textColor}`}>
                           🎓 Sinh viên thực hiện
                         </p>
                       </div>
@@ -392,7 +398,7 @@ const AIDetailScreen = () => {
             </div>
           </div>
 
-          {/* Right Column - Sidebar */}
+          {/* Right Column */}
           <div className="space-y-6">
             {/* Info Card */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -402,10 +408,7 @@ const AIDetailScreen = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-500">Ngành</span>
-                  <span
-                    className="font-medium"
-                    style={{ color: theme.textColor }}
-                  >
+                  <span className={`font-medium ${theme.textColor}`}>
                     {productVisitorDetail?.major}
                   </span>
                 </div>
@@ -431,8 +434,7 @@ const AIDetailScreen = () => {
 
               <div className="flex gap-3 mt-6">
                 <button
-                  className="flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-medium transition-all hover:opacity-90 hover:shadow-lg"
-                  style={{ backgroundColor: theme.bgColor }}
+                  className={`flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-medium transition-all hover:opacity-90 hover:shadow-lg ${theme.buttonBg}`}
                 >
                   🤖 Demo AI
                 </button>
@@ -452,11 +454,13 @@ const AIDetailScreen = () => {
                       href={productVisitorDetail.resources.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group"
+                      className={`flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group ${theme.hoverBg}`}
                     >
                       <span className="text-2xl">📦</span>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-800 group-hover:text-purple-600 transition">
+                        <div
+                          className={`font-medium text-gray-800 ${theme.hoverText} transition`}
+                        >
                           GitHub Repository
                         </div>
                         <div className="text-xs text-gray-400">
@@ -473,11 +477,13 @@ const AIDetailScreen = () => {
                       href={productVisitorDetail.resources.demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group"
+                      className={`flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition group ${theme.hoverBg}`}
                     >
                       <span className="text-2xl">🚀</span>
                       <div className="flex-1">
-                        <div className="font-medium text-gray-800 group-hover:text-purple-600 transition">
+                        <div
+                          className={`font-medium text-gray-800 ${theme.hoverText} transition`}
+                        >
                           Live Demo
                         </div>
                         <div className="text-xs text-gray-400">
@@ -503,7 +509,7 @@ const AIDetailScreen = () => {
                   {productVisitorDetail.tags.map((tag, i) => (
                     <span
                       key={i}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:scale-105 transition-transform"
+                      className={`px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium hover:scale-105 transition-transform ${theme.hoverBg} ${theme.hoverText}`}
                     >
                       #{tag}
                     </span>
@@ -537,10 +543,7 @@ const AIDetailScreen = () => {
 
       {/* Footer */}
       <footer
-        className="mt-16 py-8 text-white"
-        style={{
-          background: `linear-gradient(135deg, ${theme.bgColor} 0%, #4C1D95 100%)`,
-        }}
+        className={`mt-16 py-8 text-white bg-gradient-to-r ${theme.headerGradient}`}
       >
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm">
