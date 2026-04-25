@@ -62,4 +62,12 @@ class ProductController extends Controller
             $result
         );
     }
+
+    public function getVisitorProductById($id)
+    {
+        $result = $this->productService->getVisitorProductById($id);
+        return response()->json(
+            $result
+        );
+    }
 }

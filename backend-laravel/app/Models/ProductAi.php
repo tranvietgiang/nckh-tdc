@@ -19,8 +19,6 @@ class ProductAi extends Model
         'language',
         'dataset_used',
         'accuracy_score',
-        'github_link',
-        'demo_link',
     ];
 
     protected $casts = [

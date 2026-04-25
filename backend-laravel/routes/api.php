@@ -86,4 +86,5 @@ Route::get('/category/all', [CategoryController::class, 'getAllCategories'])->mi
 Route::prefix('visitor')->group(function () {
     Route::get('/products', [ProductController::class, 'getProductsVisitor']);
     Route::get('/majors', [MajorController::class, 'getMajorAll']);
+    Route::get('/product/{id}', [ProductController::class, 'getVisitorProductById']);
 });

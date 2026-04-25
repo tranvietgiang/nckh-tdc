@@ -344,8 +344,6 @@ class ProductSeeder extends Seeder
                 'language' => $languages[array_rand($languages)],
                 'dataset_used' => $datasets[array_rand($datasets)],
                 'accuracy_score' => rand(85, 99) . '.' . rand(0, 9),
-                'github_link' => 'https://github.com/tdc/ai-project-' . ($i + 1),
-                'demo_link' => 'https://demo.tdc.edu.vn/ai-' . ($i + 1),
             ]);
         }
     }
@@ -440,8 +438,6 @@ class ProductSeeder extends Seeder
                 'programming_language' => $languages[array_rand($languages)],
                 'framework' => $frameworks[array_rand($frameworks)],
                 'database_used' => $databases[array_rand($databases)],
-                'github_link' => 'https://github.com/tdc/cntt-project-' . ($i + 1),
-                'demo_link' => 'https://demo.tdc.edu.vn/cntt-' . ($i + 1),
             ]);
         }
     }
@@ -537,7 +533,6 @@ class ProductSeeder extends Seeder
                 'network_protocol' => $protocols[array_rand($protocols)],
                 'topology_type' => $topologies[array_rand($topologies)],
                 'config_file' => 'configs/config_' . ($i + 1) . '.txt',
-                'demo_link' => 'https://demo.tdc.edu.vn/network-' . ($i + 1),
             ]);
         }
     }
@@ -632,7 +627,7 @@ class ProductSeeder extends Seeder
                 'product_id' => $product->product_id,
                 'design_type' => $designTypes[array_rand($designTypes)],
                 'tools_used' => $tools[array_rand($tools)],
-                'demo_link' => 'https://demo.tdc.edu.vn/graphic-' . ($i + 1),
+                'drive_link' => 'https://drive.google.com/drive/folders/tdc/graphic-' . ($i + 1),
                 'behance_link' => 'https://www.behance.net/tdc/graphic-' . ($i + 1),
             ]);
         }
@@ -670,6 +665,8 @@ class ProductSeeder extends Seeder
             'approved_by' => $teacher->user_id,
             'submitted_at' => $submittedAt,
             'approved_at' => $approvedAt,
+            'github_link' => 'https://demo.tdc.edu.vn/github-link',
+            'demo_link' => 'https://demo.tdc.edu.vn/demo-link',
         ]);
     }
 }

@@ -18,6 +18,5 @@ class ProductGraphic extends Model
         'tools_used',
         'drive_link',
         'behance_link',
-        'demo_link',
     ];
 }

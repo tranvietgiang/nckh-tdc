@@ -40,4 +40,13 @@ class ProductService extends BaseRepository
     {
         return $this->productRepository->getProductsVisitor();
     }
+
+    public function getVisitorProductById($productId): ?array
+    {
+        if (!$this->productRepository->productExists($productId)) {
+            return  null;
+        };
+
+        return $this->productRepository->getVisitorProductById($productId);
+    }
 }

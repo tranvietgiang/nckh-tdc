@@ -19,10 +19,12 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('simulation_tool', 100);
+
             $table->string('network_protocol', 100);
+
             $table->string('topology_type', 50);
+
             $table->string('config_file', 255)->nullable();
-            $table->string('demo_link', 255)->nullable();
 
             $table->timestamps();
         });

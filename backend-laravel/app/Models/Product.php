@@ -16,13 +16,14 @@ class Product extends Model
         'title',
         'description',
         'thumbnail',
-        'github_link',
-        'demo_link',
         'status',
         'user_id',
         'major_id',
         'cate_id',
         'approved_by',
-        'approved_at'
+        'awards',
+        'github_link',
+        'demo_link',
+        'approved_at',
     ];
 }
