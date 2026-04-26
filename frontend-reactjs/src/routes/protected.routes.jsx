@@ -2,7 +2,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AdminScreen from "../pages/admin/AdminScreen";
 import StudentScreen from "../pages/student/StudentScreen";
 import UploadProductScreen from "../pages/uploadProductScreen/UploadProductScreen";
-import ProductDetailScreen from "../pages/productDetailScreen/ProductDetailScreen";
+import ItDetail from "../components/student-detail/ItDetail";
+// import ProductDetailScreen from "../pages/productDetailScreen/ProductDetailScreen";
 import NotFoundScreen from "../pages/notFoundScreen/NotFoundScreen";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
@@ -51,7 +52,9 @@ function RoleRoutes() {
         path="/product-detail"
         element={
           <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
-            <ProductDetailScreen />
+            {/* <ProductDetailScreen /> */}
+            {/* <GraphicDetail /> */}
+            <ItDetail />
           </ProtectedRoute>
         }
       />
