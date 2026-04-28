@@ -73,12 +73,4 @@ class ProductController extends Controller
             $result
         );
     }
-
-    public function demoDetail(int $productId)
-    {
-        $result = $this->productService->demoDetail($productId);
-        return response()->json(
-            $result
-        );
-    }
 }

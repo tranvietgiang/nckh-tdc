@@ -98,4 +98,4 @@ Route::prefix('visitor')->group(function () {
 */
 // Route::get('/test/{id}', [MajorController::class, 'demoDetail']);
 
-Route::get('/demo-detail/{productId}', [ProductController::class, 'demoDetail']);
+// Route::get('/demo-detail/{productId}', [ProductController::class, 'demoDetail']);
