@@ -7,9 +7,14 @@ use App\Repositories\Traits\HasCurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Repositories\MajorRepository;
 
 class ProductRepository extends BaseRepository
 {
+
+    public function __construct(protected MajorRepository $majorRepository) {}
+
+
     // kiểm tra sản phẩm có tồn tại bằng id
     public function productExists(int $productId): bool
     {
@@ -149,6 +154,220 @@ class ProductRepository extends BaseRepository
         return $result;
     }
 
+    public function demoDetail(int $productId): ?array
+    {
+        $majorCode = strtolower($this->majorRepository->getMajorCodeByProductId($productId));
+        $userId = $this->getCurrentUserId();
+
+        $product = DB::table('products as p')
+            ->join('categories as c', 'p.cate_id', '=', 'c.cate_id')
+            ->join('majors as m', 'p.major_id', '=', 'm.major_id')
+            ->leftJoin('users as approved_user', 'p.approved_by', '=', 'approved_user.user_id')
+            ->leftJoin('users as u', 'p.user_id', '=', 'u.user_id')
+
+            // Join bảng detail theo major
+            ->leftJoin('product_ai as ai', 'p.product_id', '=', 'ai.product_id')
+            ->leftJoin('product_cntt as it', 'p.product_id', '=', 'it.product_id')
+            ->leftJoin('product_mmt as nw', 'p.product_id', '=', 'nw.product_id')
+            ->leftJoin('product_graphic as gr', 'p.product_id', '=', 'gr.product_id')
+
+            ->select(
+                'p.product_id',
+                'p.title',
+                'p.description',
+                'p.thumbnail',
+                'p.status',
+                'p.awards',
+                'p.github_link',
+                'p.demo_link',
+                'p.submitted_at',
+                'p.approved_at',
+                'p.created_at',
+                'p.updated_at',
+                'p.user_id',
+                'u.name as fullname',
+
+                'p.major_id',
+                'm.major_name',
+                'm.major_code',
+
+                'p.cate_id',
+                'c.category_name',
+
+                'p.approved_by',
+                'approved_user.name as approved_by_fullname',
+                'approved_user.email as approved_by_email',
+                'approved_user.role as approved_by_role',
+
+                // AI
+                'ai.model_used',
+                'ai.framework',
+                'ai.language',
+                'ai.dataset_used',
+                'ai.accuracy_score',
+
+                // CNTT
+                'it.programming_language',
+                'it.framework as it_framework',
+                'it.database_used',
+
+                // MMT
+                'nw.simulation_tool',
+                'nw.network_protocol',
+                'nw.topology_type',
+                'nw.config_file',
+
+                // TKDH
+                'gr.design_type',
+                'gr.tools_used',
+                'gr.drive_link',
+                'gr.behance_link',
+            )
+            ->where('p.user_id', $userId)
+            ->where('p.product_id', $productId)
+            ->first();
+
+        if (!$product) {
+            return null;
+        }
+
+        $images = DB::table('product_images')
+            ->where('product_id', $productId)
+            ->select('product_image_id', 'image_url', 'created_at')
+            ->get();
+
+        $files = DB::table('product_files')
+            ->where('product_id', $productId)
+            ->select('product_file_id', 'file_url', 'file_type', 'created_at')
+            ->get();
+
+        $tags = DB::table('product_tags')
+            ->where('product_id', $productId)
+            ->select('product_tag_id', 'tag_name')
+            ->get();
+
+        $reviews = DB::table('reviews')
+            ->leftJoin('users as teacher', 'reviews.teacher_id', '=', 'teacher.user_id')
+            ->where('reviews.product_id', $productId)
+            ->select(
+                'reviews.review_id',
+                'reviews.teacher_id',
+                'reviews.comment',
+                'reviews.created_at',
+                'teacher.user_id as teacher_user_id',
+                'teacher.name as teacher_fullname',
+                'teacher.email as teacher_email',
+                'teacher.role as teacher_role'
+            )
+            ->get();
+
+        $statistics = DB::table('product_statistics')
+            ->where('product_id', $productId)
+            ->select('views', 'downloads', 'shares')
+            ->first();
+
+        $result = [
+            'product_id' => $product->product_id,
+            'title' => $product->title,
+            'description' => $product->description,
+            'thumbnail' => $product->thumbnail,
+            'status' => $product->status,
+            'awards' => $product->awards,
+            'github_link' => $product->github_link,
+            'demo_link' => $product->demo_link,
+
+            'submitted_at' => $product->submitted_at,
+            'approved_at' => $product->approved_at,
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at,
+
+            'user_id' => $product->user_id,
+            'fullname' => $product->fullname,
+
+            'major' => [
+                'major_id' => $product->major_id,
+                'major_name' => $product->major_name,
+                'major_code' => $product->major_code,
+            ],
+
+            'category' => [
+                'cate_id' => $product->cate_id,
+                'name' => $product->category_name,
+            ],
+
+            'approved_by_user' => [
+                'user_id' => $product->approved_by,
+                'fullname' => $product->approved_by_fullname,
+                'email' => $product->approved_by_email,
+                'role' => $product->approved_by_role,
+            ],
+
+            'images' => $images,
+            'files' => $files,
+            'tags' => $tags,
+
+            'reviews' => $reviews->map(function ($review) {
+                return [
+                    'review_id' => $review->review_id,
+                    'teacher_id' => $review->teacher_id,
+                    'comment' => $review->comment,
+                    'created_at' => $review->created_at,
+                    'teacher' => [
+                        'user_id' => $review->teacher_user_id,
+                        'fullname' => $review->teacher_fullname,
+                        'email' => $review->teacher_email,
+                        'role' => $review->teacher_role,
+                    ],
+                ];
+            }),
+
+            'activity_logs' => [
+                'views' => $statistics->views ?? 0,
+                'downloads' => $statistics->downloads ?? 0,
+                'shares' => $statistics->shares ?? 0,
+            ],
+        ];
+
+        switch ($majorCode) {
+            case 'ai':
+                $result['ai_detail'] = [
+                    'model_used' => $product->model_used,
+                    'framework' => $product->framework,
+                    'language' => $product->language,
+                    'dataset_used' => $product->dataset_used,
+                    'accuracy_score' => $product->accuracy_score,
+                ];
+                break;
+
+            case 'cntt':
+                $result['it_detail'] = [
+                    'programming_language' => $product->programming_language,
+                    'framework' => $product->it_framework,
+                    'database_used' => $product->database_used,
+                ];
+                break;
+
+            case 'mmt':
+                $result['network_detail'] = [
+                    'simulation_tool' => $product->simulation_tool,
+                    'network_protocol' => $product->network_protocol,
+                    'topology_type' => $product->topology_type,
+                    'config_file' => $product->config_file,
+                ];
+                break;
+
+            case 'tkdh':
+                $result['graphic_detail'] = [
+                    'design_type' => $product->design_type,
+                    'tools_used' => $product->tools_used,
+                    'drive_link' => $product->drive_link,
+                    'behance_link' => $product->behance_link,
+                ];
+                break;
+        }
+
+        return $result;
+    }
     // lấy tất cả sản phẩm của học sinh theo id
     public function productAllById(): ?Collection
     {

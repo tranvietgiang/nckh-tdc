@@ -19,7 +19,7 @@ class ProductService extends BaseRepository
             return  null;
         };
 
-        return $this->productRepository->findProductById($productId);
+        return $this->productRepository->demoDetail($productId);
     }
 
     public function getAllProductsByUserId(): Collection
@@ -48,5 +48,14 @@ class ProductService extends BaseRepository
         };
 
         return $this->productRepository->getVisitorProductById($productId);
+    }
+
+    public function demoDetail(int $productId): ?array
+    {
+        // if (!$this->productRepository->productExists($productId)) {
+        //     return  null;
+        // }
+
+        return $this->productRepository->demoDetail($productId);
     }
 }
