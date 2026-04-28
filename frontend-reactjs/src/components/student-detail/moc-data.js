@@ -18,6 +18,7 @@ export const mockAiProduct = {
   updated_at: "2024-11-20T10:30:00Z",
   user_id: "SV2024001",
   fullname: "Nguyễn Văn An",
+
   major: {
     major_id: "MAJ001",
     major_name: "Trí tuệ nhân tạo",

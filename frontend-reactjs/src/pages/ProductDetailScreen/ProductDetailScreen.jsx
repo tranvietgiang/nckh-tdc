@@ -17,12 +17,15 @@ export default function ProductDetailScreen() {
   const id = location.state?.productId;
 
   const { product, loading, error } = useProductDetail(id);
-  const { majorName } = useMajorName(product?.major_id);
+  const { majorName } = useMajorName(product?.major?.major_id);
+
+  console.log(id);
 
   if (loading) return <p>Đang tải...</p>;
   if (error) return <p className="text-red-500">Có lỗi xảy ra</p>;
   if (!product) return <p>Sản phẩm không tồn tại</p>;
 
+  console.log(majorName, product);
   // chờ majorName
   if (!majorName) return <p>Đang tải ngành...</p>;
 

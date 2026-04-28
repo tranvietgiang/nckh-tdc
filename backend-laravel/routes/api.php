@@ -51,24 +51,26 @@ Route::middleware('auth:sanctum')->prefix('teacher')->group(function () {
     Route::get('/product/{product_id}', [ProductController::class, 'productViewIdTeacher']);
     Route::post('/product/{product_id}/approve', [TeacherController::class, 'teacherApprove']);
     Route::post('/product/reject', [TeacherController::class, 'teacherReject']);
-    Route::post('/product/reject', [TeacherController::class, 'teacherReject']);
 });
 /*
 |--------------------------------------------------------------------------
 | Teacher ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/teacher/statistic', [TeacherController::class, 'getTeacherStatistic'])->middleware('auth:sanctum');
-Route::get('/teacher', [TeacherController::class, 'getTeacherData'])->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/teacher/statistic', [TeacherController::class, 'getTeacherStatistic']);
+    Route::get('/teacher', [TeacherController::class, 'getTeacherData']);
+});
 
 /*
 |--------------------------------------------------------------------------
 | Upload ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/upload/count-published', [UploadController::class, 'countPublishedProducts'])->middleware('auth:sanctum');
-Route::post('/upload', [UploadController::class, 'upload'])
-    ->middleware('auth:sanctum'); // guard token
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/upload/count-published', [UploadController::class, 'countPublishedProducts']);
+    Route::post('/upload', [UploadController::class, 'upload']); // guard token
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -87,3 +89,13 @@ Route::prefix('visitor')->group(function () {
     Route::get('/majors', [MajorController::class, 'getMajorAll']);
     Route::get('/product/{id}', [ProductController::class, 'getVisitorProductById']);
 });
+
+
+/*
+|--------------------------------------------------------------------------
+| test postman ROUTES
+|--------------------------------------------------------------------------
+*/
+// Route::get('/test/{id}', [MajorController::class, 'demoDetail']);
+
+Route::get('/demo-detail/{productId}', [ProductController::class, 'demoDetail']);
