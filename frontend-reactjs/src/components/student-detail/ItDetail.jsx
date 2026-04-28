@@ -1,24 +1,14 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import useProductDetail from "../../hooks/useProduct/useProductDetail";
 import useTitle from "../../hooks/common/useTitle";
 import useImageViewer from "../../shared/useImageViewer";
-import { getMajorTheme } from "../../utils/uploadProductScreen/uploadRegistry";
 import { formatDate } from "../../utils/formatDate";
 import { STATUS } from "../../utils/constants";
 import { Icons } from "../../components/common/Icon";
-import { mockItProduct } from "./moc-data";
-const ItDetail = () => {
+const ItDetail = ({ product, theme }) => {
   useTitle("Chi tiết sản phẩm CNTT");
-  const { state } = useLocation();
-  const id = state?.productId;
 
-  // const { product, loading, error } = useProductDetail(id);
-  const product = mockItProduct;
   const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
-
-  const theme = getMajorTheme(product?.major?.major_code);
 
   // if (loading) {
   //   return (

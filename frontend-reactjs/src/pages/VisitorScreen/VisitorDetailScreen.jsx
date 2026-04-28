@@ -25,9 +25,9 @@ export default function VisitorDetailScreen() {
 
   console.log(productVisitorDetail?.major_id);
 
-  console.log("majorName", majorName);
+  // console.log("majorName", majorName);
 
-  console.log(theme);
+  // console.log(theme);
 
   // loading
   if (loadingVisitorDetail) {

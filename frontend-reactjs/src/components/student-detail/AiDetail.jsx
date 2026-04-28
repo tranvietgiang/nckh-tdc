@@ -1,68 +1,60 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import useProductDetail from "../../hooks/useProduct/useProductDetail";
 import useTitle from "../../hooks/common/useTitle";
 import useImageViewer from "../../shared/useImageViewer";
-import { getMajorTheme } from "../../utils/uploadProductScreen/uploadRegistry";
 import { formatDate } from "../../utils/formatDate";
 import { STATUS } from "../../utils/constants";
 import { Icons } from "../../components/common/Icon";
 
-const AiDetail = () => {
+const AiDetail = ({ product, theme }) => {
   useTitle("Chi tiết sản phẩm AI");
-  const { state } = useLocation();
-  const id = state?.productId;
 
-  const { product, loading, error } = useProductDetail(id);
   const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
 
-  const theme = getMajorTheme(product?.major?.major_code);
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div
+  //           className={`w-16 h-16 border-4 border-${theme.primary}-600 border-t-transparent rounded-full animate-spin mx-auto mb-4`}
+  //         ></div>
+  //         <p className="text-gray-600">Đang tải thông tin sản phẩm AI...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div
-            className={`w-16 h-16 border-4 border-${theme.primary}-600 border-t-transparent rounded-full animate-spin mx-auto mb-4`}
-          ></div>
-          <p className="text-gray-600">Đang tải thông tin sản phẩm AI...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+  //           <Icons.AlertCircle />
+  //         </div>
+  //         <h2 className="text-xl font-bold text-gray-900 mb-2">
+  //           Có lỗi xảy ra
+  //         </h2>
+  //         <p className="text-gray-600">{error}</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icons.AlertCircle />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Có lỗi xảy ra
-          </h2>
-          <p className="text-gray-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Icons.AlertCircle />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Không tìm thấy sản phẩm
-          </h2>
-          <p className="text-gray-600">
-            Sản phẩm AI không tồn tại hoặc đã bị xóa.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (!product) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <Icons.AlertCircle />
+  //         <h2 className="text-xl font-bold text-gray-900 mb-2">
+  //           Không tìm thấy sản phẩm
+  //         </h2>
+  //         <p className="text-gray-600">
+  //           Sản phẩm AI không tồn tại hoặc đã bị xóa.
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Lấy thông tin AI specific fields
   const aiDetail = product.ai_detail || {};
