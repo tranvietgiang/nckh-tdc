@@ -7,9 +7,6 @@ import { Icons } from "../../components/common/Icon";
 
 const NetworkDetail = ({ product, theme }) => {
   useTitle("Chi tiết sản phẩm Mạng máy tính");
-
-  // const { product, loading, error } = useProductDetail(id);
-  // const product = mockNetworkProduct;
   const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
 

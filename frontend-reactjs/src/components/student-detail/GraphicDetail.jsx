@@ -1,23 +1,15 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import useProductDetail from "../../hooks/useProduct/useProductDetail";
+
 import useTitle from "../../hooks/common/useTitle";
 import useImageViewer from "../../shared/useImageViewer";
-import { getMajorTheme } from "../../utils/uploadProductScreen/uploadRegistry";
 import { formatDate } from "../../utils/formatDate";
 import { STATUS } from "../../utils/constants";
 import { Icons } from "../../components/common/Icon";
-import { mockGraphicProduct } from "./moc-data";
-const GraphicDetail = () => {
+const GraphicDetail = ({ product, theme }) => {
   useTitle("Chi tiết sản phẩm Thiết kế đồ họa");
-  // const { state } = useLocation();
-  // const id = state?.productId;
 
-  // const { product, loading, error } = useProductDetail(id);
   const { openViewer, ImageViewerModal } = useImageViewer();
   const [activeTab, setActiveTab] = useState("overview");
-  const product = mockGraphicProduct; // Sử dụng dữ liệu giả lập cho mục đích demo
-  const theme = getMajorTheme(product?.major?.major_code);
 
   // if (loading) {
   //   return (
