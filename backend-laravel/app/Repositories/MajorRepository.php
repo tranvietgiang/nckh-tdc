@@ -18,6 +18,13 @@ class MajorRepository
         return Major::where('major_id', $majorId)->exists();
     }
 
+    public function getMajorCodeByProductId(int $idProduct): ?string
+    {
+        return Major::leftJoin('products as p', 'majors.major_id', '=', 'p.major_id')
+            ->where('p.product_id', $idProduct)
+            ->value('majors.major_code');
+    }
+
     // lấy tất cả các ngành
     public function all()
     {

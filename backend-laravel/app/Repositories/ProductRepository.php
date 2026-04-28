@@ -7,49 +7,96 @@ use App\Repositories\Traits\HasCurrentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Repositories\MajorRepository;
 
 class ProductRepository extends BaseRepository
 {
+
+    public function __construct(protected MajorRepository $majorRepository) {}
+
+
     // kiểm tra sản phẩm có tồn tại bằng id
     public function productExists(int $productId): bool
     {
         return Product::where("product_id", $productId)->exists();
     }
 
-    // tìm một sản phẩm bằng id chi tiết
     public function findProductById(int $productId): ?array
     {
+        $majorCode = strtolower($this->majorRepository->getMajorCodeByProductId($productId));
         $userId = $this->getCurrentUserId();
-        $product = DB::table('products')
-            ->join('categories', 'products.cate_id', '=', 'categories.cate_id')
-            ->join('majors', 'products.major_id', '=', 'majors.major_id')
-            ->leftJoin('users as approved_user', 'products.approved_by', '=', 'approved_user.user_id')
+
+        $product = DB::table('products as p')
+            ->join('categories as c', 'p.cate_id', '=', 'c.cate_id')
+            ->join('majors as m', 'p.major_id', '=', 'm.major_id')
+            ->leftJoin('users as approved_user', 'p.approved_by', '=', 'approved_user.user_id')
+            ->leftJoin('users as u', 'p.user_id', '=', 'u.user_id')
+
+            // Join bảng detail theo major
+            ->leftJoin('product_ai as ai', 'p.product_id', '=', 'ai.product_id')
+            ->leftJoin('product_cntt as it', 'p.product_id', '=', 'it.product_id')
+            ->leftJoin('product_mmt as nw', 'p.product_id', '=', 'nw.product_id')
+            ->leftJoin('product_graphic as gr', 'p.product_id', '=', 'gr.product_id')
+
             ->select(
-                'products.product_id',
-                'products.title',
-                'products.description',
-                'products.thumbnail',
-                'products.github_link',
-                'products.demo_link',
-                'products.status',
-                'products.user_id',
-                'products.major_id',
-                'products.cate_id',
-                'products.approved_by',
-                'products.approved_at',
-                'products.created_at',
-                'products.updated_at',
-                'majors.major_name',
-                'majors.major_code',
-                'categories.category_name',
-                'categories.description as category_description',
+                'p.product_id',
+                'p.title',
+                'p.description',
+                'p.thumbnail',
+                'p.status',
+                'p.awards',
+                'p.github_link',
+                'p.demo_link',
+                'p.submitted_at',
+                'p.approved_at',
+                'p.created_at',
+                'p.updated_at',
+                'p.user_id',
+                'u.name as fullname',
+
+                'p.major_id',
+                'm.major_name',
+                'm.major_code',
+
+                'p.cate_id',
+                'c.category_name',
+
+                'p.approved_by',
                 'approved_user.name as approved_by_fullname',
                 'approved_user.email as approved_by_email',
-                'approved_user.role as approved_by_role'
+                'approved_user.role as approved_by_role',
+
+                // AI
+                'ai.model_used',
+                'ai.framework',
+                'ai.language',
+                'ai.dataset_used',
+                'ai.accuracy_score',
+
+                // CNTT
+                'it.programming_language',
+                'it.framework as it_framework',
+                'it.database_used',
+
+                // MMT
+                'nw.simulation_tool',
+                'nw.network_protocol',
+                'nw.topology_type',
+                'nw.config_file',
+
+                // TKDH
+                'gr.design_type',
+                'gr.tools_used',
+                'gr.drive_link',
+                'gr.behance_link',
             )
-            ->where('products.user_id', $userId)
-            ->where('products.product_id', $productId)
+            ->where('p.user_id', $userId)
+            ->where('p.product_id', $productId)
             ->first();
+
+        if (!$product) {
+            return null;
+        }
 
         $images = DB::table('product_images')
             ->where('product_id', $productId)
@@ -62,8 +109,8 @@ class ProductRepository extends BaseRepository
             ->get();
 
         $tags = DB::table('product_tags')
-            ->where('product_tags.product_id', $productId)
-            ->select('tags.tag_id', 'tags.tag_name')
+            ->where('product_id', $productId)
+            ->select('product_tag_id', 'tag_name')
             ->get();
 
         $reviews = DB::table('reviews')
@@ -86,22 +133,23 @@ class ProductRepository extends BaseRepository
             ->select('views', 'downloads', 'shares')
             ->first();
 
-
         $result = [
             'product_id' => $product->product_id,
             'title' => $product->title,
             'description' => $product->description,
             'thumbnail' => $product->thumbnail,
+            'status' => $product->status,
+            'awards' => $product->awards,
             'github_link' => $product->github_link,
             'demo_link' => $product->demo_link,
-            'status' => $product->status,
-            'user_id' => $product->user_id,
-            'major_id' => $product->major_id,
-            'cate_id' => $product->cate_id,
-            'approved_by' => $product->approved_by,
+
+            'submitted_at' => $product->submitted_at,
             'approved_at' => $product->approved_at,
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,
+
+            'user_id' => $product->user_id,
+            'fullname' => $product->fullname,
 
             'major' => [
                 'major_id' => $product->major_id,
@@ -112,7 +160,6 @@ class ProductRepository extends BaseRepository
             'category' => [
                 'cate_id' => $product->cate_id,
                 'name' => $product->category_name,
-                'description' => $product->category_description,
             ],
 
             'approved_by_user' => [
@@ -125,6 +172,7 @@ class ProductRepository extends BaseRepository
             'images' => $images,
             'files' => $files,
             'tags' => $tags,
+
             'reviews' => $reviews->map(function ($review) {
                 return [
                     'review_id' => $review->review_id,
@@ -139,6 +187,7 @@ class ProductRepository extends BaseRepository
                     ],
                 ];
             }),
+
             'activity_logs' => [
                 'views' => $statistics->views ?? 0,
                 'downloads' => $statistics->downloads ?? 0,
@@ -146,9 +195,46 @@ class ProductRepository extends BaseRepository
             ],
         ];
 
+        switch ($majorCode) {
+            case 'ai':
+                $result['ai_detail'] = [
+                    'model_used' => $product->model_used,
+                    'framework' => $product->framework,
+                    'language' => $product->language,
+                    'dataset_used' => $product->dataset_used,
+                    'accuracy_score' => $product->accuracy_score,
+                ];
+                break;
+
+            case 'cntt':
+                $result['it_detail'] = [
+                    'programming_language' => $product->programming_language,
+                    'framework' => $product->it_framework,
+                    'database_used' => $product->database_used,
+                ];
+                break;
+
+            case 'mmt':
+                $result['network_detail'] = [
+                    'simulation_tool' => $product->simulation_tool,
+                    'network_protocol' => $product->network_protocol,
+                    'topology_type' => $product->topology_type,
+                    'config_file' => $product->config_file,
+                ];
+                break;
+
+            case 'tkdh':
+                $result['graphic_detail'] = [
+                    'design_type' => $product->design_type,
+                    'tools_used' => $product->tools_used,
+                    'drive_link' => $product->drive_link,
+                    'behance_link' => $product->behance_link,
+                ];
+                break;
+        }
+
         return $result;
     }
-
     // lấy tất cả sản phẩm của học sinh theo id
     public function productAllById(): ?Collection
     {
@@ -353,5 +439,193 @@ class ProductRepository extends BaseRepository
                 'advisor' => $p->advisor ?? null,
             ])
             ->toArray();
+    }
+
+    public function getVisitorProductById($id): array
+    {
+        // ================= 1. GET PRODUCT =================
+        $product = DB::table('products as p')
+            ->join('majors as m', 'p.major_id', '=', 'm.major_id')
+            ->leftJoin('product_statistics as s', 'p.product_id', '=', 's.product_id')
+            ->leftJoin('categories as c', 'p.cate_id', '=', 'c.cate_id')
+            ->leftJoin('users as u', 'p.user_id', '=', 'u.user_id')
+            ->leftJoin('users as gv', 'p.approved_by', '=', 'gv.user_id')
+            ->where('p.product_id', $id)
+            ->where('p.status', 'approved')
+            ->select(
+                'p.*',
+                'm.major_name as major',
+                'm.major_code',
+                'u.name as student',
+                'u.user_id as studentId',
+                'gv.name as advisor',
+                'c.category_name as type',
+                's.views',
+                's.likes'
+            )
+            ->first();
+
+        if (!$product) return [];
+
+        $productId = $product->product_id;
+
+        // ================= 2. IMAGES =================
+        $images = DB::table('product_images')
+            ->where('product_id', $productId)
+            ->select('product_image_id', 'image_url')
+            ->get()
+            ->map(fn($i) => [
+                'product_image_id' => $i->product_image_id,
+                'image_url' => $i->image_url,
+            ])
+            ->toArray();
+
+        // ================= 3. TAGS =================
+        $tags = DB::table('product_tags')
+            ->where('product_id', $productId)
+            ->pluck('tag_name')
+            ->toArray();
+
+        // ================= 4. REVIEWS =================
+        $reviews = DB::table('reviews')
+            ->where('product_id', $productId)
+            ->select('comment', 'teacher_id')
+            ->get()
+            ->toArray();
+
+        // ================= 4. DETECT MAJOR =================
+        $major = strtolower(trim($product->major ?? ''));
+
+        $isAI = str_contains($major, 'ai')
+            || str_contains($major, 'trí tuệ')
+            || str_contains($major, 'artificial');
+
+        $isCNTT = str_contains($major, 'cntt')
+            || str_contains($major, 'công nghệ thông tin');
+
+        $isMMT = str_contains($major, 'mmt')
+            || str_contains($major, 'mạng')
+            || str_contains($major, 'network');
+
+        $isGRAPHIC = str_contains($major, 'tkdh')
+            || str_contains($major, 'graphic')
+            || str_contains($major, 'thiết kế');
+
+        // ================= 5. GET MAJOR DETAIL =================
+        $detail = null;
+
+        if ($isCNTT) {
+            $detail = DB::table('product_cntt')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        if ($isAI) {
+            $detail = DB::table('product_ai')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        if ($isMMT) {
+            $detail = DB::table('product_mmt')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        if ($isGRAPHIC) {
+            $detail = DB::table('product_graphic')
+                ->where('product_id', $productId)
+                ->first();
+        }
+
+        // ================= 6. TECHNOLOGIES =================
+        $technologies = [];
+
+        if ($isCNTT && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->programming_language ?? null,
+                $detail->framework ?? null,
+                $detail->database_used ?? null,
+            ]));
+        }
+
+        if ($isAI && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->model_used ?? null,
+                $detail->framework ?? null,
+                $detail->language ?? null,
+                $detail->dataset_used ?? null,
+            ]));
+        }
+
+        if ($isMMT && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->simulation_tool ?? null,
+                $detail->network_protocol ?? null,
+                $detail->topology_type ?? null,
+            ]));
+        }
+
+        if ($isGRAPHIC && $detail) {
+            $technologies = array_values(array_filter([
+                $detail->design_type ?? null,
+                $detail->tools_used ?? null,
+            ]));
+        }
+
+        // ================= 7. RESOURCES =================
+        $resources = [
+            'github' => $product->github_link ?? null,
+            'demo' => $product->demo_link ?? null,
+            'drive' => $detail->drive_link ?? null,
+            'behance' => $detail->behance_link ?? null,
+            'config_file' => $detail->config_file ?? null,
+        ];
+
+        // ================= 8. RETURN =================
+        return [
+            'id' => $product->product_id,
+            'title' => $product->title,
+            'description' => $product->description,
+            'thumbnail' => $product->thumbnail,
+
+            'images' => $images,
+
+            'year' => $product->created_at
+                ? date('Y', strtotime($product->created_at))
+                : null,
+
+            'approved_at' => $product->approved_at
+                ? date('Y-m-d H:i:s', strtotime($product->approved_at))
+                : null,
+
+            'student' => $product->student ?? 'Ẩn danh',
+            'studentId' => $product->studentId,
+
+            'major_id' => $product->major_id,
+            'major' => $product->major,
+            'major_code' => $product->major_code,
+
+            'type' => $product->type,
+
+            'views' => (int) ($product->views ?? 0),
+            'likes' => (int) ($product->likes ?? 0),
+
+            'advisor' => $product->advisor,
+
+            'technologies' => $technologies,
+
+            'resources' => $resources,
+
+            'awards' => $product->awards
+                ? json_decode($product->awards, true)
+                : [],
+
+            'feedback' => array_map(fn($r) => $r->comment, $reviews),
+
+            'tags' => $tags,
+
+            'major_detail' => $detail,
+        ];
     }
 }

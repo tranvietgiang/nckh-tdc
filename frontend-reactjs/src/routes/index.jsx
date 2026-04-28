@@ -6,6 +6,7 @@ import VisitorScreen from "../pages/visitorScreen/VisitorScreen";
 import VisitorDetailScreen from "../pages/visitorScreen/VisitorDetailScreen";
 import NotFoundPage from "../pages/notFoundScreen/NotFoundScreen";
 import Profile from "../layouts/ProfileLayout";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -20,13 +21,12 @@ function AppRoutes() {
         />
 
         <Route path="/nckh-visitor" element={<VisitorScreen />} />
-        <Route path="/nckh-visitor-detail" element={<VisitorDetailScreen />} />
+
+        <Route path="/visitor-detail" element={<VisitorDetailScreen />} />
 
         <Route path="/nckh-profile" element={<Profile />} />
 
-        <Route path="/404" element={<NotFoundPage />} />
-
-        <Route path="/*" element={<RoleRoutes />} />
+        <Route path="*" element={<RoleRoutes />} />
       </Routes>
     </BrowserRouter>
   );

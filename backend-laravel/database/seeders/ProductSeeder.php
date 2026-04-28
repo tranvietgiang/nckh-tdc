@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Major;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use App\Models\ProductAi;
@@ -344,8 +345,6 @@ class ProductSeeder extends Seeder
                 'language' => $languages[array_rand($languages)],
                 'dataset_used' => $datasets[array_rand($datasets)],
                 'accuracy_score' => rand(85, 99) . '.' . rand(0, 9),
-                'github_link' => 'https://github.com/tdc/ai-project-' . ($i + 1),
-                'demo_link' => 'https://demo.tdc.edu.vn/ai-' . ($i + 1),
             ]);
         }
     }
@@ -440,8 +439,6 @@ class ProductSeeder extends Seeder
                 'programming_language' => $languages[array_rand($languages)],
                 'framework' => $frameworks[array_rand($frameworks)],
                 'database_used' => $databases[array_rand($databases)],
-                'github_link' => 'https://github.com/tdc/cntt-project-' . ($i + 1),
-                'demo_link' => 'https://demo.tdc.edu.vn/cntt-' . ($i + 1),
             ]);
         }
     }
@@ -537,7 +534,6 @@ class ProductSeeder extends Seeder
                 'network_protocol' => $protocols[array_rand($protocols)],
                 'topology_type' => $topologies[array_rand($topologies)],
                 'config_file' => 'configs/config_' . ($i + 1) . '.txt',
-                'demo_link' => 'https://demo.tdc.edu.vn/network-' . ($i + 1),
             ]);
         }
     }
@@ -632,7 +628,7 @@ class ProductSeeder extends Seeder
                 'product_id' => $product->product_id,
                 'design_type' => $designTypes[array_rand($designTypes)],
                 'tools_used' => $tools[array_rand($tools)],
-                'demo_link' => 'https://demo.tdc.edu.vn/graphic-' . ($i + 1),
+                'drive_link' => 'https://drive.google.com/drive/folders/tdc/graphic-' . ($i + 1),
                 'behance_link' => 'https://www.behance.net/tdc/graphic-' . ($i + 1),
             ]);
         }
@@ -643,11 +639,21 @@ class ProductSeeder extends Seeder
     | Product chung
     |--------------------------------------------------------------------------
     */
+    private function getRandomStatus(): string
+    {
+        $statuses = ['pending', 'approved', 'rejected'];
+
+        return $statuses[array_rand($statuses)];
+    }
 
     private function createProduct($title, $description, $majorId, $thumbnail)
     {
         $student = User::where('role', 'student')->inRandomOrder()->first();
         $teacher = User::where('role', 'teacher')->inRandomOrder()->first();
+
+        $majorID = Major::join('products', 'majors.major_id', '=', 'product.major_id')
+            ->join('users', 'majors.major_id', '=', 'users.major_id')
+            ->select('majors.major_id');
 
         if (!$student) {
             $student = User::first();
@@ -663,13 +669,15 @@ class ProductSeeder extends Seeder
             'title' => $title,
             'description' => $description,
             'thumbnail' => $thumbnail,
-            'status' => 'approved',
+            'status' => $this->getRandomStatus(),
             'user_id' => $student->user_id,
-            'major_id' => $majorId,
+            'major_id' => $student->major_id,
             'cate_id' => Category::inRandomOrder()->value('cate_id'),
             'approved_by' => $teacher->user_id,
             'submitted_at' => $submittedAt,
             'approved_at' => $approvedAt,
+            'github_link' => 'https://demo.tdc.edu.vn/github-link',
+            'demo_link' => 'https://demo.tdc.edu.vn/demo-link',
         ]);
     }
 }

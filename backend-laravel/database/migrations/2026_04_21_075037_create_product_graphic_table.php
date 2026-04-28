@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('tools_used', 150);
             $table->string('drive_link', 255)->nullable();
             $table->string('behance_link', 255)->nullable();
-            $table->string('demo_link', 255)->nullable();
 
             $table->timestamps();
         });

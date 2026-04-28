@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
 import useMajorAll from "../../hooks/common/useMajorAll";
@@ -29,7 +29,7 @@ const majorIcons = {
   "Thiết kế đồ họa": "🎨",
 };
 
-const VisitorScreen = () => {
+export default function VisitorScreen() {
   const [likedProducts, setLikedProducts] = useState({});
   const [selectedMajor, setSelectedMajor] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
@@ -46,17 +46,16 @@ const VisitorScreen = () => {
   const { majorAll, loadingMajorAll } = useMajorAll();
   const { productVisitor, loadingVisitor, errorVisitor } = useVisitorProduct();
 
+  const handleViewDetail = (id) => {
+    navigate("/visitor-detail", { state: { productId: id } });
+  };
+
   const handleLike = (id) => {
     setLikedProducts((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
   };
-
-  // reset page khi đổi filter
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedMajor, sortBy]);
 
   const filteredProducts = useMemo(() => {
     return [...productVisitor]
@@ -148,7 +147,7 @@ const VisitorScreen = () => {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate("/nckh-login")}
+                onClick={() => navigate("/login")}
                 className="px-5 py-2 text-[#003087] border border-[#003087] rounded-md font-medium text-sm hover:bg-[#003087] hover:text-white transition-all"
               >
                 Đăng nhập
@@ -226,7 +225,10 @@ const VisitorScreen = () => {
             <select
               className="px-4 py-2.5 bg-gray-50 rounded-md outline-none text-gray-600 text-sm border-0 cursor-pointer"
               value={selectedMajor}
-              onChange={(e) => setSelectedMajor(e.target.value)}
+              onChange={(e) => {
+                setSelectedMajor(e.target.value);
+                setCurrentPage(1);
+              }}
               disabled={loadingMajorAll}
             >
               {loadingMajorAll ? (
@@ -301,7 +303,10 @@ const VisitorScreen = () => {
                   key={product.id}
                   className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
                 >
-                  <div className="relative h-48 bg-gray-100 overflow-hidden">
+                  <div
+                    onClick={() => handleViewDetail(product?.id)}
+                    className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer"
+                  >
                     <img
                       src={product?.thumbnail}
                       alt={product?.title}
@@ -380,7 +385,7 @@ const VisitorScreen = () => {
                       </div>
 
                       <button
-                        onClick={() => navigate(`/product/${product.id}`)}
+                        onClick={() => handleViewDetail(product?.id)}
                         className="px-3 py-1 bg-white border border-[#003087] text-[#003087] text-xs rounded-md hover:bg-[#003087] hover:text-white transition"
                       >
                         Xem chi tiết
@@ -451,6 +456,4 @@ const VisitorScreen = () => {
       </footer>
     </div>
   );
-};
-
-export default VisitorScreen;
+}

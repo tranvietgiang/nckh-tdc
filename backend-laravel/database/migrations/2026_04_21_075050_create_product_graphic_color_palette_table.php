@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_cntt', function (Blueprint $table) {
-            $table->id('product_cntt_id');
+        Schema::create('product_graphic_color_palette', function (Blueprint $table) {
+            $table->id('product_graphic_color_palette_id');
 
-            $table->foreignId('product_id')
-                ->constrained('products', 'product_id')
+            $table->foreignId('product_graphic_id')
+                ->constrained('product_graphic', 'product_graphic_id')
                 ->cascadeOnDelete();
 
-            $table->string('programming_language', 50);
-            $table->string('framework', 100);
-            $table->string('database_used', 100);
+            $table->string('color_palette_name', 100);
 
             $table->timestamps();
         });
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_cntt');
+        Schema::dropIfExists('product_graphic_color_palette');
     }
 };
