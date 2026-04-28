@@ -303,7 +303,10 @@ export default function VisitorScreen() {
                   key={product.id}
                   className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100"
                 >
-                  <div className="relative h-48 bg-gray-100 overflow-hidden">
+                  <div
+                    onClick={() => handleViewDetail(product?.id)}
+                    className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer"
+                  >
                     <img
                       src={product?.thumbnail}
                       alt={product?.title}
