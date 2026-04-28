@@ -648,18 +648,21 @@ class ProductSeeder extends Seeder
 
     private function createProduct($title, $description, $majorId, $thumbnail)
     {
-        $student = User::where('role', 'student')->inRandomOrder()->first();
-        $teacher = User::where('role', 'teacher')->inRandomOrder()->first();
+        $student = User::where('role', 'student')
+            ->where('major_id', $majorId)
+            ->inRandomOrder()
+            ->first();
 
-        $majorID = Major::join('products', 'majors.major_id', '=', 'product.major_id')
-            ->join('users', 'majors.major_id', '=', 'users.major_id')
-            ->select('majors.major_id');
+        $teacher = User::where('role', 'teacher')
+            ->inRandomOrder()
+            ->first();
 
         if (!$student) {
-            $student = User::first();
+            $student = User::where('role', 'student')->first();
         }
+
         if (!$teacher) {
-            $teacher = $student;
+            $teacher = User::first();
         }
 
         $submittedAt = now()->subDays(rand(10, 60));
@@ -671,7 +674,7 @@ class ProductSeeder extends Seeder
             'thumbnail' => $thumbnail,
             'status' => $this->getRandomStatus(),
             'user_id' => $student->user_id,
-            'major_id' => $student->major_id,
+            'major_id' => $majorId,
             'cate_id' => Category::inRandomOrder()->value('cate_id'),
             'approved_by' => $teacher->user_id,
             'submitted_at' => $submittedAt,

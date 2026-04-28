@@ -371,8 +371,6 @@ class ProductRepository extends BaseRepository
         return $product->update($data);
     }
 
-
-
     public function findByIdPAndIdMajor($productId, $majorId): ?Product
     {
         return Product::where('product_id', $productId)
