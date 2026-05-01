@@ -28,7 +28,6 @@ const UploadProductForm_Network = ({
   handlePrevStep,
   handleNextStep,
   loading,
-  isAllStepsCompleted,
   setSelectedImage,
   handleSaveDraft,
   drafts,
@@ -215,15 +214,15 @@ const UploadProductForm_Network = ({
                     }`}
                   >
                     <option value="">Chọn loại</option>
-                    <option value="lan">LAN - Mạng cục bộ</option>
-                    <option value="wan">WAN - Mạng diện rộng</option>
-                    <option value="vlan">VLAN - Mạng ảo</option>
-                    <option value="wifi">WiFi / Mạng không dây</option>
-                    <option value="sdn">
+                    <option value="LAN">LAN - Mạng cục bộ</option>
+                    <option value="WAN">WAN - Mạng diện rộng</option>
+                    <option value="VLAN">VLAN - Mạng ảo</option>
+                    <option value="WiFi">WiFi / Mạng không dây</option>
+                    <option value="SDN">
                       SDN - Mạng định nghĩa bằng phần mềm
                     </option>
-                    <option value="cloud">Cloud Network</option>
-                    <option value="security">An ninh mạng</option>
+                    <option value="Cloud">Cloud Network</option>
+                    <option value="Security">An ninh mạng</option>
                   </select>
                   {errors.network_type && (
                     <p className="mt-2 text-sm text-red-600">
@@ -240,14 +239,51 @@ const UploadProductForm_Network = ({
                 </label>
                 <input
                   type="text"
-                  name="technologies"
-                  value={formData.technologies}
+                  name="network_protocol"
+                  value={formData.network_protocol}
                   onChange={handleChange}
-                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
-                  placeholder="TCP/IP, OSPF, BGP, VLAN, MPLS, VPN..."
+                  className={`w-full rounded-xl border-2 px-4 py-3 ${
+                    errors.network_protocol
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
+                  placeholder="VD: OSPF, BGP, SMTP, HTTP/HTTPS..."
                 />
+                {errors.network_protocol && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.network_protocol}
+                  </p>
+                )}
               </div>
-
+              {/* Topology */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Loại topology <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="topology_type"
+                  value={formData.topology_type}
+                  onChange={handleChange}
+                  className={`w-full rounded-xl border-2 px-4 py-3 ${
+                    errors.topology_type
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <option value="">Chọn topology</option>
+                  <option value="Star">Star</option>
+                  <option value="Mesh">Mesh</option>
+                  <option value="Tree">Tree</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Bus">Bus</option>
+                  <option value="Ring">Ring</option>
+                </select>
+                {errors.topology_type && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.topology_type}
+                  </p>
+                )}
+              </div>
               {/* Danh mục */}
               {isLoadingCategories ? (
                 <div className="flex items-center justify-center p-4">
@@ -622,7 +658,36 @@ const UploadProductForm_Network = ({
                   </div>
                 )}
               </div>
-
+              {/* Công cụ mô phỏng */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Công cụ mô phỏng <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="simulation_tool"
+                  value={formData.simulation_tool}
+                  onChange={handleChange}
+                  className={`w-full rounded-xl border-2 px-4 py-3 ${
+                    errors.simulation_tool
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <option value="">Chọn công cụ</option>
+                  <option value="Cisco Packet Tracer">
+                    Cisco Packet Tracer
+                  </option>
+                  <option value="GNS3">GNS3</option>
+                  <option value="EVE-NG">EVE-NG</option>
+                  <option value="Wireshark">Wireshark</option>
+                  <option value="Nmap">Nmap</option>
+                </select>
+                {errors.simulation_tool && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.simulation_tool}
+                  </p>
+                )}
+              </div>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Link mô phỏng */}
                 <div>
@@ -731,17 +796,9 @@ const UploadProductForm_Network = ({
               ) : (
                 <button
                   type="submit"
-                  disabled={
-                    isSubmitting ||
-                    loading ||
-                    !isAllStepsCompleted() ||
-                    !confirmed
-                  }
+                  disabled={isSubmitting || loading || !confirmed}
                   className={`flex items-center gap-2 rounded-xl px-8 py-3 font-medium shadow-lg hover:shadow-xl ${
-                    isAllStepsCompleted() &&
-                    confirmed &&
-                    !isSubmitting &&
-                    !loading
+                    confirmed && !isSubmitting && !loading
                       ? "bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700"
                       : "cursor-not-allowed bg-gray-300 text-gray-500"
                   }`}
@@ -765,13 +822,7 @@ const UploadProductForm_Network = ({
             </div>
           </div>
 
-          {/* Warning messages */}
-          {currentStep === 3 && !isAllStepsCompleted() && (
-            <p className="mt-2 text-sm text-red-600">
-              ⚠️ Vui lòng hoàn thành bước 1 và 2 trước khi gửi duyệt
-            </p>
-          )}
-          {currentStep === 3 && isAllStepsCompleted() && (
+          {currentStep === 3 && (
             <div className="mt-4 rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800">
               ⚠️ Vui lòng kiểm tra thông tin trước khi gửi
               <div className="mt-2 flex items-center gap-2">

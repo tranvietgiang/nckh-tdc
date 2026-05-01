@@ -28,7 +28,6 @@ const UploadProductForm_AI = ({
   handlePrevStep,
   handleNextStep,
   loading,
-  isAllStepsCompleted,
   setSelectedImage,
   handleSaveDraft,
   drafts,
@@ -206,11 +205,11 @@ const UploadProductForm_AI = ({
                     Lĩnh vực AI <span className="text-red-500">*</span>
                   </label>
                   <select
-                    name="model_type"
-                    value={formData.model_type}
+                    name="model_used"
+                    value={formData.model_used}
                     onChange={handleChange}
                     className={`w-full rounded-xl border-2 px-4 py-3 ${
-                      errors.model_type
+                      errors.model_used
                         ? "border-red-300 bg-red-50"
                         : "border-gray-200"
                     }`}
@@ -230,7 +229,7 @@ const UploadProductForm_AI = ({
                       Hệ gợi ý (Recommender System)
                     </option>
                   </select>
-                  {errors.model_type && (
+                  {errors.model_used && (
                     <p className="mt-2 text-sm text-red-600">
                       {errors.model_type}
                     </p>
@@ -248,9 +247,18 @@ const UploadProductForm_AI = ({
                   name="framework"
                   value={formData.framework}
                   onChange={handleChange}
-                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                  className={`w-full rounded-xl border-2 border-gray-200 px-4 py-3 ${
+                    errors.framework
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
                   placeholder="TensorFlow, PyTorch, Scikit-learn, Keras..."
                 />
+                {errors.framework && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.framework}
+                  </p>
+                )}
               </div>
 
               {/* Danh mục */}
@@ -626,6 +634,67 @@ const UploadProductForm_AI = ({
                   </div>
                 )}
               </div>
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Ngôn ngữ lập trình
+                </label>
+                <input
+                  type="text"
+                  name="language"
+                  value={formData.language}
+                  onChange={handleChange}
+                  className={`w-full rounded-xl border-2 px-4 py-3 ${
+                    errors.language
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
+                  placeholder="Python, Java, C++..."
+                />
+                {errors.language && (
+                  <p className="mt-2 text-sm text-red-600">{errors.language}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Dataset sử dụng
+                </label>
+                <input
+                  type="text"
+                  name="dataset_used"
+                  value={formData.dataset_used}
+                  onChange={handleChange}
+                  className={`w-full rounded-xl border-2 px-4 py-3 ${
+                    errors.dataset_used
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
+                  placeholder="COCO, ImageNet, custom dataset..."
+                />
+                {errors.dataset_used && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.dataset_used}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Độ chính xác (Accuracy %)
+                </label>
+                <input
+                  type="number"
+                  name="accuracy_score"
+                  value={formData.accuracy_score}
+                  onChange={handleChange}
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  className="w-full rounded-xl border-2 px-4 py-3 
+                      border-gray-200"
+                  placeholder="VD: 92.5"
+                />
+              </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Google Colab / GitHub */}
@@ -759,17 +828,9 @@ const UploadProductForm_AI = ({
               ) : (
                 <button
                   type="submit"
-                  disabled={
-                    isSubmitting ||
-                    loading ||
-                    !isAllStepsCompleted() ||
-                    !confirmed
-                  }
+                  disabled={isSubmitting || loading || !confirmed}
                   className={`flex items-center gap-2 rounded-xl px-8 py-3 font-medium shadow-lg hover:shadow-xl ${
-                    isAllStepsCompleted() &&
-                    confirmed &&
-                    !isSubmitting &&
-                    !loading
+                    confirmed && !isSubmitting && !loading
                       ? "bg-gradient-to-r from-green-600 to-teal-600 text-white hover:from-green-700 hover:to-teal-700"
                       : "cursor-not-allowed bg-gray-300 text-gray-500"
                   }`}
@@ -793,13 +854,7 @@ const UploadProductForm_AI = ({
             </div>
           </div>
 
-          {/* Warning messages */}
-          {currentStep === 3 && !isAllStepsCompleted() && (
-            <p className="mt-2 text-sm text-red-600">
-              ⚠️ Vui lòng hoàn thành bước 1 và 2 trước khi gửi duyệt
-            </p>
-          )}
-          {currentStep === 3 && isAllStepsCompleted() && (
+          {currentStep === 3 && (
             <div className="mt-4 rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-800">
               ⚠️ Vui lòng kiểm tra thông tin trước khi gửi
               <div className="mt-2 flex items-center gap-2">
