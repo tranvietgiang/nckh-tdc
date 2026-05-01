@@ -101,32 +101,40 @@ class UploadRequest extends FormRequest
         $check  = $this->normalizeMajorCode->normalizeMajorCode($majorCode);
 
         switch ($check) {
+
             case 'ai':
+                // DB: NOT NULL
                 $rules['model_used'] = 'required|string|max:100';
                 $rules['framework'] = 'required|string|max:100';
-                $rules['language'] = 'required|string|max:50';
                 $rules['dataset_used'] = 'required|string|max:100';
+
+                // DB: NULLABLE
+                $rules['language'] = 'nullable|string|max:50';
                 $rules['accuracy_score'] = 'nullable|numeric|min:0|max:100';
                 break;
+
             case 'cntt':
+                // DB: tất cả NOT NULL → bắt buộc hết
                 $rules['programming_language'] = 'required|string|max:50';
-                $rules['framework'] = 'nullable|string|max:100';
-                $rules['database_used'] = 'nullable|string|max:100';
+                $rules['framework'] = 'required|string|max:100';
+                $rules['database_used'] = 'required|string|max:100';
                 break;
+
             case 'tkdh':
+                // DB: NOT NULL
                 $rules['design_type'] = 'required|string|max:50';
                 $rules['tools_used'] = 'required|string|max:150';
 
+                // DB: NULLABLE
                 $rules['drive_link'] = 'nullable|url|max:255';
                 $rules['behance_link'] = 'nullable|url|max:255';
                 break;
+
             case 'mmt':
-                $rules['simulation_tool'] = 'required|string|max:100';
+                // DB: NOT NULL
                 $rules['network_protocol'] = 'required|string|max:100';
                 $rules['topology_type'] = 'required|string|max:50';
-                $rules['config_file'] = 'required|string|max:225';
-                break;
-            default:
+                $rules['simulation_tool'] = 'required|string|max:100';
                 break;
         }
 
@@ -167,26 +175,52 @@ class UploadRequest extends FormRequest
 
             // ================= AI =================
             'model_used.required' => 'Nhập model sử dụng',
+            'model_used.max' => 'Model tối đa 100 ký tự',
+
             'framework.required' => 'Nhập framework',
-            'language.required' => 'Nhập ngôn ngữ sử dụng',
+            'framework.max' => 'Framework tối đa 100 ký tự',
+
             'dataset_used.required' => 'Nhập dataset sử dụng',
+            'dataset_used.max' => 'Dataset tối đa 100 ký tự',
+
+            'language.max' => 'Ngôn ngữ tối đa 50 ký tự',
+
             'accuracy_score.numeric' => 'Accuracy phải là số',
             'accuracy_score.min' => 'Accuracy ≥ 0',
             'accuracy_score.max' => 'Accuracy ≤ 100',
 
             // ================= CNTT =================
             'programming_language.required' => 'Nhập ngôn ngữ lập trình',
+            'programming_language.max' => 'Ngôn ngữ tối đa 50 ký tự',
+
+            'framework.required' => 'Nhập framework',
+            'framework.max' => 'Framework tối đa 100 ký tự',
+
+            'database_used.required' => 'Nhập database',
             'database_used.max' => 'Database tối đa 100 ký tự',
 
             // ================= TKĐH =================
             'design_type.required' => 'Chọn loại thiết kế',
+            'design_type.max' => 'Loại thiết kế tối đa 50 ký tự',
+
             'tools_used.required' => 'Nhập công cụ sử dụng',
+            'tools_used.max' => 'Công cụ tối đa 150 ký tự',
+
+            'drive_link.url' => 'Link drive không hợp lệ',
+            'drive_link.max' => 'Link drive tối đa 255 ký tự',
+
+            'behance_link.url' => 'Link behance không hợp lệ',
+            'behance_link.max' => 'Link behance tối đa 255 ký tự',
 
             // ================= MMT =================
             'simulation_tool.required' => 'Nhập công cụ mô phỏng',
+            'simulation_tool.max' => 'Tối đa 100 ký tự',
+
             'network_protocol.required' => 'Nhập giao thức mạng',
-            'topology_type.required' => 'Chọn topology',
-            'config_file.required' => 'Thiếu file cấu hình',
+            'network_protocol.max' => 'Tối đa 100 ký tự',
+
+            'topology_type.required' => 'Nhập topology',
+            'topology_type.max' => 'Tối đa 50 ký tự',
         ];
     }
 }

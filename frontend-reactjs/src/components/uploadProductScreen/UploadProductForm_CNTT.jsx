@@ -601,6 +601,11 @@ const UploadProductForm_CNTT = ({
                     className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
                     placeholder="VD: JavaScript, PHP"
                   />
+                  {errors.programming_language && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.programming_language}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -615,6 +620,11 @@ const UploadProductForm_CNTT = ({
                     className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
                     placeholder="VD: React, Laravel"
                   />
+                  {errors.framework && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.framework}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -629,6 +639,11 @@ const UploadProductForm_CNTT = ({
                     className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
                     placeholder="VD: MySQL, MongoDB"
                   />
+                  {errors.database_used && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {errors.database_used}
+                    </p>
+                  )}
                 </div>
               </div>
 

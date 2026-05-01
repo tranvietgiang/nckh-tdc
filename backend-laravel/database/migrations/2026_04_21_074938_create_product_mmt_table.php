@@ -18,13 +18,12 @@ return new class extends Migration
                 ->constrained('products', 'product_id')
                 ->cascadeOnDelete();
 
-            $table->string('simulation_tool', 100);
+            // đúng theo UI đang hiển thị
+            $table->string('network_protocol', 100);  // SMTP, OSPF...
+            $table->string('topology_type', 50);      // Hybrid, Star...
+            $table->string('simulation_tool', 100);   // Nmap, GNS3...
 
-            $table->string('network_protocol', 100);
-
-            $table->string('topology_type', 50);
-
-            $table->string('config_file', 255)->nullable();
+            $table->string('config_file')->nullable();
 
             $table->timestamps();
         });

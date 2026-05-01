@@ -530,9 +530,9 @@ class ProductSeeder extends Seeder
 
             ProductMMT::create([
                 'product_id' => $product->product_id,
-                'simulation_tool' => $tools[array_rand($tools)],
                 'network_protocol' => $protocols[array_rand($protocols)],
                 'topology_type' => $topologies[array_rand($topologies)],
+                'simulation_tool' => $tools[array_rand($tools)],
                 'config_file' => 'configs/config_' . ($i + 1) . '.txt',
             ]);
         }

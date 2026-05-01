@@ -63,45 +63,7 @@ export const initialNetworkFormData = {
   config_file: "",
 };
 
-/* =========================================================
-   COMMON VALIDATE
-========================================================= */
-
-const validateBasicInfo = (formData, errors) => {
-  if (!formData.title?.trim()) {
-    errors.title = "Vui lòng nhập tên sản phẩm";
-  } else if (formData.title.length < 5) {
-    errors.title = "Tên phải từ 5 ký tự";
-  } else if (formData.title.length > 100) {
-    errors.title = "Tên tối đa 100 ký tự";
-  }
-
-  if (!formData.description?.trim()) {
-    errors.description = "Vui lòng nhập mô tả";
-  } else if (formData.description.length < 10) {
-    errors.description = "Mô tả phải từ 10 ký tự";
-  } else if (formData.description.length > 300) {
-    errors.description = "Mô tả tối đa 300 ký tự";
-  }
-
-  if (!formData.cate_id) {
-    errors.cate_id = "Vui lòng chọn danh mục";
-  }
-};
-
-const validateMedia = (images = [], files = [], errors) => {
-  if (images.length === 0) {
-    errors.images = "Cần ít nhất 1 hình ảnh";
-  }
-
-  if (images.length > 10) {
-    errors.images = "Tối đa 10 hình ảnh";
-  }
-
-  if (files.length > 5) {
-    errors.files = "Tối đa 5 file";
-  }
-};
+/* ================= COMMON ================= */
 
 const isValidUrl = (value) => {
   try {
@@ -112,10 +74,53 @@ const isValidUrl = (value) => {
   }
 };
 
-/* =========================================================
-   CNTT
-========================================================= */
+const validateBasicInfo = (formData, errors) => {
+  // TITLE
+  if (!formData.title?.trim()) {
+    errors.title = "Nhập tên sản phẩm";
+  } else if (formData.title.length < 5) {
+    errors.title = "Tên ≥ 5 ký tự";
+  } else if (formData.title.length > 100) {
+    errors.title = "Tên ≤ 100 ký tự";
+  }
 
+  // DESCRIPTION
+  if (!formData.description?.trim()) {
+    errors.description = "Nhập mô tả";
+  } else if (formData.description.length < 10) {
+    errors.description = "Mô tả ≥ 10 ký tự";
+  } else if (formData.description.length > 300) {
+    errors.description = "Mô tả ≤ 300 ký tự";
+  }
+
+  // CATEGORY
+  if (!formData.cate_id) {
+    errors.cate_id = "Chọn danh mục";
+  }
+
+  // LINKS
+  if (formData.github_link && !isValidUrl(formData.github_link)) {
+    errors.github_link = "Link GitHub sai";
+  }
+
+  if (formData.demo_link && !isValidUrl(formData.demo_link)) {
+    errors.demo_link = "Link demo sai";
+  }
+};
+
+const validateMedia = (images = [], files = [], errors) => {
+  if (images.length === 0) {
+    errors.images = "Cần ít nhất 1 ảnh";
+  }
+  if (images.length > 10) {
+    errors.images = "Tối đa 10 ảnh";
+  }
+  if (files.length > 5) {
+    errors.files = "Tối đa 5 file";
+  }
+};
+
+/* ================= CNTT ================= */
 export const validateCNTTStep = ({
   step,
   formData,
@@ -124,31 +129,33 @@ export const validateCNTTStep = ({
 }) => {
   const errors = {};
 
-  if (step === 1) {
-    validateBasicInfo(formData, errors);
-  }
-
-  if (step === 2) {
-    validateMedia(images, files, errors);
-  }
+  if (step === 1) validateBasicInfo(formData, errors);
+  if (step === 2) validateMedia(images, files, errors);
 
   if (step === 3) {
-    if (formData.github_link && !isValidUrl(formData.github_link)) {
-      errors.github_link = "Link GitHub không hợp lệ";
+    if (!formData.programming_language?.trim()) {
+      errors.programming_language = "Nhập ngôn ngữ";
+    } else if (formData.programming_language.length > 50) {
+      errors.programming_language = "≤ 50 ký tự";
     }
 
-    if (formData.demo_link && !isValidUrl(formData.demo_link)) {
-      errors.demo_link = "Link demo không hợp lệ";
+    if (!formData.framework?.trim()) {
+      errors.framework = "Nhập framework";
+    } else if (formData.framework.length > 100) {
+      errors.framework = "≤ 100 ký tự";
+    }
+
+    if (!formData.database_used?.trim()) {
+      errors.database_used = "Nhập database";
+    } else if (formData.database_used.length > 100) {
+      errors.database_used = "≤ 100 ký tự";
     }
   }
 
   return errors;
 };
 
-/* =========================================================
-   ĐỒ HỌA
-========================================================= */
-
+/* ================= ĐỒ HỌA ================= */
 export const validateGraphicStep = ({
   step,
   formData,
@@ -160,62 +167,82 @@ export const validateGraphicStep = ({
   if (step === 1) {
     validateBasicInfo(formData, errors);
 
-    if (!formData.design_type) {
-      errors.design_type = "Vui lòng chọn loại ấn phẩm";
+    if (!formData.design_type?.trim()) {
+      errors.design_type = "Chọn loại thiết kế";
+    } else if (formData.design_type.length > 50) {
+      errors.design_type = "≤ 50 ký tự";
     }
 
     if (!formData.tools_used?.trim()) {
-      errors.tools_used = "Vui lòng nhập công cụ sử dụng";
+      errors.tools_used = "Nhập công cụ";
+    } else if (formData.tools_used.length > 150) {
+      errors.tools_used = "≤ 150 ký tự";
+    }
+
+    if (formData.behance_link && !isValidUrl(formData.behance_link)) {
+      errors.behance_link = "Link sai";
+    }
+
+    if (formData.drive_link && !isValidUrl(formData.drive_link)) {
+      errors.drive_link = "Link sai";
     }
   }
 
-  if (step === 2) {
-    validateMedia(images, files, errors);
-  }
+  if (step === 2) validateMedia(images, files, errors);
 
   return errors;
 };
 
-/* =========================================================
-   AI
-========================================================= */
-
+/* ================= AI ================= */
 export const validateAIStep = ({ step, formData, images = [], files = [] }) => {
   const errors = {};
 
   if (step === 1) {
     validateBasicInfo(formData, errors);
 
-    if (!formData.model_type) {
-      errors.model_type = "Vui lòng chọn loại mô hình AI";
+    if (!formData.model_used?.trim()) {
+      errors.model_used = "Nhập model";
+    } else if (formData.model_used.length > 100) {
+      errors.model_used = "≤ 100 ký tự";
+    }
+
+    if (!formData.framework?.trim()) {
+      errors.framework = "Nhập framework";
+    } else if (formData.framework.length > 100) {
+      errors.framework = "≤ 100 ký tự";
     }
   }
 
-  if (step === 2) {
-    validateMedia(images, files, errors);
-  }
+  if (step === 2) validateMedia(images, files, errors);
 
   if (step === 3) {
-    if (formData.dataset_link && !isValidUrl(formData.dataset_link)) {
-      errors.dataset_link = "Link dataset không hợp lệ";
+    if (!formData.dataset_used?.trim()) {
+      errors.dataset_used = "Nhập dataset";
+    } else if (formData.dataset_used.length > 100) {
+      errors.dataset_used = "≤ 100 ký tự";
     }
 
-    if (formData.demo_link && !isValidUrl(formData.demo_link)) {
-      errors.demo_link = "Link demo không hợp lệ";
+    if (formData.language && formData.language.length > 50) {
+      errors.language = "≤ 50 ký tự";
     }
 
-    if (formData.github_link && !isValidUrl(formData.github_link)) {
-      errors.github_link = "Link GitHub không hợp lệ";
+    const acc = formData.accuracy_score;
+    if (acc !== "" && acc !== null) {
+      const num = Number(acc);
+      if (isNaN(num)) {
+        errors.accuracy_score = "Phải là số";
+      } else if (num < 0) {
+        errors.accuracy_score = "≥ 0";
+      } else if (num > 100) {
+        errors.accuracy_score = "≤ 100";
+      }
     }
   }
 
   return errors;
 };
 
-/* =========================================================
-   NETWORK
-========================================================= */
-
+/* ================= NETWORK ================= */
 export const validateNetworkStep = ({
   step,
   formData,
@@ -227,8 +254,18 @@ export const validateNetworkStep = ({
   if (step === 1) {
     validateBasicInfo(formData, errors);
 
-    if (!formData.network_type) {
-      errors.network_type = "Vui lòng chọn loại hệ thống mạng";
+    // ✅ Giao thức mạng
+    if (!formData.network_protocol?.trim()) {
+      errors.network_protocol = "Nhập giao thức mạng";
+    } else if (formData.network_protocol.length > 100) {
+      errors.network_protocol = "≤ 100 ký tự";
+    }
+
+    // ✅ Topology
+    if (!formData.topology_type?.trim()) {
+      errors.topology_type = "Nhập topology";
+    } else if (formData.topology_type.length > 50) {
+      errors.topology_type = "≤ 50 ký tự";
     }
   }
 
@@ -237,12 +274,11 @@ export const validateNetworkStep = ({
   }
 
   if (step === 3) {
-    if (formData.simulation_link && !isValidUrl(formData.simulation_link)) {
-      errors.simulation_link = "Link mô phỏng không hợp lệ";
-    }
-
-    if (formData.report_link && !isValidUrl(formData.report_link)) {
-      errors.report_link = "Link báo cáo không hợp lệ";
+    // ✅ Tool
+    if (!formData.simulation_tool?.trim()) {
+      errors.simulation_tool = "Nhập công cụ mô phỏng";
+    } else if (formData.simulation_tool.length > 100) {
+      errors.simulation_tool = "≤ 100 ký tự";
     }
   }
 
