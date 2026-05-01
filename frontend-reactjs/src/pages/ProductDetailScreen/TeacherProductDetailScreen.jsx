@@ -49,7 +49,7 @@ const TeacherProductDetailScreen = () => {
   const productData = product?.product || {};
   const reviews = product?.reviews || [];
 
-  const theme = getMajorTheme(productData?.major_id);
+  const theme = getMajorTheme(productData?.major_code);
 
   const handleApproveOriginal = useHandleApprove(
     confirmToast,
