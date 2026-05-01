@@ -8,54 +8,53 @@ import UploadProductForm_CNTT from "../../components/uploadProductScreen/UploadP
 import UploadProductForm_Graphic from "../../components/uploadProductScreen/UploadProductForm_Graphic";
 import UploadProductForm_Network from "../../components/uploadProductScreen/UploadProductForm_Network";
 import UploadProductForm_AI from "../../components/uploadProductScreen/UploadProductForm_AI";
+import { detectMajorKey } from "../../utils/detectMajorKey";
 
-export const getUploadResources = (majorId) => {
-  const id = Number(majorId);
+import NotFoundPage from "../../pages/notFoundScreen/NotFoundScreen";
+// utils/uploadProductScreen/uploadRegistry.js
 
-  switch (id) {
-    case 1:
-      return {
-        useHook: useUploadProductForm,
-        FormComponent: UploadProductForm_CNTT,
-        title: "Đăng sản phẩm công nghệ phần mềm",
-        description: "Ứng dụng, website, hệ thống thông tin",
-        gradient: "from-blue-600 to-indigo-600",
-        icon: "💻",
-      };
+export const getUploadResources = () => {
+  const majorName = localStorage.getItem("majorName");
+  if (!majorName) return null;
 
-    case 2:
-      return {
-        useHook: useUploadGraphicForm,
-        FormComponent: UploadProductForm_Graphic,
-        title: "Đăng sản phẩm đồ họa",
-        description: "Logo, poster, UI/UX, video, ấn phẩm",
-        gradient: "from-rose-600 to-orange-600",
-        icon: "🎨",
-      };
+  const key = detectMajorKey(majorName);
 
-    case 3:
-      return {
-        useHook: useUploadNetworkForm,
-        FormComponent: UploadProductForm_Network,
-        title: "Đăng đồ án mạng máy tính",
-        description: "Mô phỏng, cấu hình, bảo mật",
-        gradient: "from-cyan-700 to-blue-800",
-        icon: "🌐",
-      };
+  const resourcesMap = {
+    ai: {
+      useHook: useUploadAIForm,
+      FormComponent: UploadProductForm_AI,
+      title: "Đăng sản phẩm trí tuệ nhân tạo",
+      description: "Machine Learning, NLP, Computer Vision",
+      gradient: "from-purple-700 to-indigo-800",
+      icon: "🧠",
+    },
+    cntt: {
+      useHook: useUploadProductForm,
+      FormComponent: UploadProductForm_CNTT,
+      title: "Đăng sản phẩm công nghệ phần mềm",
+      description: "Ứng dụng, website, hệ thống thông tin",
+      gradient: "from-blue-600 to-indigo-600",
+      icon: "💻",
+    },
+    tkdh: {
+      useHook: useUploadGraphicForm,
+      FormComponent: UploadProductForm_Graphic,
+      title: "Đăng sản phẩm đồ họa",
+      description: "Logo, poster, UI/UX, video, ấn phẩm",
+      gradient: "from-rose-600 to-orange-600",
+      icon: "🎨",
+    },
+    mmt: {
+      useHook: useUploadNetworkForm,
+      FormComponent: UploadProductForm_Network,
+      title: "Đăng đồ án mạng máy tính",
+      description: "Mô phỏng, cấu hình, bảo mật",
+      gradient: "from-cyan-700 to-blue-800",
+      icon: "🌐",
+    },
+  };
 
-    case 4:
-      return {
-        useHook: useUploadAIForm,
-        FormComponent: UploadProductForm_AI,
-        title: "Đăng sản phẩm trí tuệ nhân tạo",
-        description: "Machine Learning, NLP, Computer Vision",
-        gradient: "from-purple-700 to-indigo-800",
-        icon: "🧠",
-      };
-
-    default:
-      return null;
-  }
+  return resourcesMap[key] || null;
 };
 
 export const getMajorTheme = (major) => {

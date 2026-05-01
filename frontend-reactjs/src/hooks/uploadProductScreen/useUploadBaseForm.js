@@ -3,13 +3,15 @@ import { toast } from "react-toastify";
 import { uploadApi } from "../useUpload/uploadApi.api";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useContext } from "react";
+import useMajorNameCode from "../common/useMajorCode";
+
 export default function useUploadBaseForm({
   initialData,
   validateStep,
   draftKey,
   stepsConfig,
-}) {
-  const [formData, setFormData] = useState(initialData);
+} = {}) {
+  const [formData, setFormData] = useState({});
   const [images, setImages] = useState([]);
   const [files, setFiles] = useState([]);
   const [tags, setTags] = useState([]);
@@ -24,12 +26,15 @@ export default function useUploadBaseForm({
   const [selectedImage, setSelectedImage] = useState(null);
   const [statusApi, setStatusApi] = useState(null);
   const [touchedSteps, setTouchedSteps] = useState({});
+
   const steps = stepsConfig || [
     { id: 1, name: "Thông tin sản phẩm", icon: "📋" },
     { id: 2, name: "Media", icon: "🖼️" },
     { id: 3, name: "Hoàn tất", icon: "✅" },
   ];
   const { user } = useContext(AuthContext);
+
+  const { majorCode } = useMajorNameCode(user?.major_id);
 
   const showErrors = (errObj) => {
     Object.values(errObj).forEach((msg) => {
@@ -263,6 +268,10 @@ export default function useUploadBaseForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!majorCode) {
+      toast.error("đang tải ngành!");
+      return;
+    }
     const allErrors = validateAllSteps();
 
     if (Object.keys(allErrors).length > 0) {
@@ -282,6 +291,7 @@ export default function useUploadBaseForm({
       });
 
       payload.append("major_id", user?.major_id || "");
+      payload.append("major_code", majorCode || "");
 
       tags.forEach((tag) => payload.append("tags[]", tag));
 

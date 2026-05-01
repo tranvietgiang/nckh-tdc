@@ -236,12 +236,21 @@ const UploadProductForm_Graphic = ({
                 </label>
                 <input
                   type="text"
-                  name="tools"
-                  value={formData.tools}
+                  name="tools_used"
+                  value={formData.tools_used}
                   onChange={handleChange}
-                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                  className={`w-full rounded-xl border-2 px-4 py-3 ${
+                    errors.design_type
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-200"
+                  }`}
                   placeholder="Photoshop, Illustrator, Figma, After Effects..."
                 />
+                {errors.tools_used && (
+                  <p className="mt-2 text-sm text-red-600">
+                    {errors.tools_used}
+                  </p>
+                )}
               </div>
 
               {/* Danh mục */}
@@ -559,7 +568,7 @@ const UploadProductForm_Graphic = ({
             </div>
           </div>
 
-          {/* Step 3: Tags & Liên kết */}
+          {/* STEP 3 thay bằng đoạn này */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 3
@@ -572,20 +581,23 @@ const UploadProductForm_Graphic = ({
                 <span>🔗</span> Tags & Liên kết
               </h2>
             </div>
+
             <div className="space-y-6 p-6">
-              {/* Tags input */}
+              {/* TAG */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Phong cách / kỹ thuật sử dụng
                 </label>
+
                 <input
                   type="text"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
                   className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
-                  placeholder="Nhập phong cách và nhấn Enter (VD: Flat design, 3D, Typography...)"
+                  placeholder="Khuyến khích thêm tag để mô tả sản phẩm: Flat design, 3D, Typography..."
                 />
+
                 {tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {tags.map((tag) => (
@@ -594,24 +606,8 @@ const UploadProductForm_Graphic = ({
                         className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 px-4 py-2 text-sm font-medium text-white"
                       >
                         #{tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          className="hover:text-white/80"
-                        >
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
+                        <button type="button" onClick={() => removeTag(tag)}>
+                          ✕
                         </button>
                       </span>
                     ))}
@@ -619,11 +615,34 @@ const UploadProductForm_Graphic = ({
                 )}
               </div>
 
+              {errors.tags && (
+                <p className="mt-2 text-sm text-red-600">{errors.tags}</p>
+              )}
+
+              {/* AWARDS */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Thành tích / Giải thưởng
+                </label>
+
+                <input
+                  type="text"
+                  name="awards"
+                  value={formData.awards}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                  placeholder="Top 1 cuộc thi thiết kế..."
+                />
+              </div>
+
+              {/* LINKS */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* Behance */}
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
                     Behance / Dribbble
                   </label>
+
                   <input
                     type="url"
                     name="behance_link"
@@ -634,18 +653,16 @@ const UploadProductForm_Graphic = ({
                         ? "border-red-300 bg-red-50"
                         : "border-gray-200"
                     }`}
-                    placeholder="https://behance.net/username"
+                    placeholder="https://behance.net/..."
                   />
-                  {errors.behance_link && (
-                    <p className="mt-2 text-sm text-red-600">
-                      {errors.behance_link}
-                    </p>
-                  )}
                 </div>
+
+                {/* DRIVE */}
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Google Drive (file nguồn)
+                    Google Drive
                   </label>
+
                   <input
                     type="url"
                     name="drive_link"
@@ -658,11 +675,44 @@ const UploadProductForm_Graphic = ({
                     }`}
                     placeholder="https://drive.google.com/..."
                   />
+
                   {errors.drive_link && (
                     <p className="mt-2 text-sm text-red-600">
                       {errors.drive_link}
                     </p>
                   )}
+                </div>
+
+                {/* GITHUB */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    GitHub (nếu có web design)
+                  </label>
+
+                  <input
+                    type="url"
+                    name="github_link"
+                    value={formData.github_link}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="https://github.com/..."
+                  />
+                </div>
+
+                {/* DEMO */}
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Demo Website / Portfolio
+                  </label>
+
+                  <input
+                    type="url"
+                    name="demo_link"
+                    value={formData.demo_link}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="https://your-site.com"
+                  />
                 </div>
               </div>
             </div>

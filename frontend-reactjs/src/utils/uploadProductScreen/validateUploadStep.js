@@ -3,42 +3,64 @@
 /* =========================================================
    INITIAL FORM DATA
 ========================================================= */
-
 export const initialCNTTFormData = {
+  // chung
   title: "",
   description: "",
+  cate_id: "",
+  awards: "",
   github_link: "",
   demo_link: "",
-  cate_id: "",
+
+  // riêng CNTT
+  programming_language: "",
+  framework: "",
+  database_used: "",
 };
 
 export const initialGraphicFormData = {
+  // chung
   title: "",
   description: "",
+  cate_id: "",
+  awards: "",
+
+  // riêng đồ họa
   design_type: "",
-  tools: "",
+  tools_used: "",
   behance_link: "",
   drive_link: "",
-  cate_id: "",
 };
 
 export const initialAIFormData = {
+  // chung
   title: "",
   description: "",
-  model_type: "",
-  dataset_link: "",
-  demo_link: "",
-  github_link: "",
   cate_id: "",
+  awards: "",
+  github_link: "",
+  demo_link: "",
+
+  // riêng AI
+  model_used: "",
+  framework: "",
+  language: "",
+  dataset_used: "",
+  accuracy_score: "",
 };
 
 export const initialNetworkFormData = {
+  // chung
   title: "",
   description: "",
-  network_type: "",
-  simulation_link: "",
-  report_link: "",
   cate_id: "",
+  awards: "",
+
+  // riêng mạng
+  simulation_tool: "",
+  network_protocol: "",
+  topology_type: "",
+  config_file: "",
 };
 
 /* =========================================================
@@ -141,20 +163,14 @@ export const validateGraphicStep = ({
     if (!formData.design_type) {
       errors.design_type = "Vui lòng chọn loại ấn phẩm";
     }
+
+    if (!formData.tools_used?.trim()) {
+      errors.tools_used = "Vui lòng nhập công cụ sử dụng";
+    }
   }
 
   if (step === 2) {
     validateMedia(images, files, errors);
-  }
-
-  if (step === 3) {
-    if (formData.behance_link && !isValidUrl(formData.behance_link)) {
-      errors.behance_link = "Link Behance không hợp lệ";
-    }
-
-    if (formData.drive_link && !isValidUrl(formData.drive_link)) {
-      errors.drive_link = "Link Google Drive không hợp lệ";
-    }
   }
 
   return errors;

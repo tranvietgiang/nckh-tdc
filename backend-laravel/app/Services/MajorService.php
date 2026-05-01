@@ -23,4 +23,9 @@ class MajorService
     {
         return $this->majorRepository->all();
     }
+
+    public function getMajorNameCodeById(int $id): ?string
+    {
+        return $this->majorRepository->getNameCodeById($id);
+    }
 }

@@ -8,12 +8,14 @@ use App\Http\Ai\CheckImage;
 use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
 use Illuminate\Support\Facades\Log;
+use App\Http\common\normalizeMajorCode;
 
 class UploadService extends BaseRepository
 {
     public function __construct(
         protected UploadRepository $upload_repository,
-        protected CheckImage $Check_ai_image
+        protected CheckImage $Check_ai_image,
+        protected normalizeMajorCode $normalizeMajorCode
     ) {}
 
 
@@ -25,7 +27,7 @@ class UploadService extends BaseRepository
     {
         $uploadedImages = [];
         $uploadedFiles = [];
-        $tagIds = $data['tags'] ?? [];
+        $tags = $data['tags'] ?? [];
 
         DB::beginTransaction();
 
@@ -67,21 +69,58 @@ class UploadService extends BaseRepository
                 $uploadedImages[] = $url;
             }
 
+            $majorCode = $this->normalizeMajorCode->normalizeMajorCode($data['major_code'] ?? null);
+
+            $tags = array_filter($data['tags'] ?? []);
+
             $dbData = [
                 'title' => $data['title'],
                 'description' => $data['description'],
                 'user_id' => $this->getCurrentUserId(),
                 'cate_id' => $data['cate_id'],
                 'major_id' => $data['major_id'],
+                'major_code' => $data['major_code'] ?? null,
                 'github_link' => $data['github_link'] ?? null,
                 'demo_link' => $data['demo_link'] ?? null,
             ];
+
+
+
+            switch ($majorCode) {
+                case 'ai':
+                    $dbData['model_used'] = $data['model_used'] ?? null;
+                    $dbData['framework'] = $data['framework'] ?? null;
+                    $dbData['language'] = $data['language'] ?? null;
+                    $dbData['dataset_used'] = $data['dataset_used'] ?? null;
+                    $dbData['accuracy_score'] = $data['accuracy_score'] ?? null;
+                    break;
+
+                case 'cntt':
+                    $dbData['programming_language'] = $data['programming_language'] ?? null;
+                    $dbData['framework'] = $data['framework'] ?? null;
+                    $dbData['database_used'] = $data['database_used'] ?? null;
+                    break;
+
+                case 'mmt':
+                    $dbData['simulation_tool'] = $data['simulation_tool'] ?? null;
+                    $dbData['network_protocol'] = $data['network_protocol'] ?? null;
+                    $dbData['topology_type'] = $data['topology_type'] ?? null;
+                    $dbData['config_file'] = isset($uploadedFiles[0]) ? $uploadedFiles[0] : null;
+                    break;
+
+                case 'tkdh':
+                    $dbData['design_type'] = $data['design_type'] ?? null;
+                    $dbData['tools_used'] = $data['tools_used'] ?? null;
+                    break;
+
+                default:
+            }
 
             $product = $this->upload_repository->upload(
                 $dbData,
                 $uploadedImages,
                 $uploadedFiles,
-                $tagIds
+                $tags
             );
 
             $product->thumbnail = $uploadedImages[0] ?? null;

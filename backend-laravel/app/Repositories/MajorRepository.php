@@ -12,6 +12,12 @@ class MajorRepository
         return Major::where('major_id', $majorId)->value('major_name');
     }
 
+
+    public function getNameCodeById(int $majorId): ?string
+    {
+        return Major::where('major_id', $majorId)->value('major_code');
+    }
+
     // kiểm tra major có tồn tại?
     public function existsById(int $majorId): ?bool
     {

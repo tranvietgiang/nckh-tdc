@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class ProductMMT extends Model
 {
     //
-
     protected $table = 'product_mmt';
     protected $primaryKey = 'product_mmt_id';
     protected $keyType = 'int';

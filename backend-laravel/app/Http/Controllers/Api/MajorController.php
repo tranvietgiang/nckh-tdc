@@ -32,4 +32,19 @@ class MajorController extends Controller
 
         return response()->json($result);
     }
+
+    public function majorNameCode(int $id)
+    {
+        $result = $this->majorService->getMajorNameCodeById($id);
+
+        if (!$result) {
+            return response()->json([
+                'message' => 'Không tìm thấy ngành'
+            ], 404);
+        }
+
+        return response()->json(
+            $result
+        );
+    }
 }

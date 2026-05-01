@@ -17,7 +17,11 @@ const StudentScreen = () => {
   const navigate = useNavigate();
 
   const { user } = useContext(AuthContext);
+  // console.log(user);
   const { majorName } = useMajorName(user?.major_id);
+
+  localStorage.setItem("majorName", majorName);
+
   const { products, loading, error } = useProductAll();
   const currentStudent = mapCurrentStudent(user, majorName);
 

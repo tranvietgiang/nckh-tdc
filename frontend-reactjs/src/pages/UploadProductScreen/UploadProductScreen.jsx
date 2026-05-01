@@ -9,11 +9,8 @@ import useUploadPublishedCount from "../../hooks/useUpload/useUploadPublishedCou
 import useTitle from "../../hooks/common/useTitle";
 
 import { getUploadResources } from "../../utils/uploadProductScreen/uploadRegistry";
-
 const UploadProductScreen = () => {
-  // const goBack = useBackToPage();
   const navigate = useNavigate();
-
   const { user } = useContext(AuthContext);
   const { majorName } = useMajorName(user?.major_id);
 
@@ -22,9 +19,12 @@ const UploadProductScreen = () => {
   const { upload_count, upload_loading, upload_error } =
     useUploadPublishedCount();
 
-  // registry động theo ngành
+  const resources = getUploadResources();
+
+  // if (!resources) return <div>Không tìm thấy ngành</div>;
+
   const { useHook, FormComponent, title, description, gradient, icon } =
-    getUploadResources(user?.major_id, majorName);
+    resources;
 
   useTitle(title);
 
@@ -77,22 +77,17 @@ const UploadProductScreen = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      {/* MODAL IMAGE */}
+      {/* IMAGE PREVIEW */}
       {selectedImage && (
         <div
           onClick={() => setSelectedImage(null)}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative max-h-[90vh] max-w-7xl"
-          >
-            <img
-              src={selectedImage.url}
-              alt={selectedImage.name}
-              className="max-h-[90vh] max-w-full rounded-xl object-contain"
-            />
-          </div>
+          <img
+            src={selectedImage.url}
+            alt={selectedImage.name}
+            className="max-h-[90vh] max-w-full rounded-xl object-contain"
+          />
         </div>
       )}
 
@@ -141,7 +136,6 @@ const UploadProductScreen = () => {
       )}
 
       <div className="mx-auto max-w-5xl px-4">
-        {/* BACK */}
         <BackButton loading={loading} />
 
         {/* HEADER */}
@@ -153,11 +147,10 @@ const UploadProductScreen = () => {
           </div>
 
           <h1 className="text-4xl font-bold text-gray-900">{title}</h1>
-
           <p className="mt-2 text-gray-600">{description}</p>
         </div>
 
-        {/* STEP */}
+        {/* STEP BAR */}
         <div className="mb-8 flex items-center justify-between gap-3">
           {steps.map((step, index) => {
             const isValid = isStepValid(step.id);
@@ -168,13 +161,13 @@ const UploadProductScreen = () => {
                 <div className="flex flex-col items-center">
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold
-                      ${
-                        currentStep === step.id
-                          ? `bg-gradient-to-r ${gradient} text-white`
-                          : isValid && isTouched
-                            ? "bg-green-500 text-white"
-                            : "bg-gray-200 text-gray-500"
-                      }`}
+                    ${
+                      currentStep === step.id
+                        ? `bg-gradient-to-r ${gradient} text-white`
+                        : isValid && isTouched
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-500"
+                    }`}
                   >
                     {step.icon}
                   </div>
@@ -196,7 +189,7 @@ const UploadProductScreen = () => {
           })}
         </div>
 
-        {/* STUDENT */}
+        {/* STUDENT INFO */}
         <div
           className={`mb-8 rounded-2xl bg-gradient-to-r ${gradient} p-6 text-white`}
         >

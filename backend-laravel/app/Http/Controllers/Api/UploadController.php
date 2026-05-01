@@ -40,6 +40,7 @@ class UploadController extends Controller
     {
         $product = $this->upload_service->upload($request->validated());
 
+
         if (isset($product['error']) && $product['error'] === true) {
             return response()->json([
                 'status' => 'error',
