@@ -28,7 +28,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 | Majors ROUTES
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')->group(function () {});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/major/code/{id}', [MajorController::class, 'majorNameCode']);
+});
 Route::get('/major/{id}', [MajorController::class, 'majorName']);
 
 /*
@@ -69,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 */
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/upload/count-published', [UploadController::class, 'countPublishedProducts']);
-    Route::post('/upload', [UploadController::class, 'upload']); // guard token
+    Route::post('/upload', [UploadController::class, 'upload']);
 });
 
 /*

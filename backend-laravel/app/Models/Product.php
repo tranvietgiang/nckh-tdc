@@ -25,5 +25,6 @@ class Product extends Model
         'github_link',
         'demo_link',
         'approved_at',
+        'submitted_at'
     ];
 }

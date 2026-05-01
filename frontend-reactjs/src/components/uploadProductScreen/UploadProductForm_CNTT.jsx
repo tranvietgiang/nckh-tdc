@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import useCategory from "../../hooks/common/useCategory";
 import { confirmToast } from "../common/ConfirmToast";
 import useMajorName from "../../hooks/common/useMajorName";
@@ -12,48 +12,38 @@ const UploadProductForm_CNTT = ({
   handleSubmit,
   errors,
   currentStep,
-
   handleSelectCategory,
   handleImageUpload,
   images,
   thumbnailIndex,
   removeImage,
   setAsThumbnail,
-
   handleFileUpload,
   files,
   removeFile,
-
   tagInput,
   setTagInput,
   handleAddTag,
   tags,
-  removeTag,
-
   handlePrevStep,
   handleNextStep,
-
   loading,
   isAllStepsCompleted,
-
-  currentStudent,
   setSelectedImage,
   handleSaveDraft,
-
-  // view draft
   drafts,
   openViewDraft,
   setOpenViewDraft,
   handleViewDraft,
   handleLoadDraft,
   handleDeleteDraft,
+  currentStudent,
 }) => {
-  const { categories, isLoadingCategories, categoryError } = useCategory();
   const [confirmed, setConfirmed] = useState(false);
   const { user } = useContext(AuthContext);
-
   const { majorName } = useMajorName(user?.major_id);
 
+  const { categories, isLoadingCategories, categoryError } = useCategory();
   // State cho loading upload ảnh
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -296,11 +286,7 @@ const UploadProductForm_CNTT = ({
           >
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4">
               <h2 className="flex items-center gap-2 text-xl font-semibold text-white">
-                <span>
-                  {" "}
-                  <Icons.image />
-                </span>{" "}
-                Hình ảnh & Files
+                <span> {/* <Icons.image /> */}</span> Hình ảnh & Files
               </h2>
             </div>
 
@@ -558,7 +544,7 @@ const UploadProductForm_CNTT = ({
             </div>
           </div>
 
-          {/* Step 3: Tags & Liên kết */}
+          {/* Step 3: Tags & Liên kết + Thông tin CNTT */}
           <div
             className={`overflow-hidden rounded-2xl bg-white shadow-xl transition-all duration-500 ${
               currentStep === 3
@@ -568,12 +554,12 @@ const UploadProductForm_CNTT = ({
           >
             <div className="bg-gradient-to-r from-green-600 to-teal-600 px-6 py-4">
               <h2 className="flex items-center gap-2 text-xl font-semibold text-white">
-                <span>🔗</span> Tags & Liên kết
+                <span>🔗</span> Công nghệ & Liên kết
               </h2>
             </div>
 
             <div className="space-y-6 p-6">
-              {/* Tags input */}
+              {/* Tags */}
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
                   Công nghệ sử dụng
@@ -584,7 +570,7 @@ const UploadProductForm_CNTT = ({
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleAddTag}
                   className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
-                  placeholder="Nhập công nghệ và nhấn Enter (VD: React, Node.js...)"
+                  placeholder="Nhập công nghệ và nhấn Enter"
                 />
 
                 {tags.length > 0 && (
@@ -592,34 +578,61 @@ const UploadProductForm_CNTT = ({
                     {tags.map((tag) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 px-4 py-2 text-sm font-medium text-white"
+                        className="rounded-xl bg-green-500 px-3 py-1 text-sm text-white"
                       >
                         #{tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          className="hover:text-white/80"
-                        >
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
                       </span>
                     ))}
                   </div>
                 )}
               </div>
 
+              {/* Trường riêng CNTT */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Ngôn ngữ lập trình
+                  </label>
+                  <input
+                    type="text"
+                    name="programming_language"
+                    value={formData.programming_language || ""}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="VD: JavaScript, PHP"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Framework
+                  </label>
+                  <input
+                    type="text"
+                    name="framework"
+                    value={formData.framework || ""}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="VD: React, Laravel"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Database sử dụng
+                  </label>
+                  <input
+                    type="text"
+                    name="database_used"
+                    value={formData.database_used || ""}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="VD: MySQL, MongoDB"
+                  />
+                </div>
+              </div>
+
+              {/* Link */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -630,18 +643,9 @@ const UploadProductForm_CNTT = ({
                     name="github_link"
                     value={formData.github_link}
                     onChange={handleChange}
-                    className={`w-full rounded-xl border-2 px-4 py-3 ${
-                      errors.github_link
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="https://github.com/username/repo"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="https://github.com/..."
                   />
-                  {errors.github_link && (
-                    <p className="mt-2 text-sm text-red-600">
-                      {errors.github_link}
-                    </p>
-                  )}
                 </div>
 
                 <div>
@@ -653,19 +657,25 @@ const UploadProductForm_CNTT = ({
                     name="demo_link"
                     value={formData.demo_link}
                     onChange={handleChange}
-                    className={`w-full rounded-xl border-2 px-4 py-3 ${
-                      errors.demo_link
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="https://demo.vercel.app"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                    placeholder="https://demo.com"
                   />
-                  {errors.demo_link && (
-                    <p className="mt-2 text-sm text-red-600">
-                      {errors.demo_link}
-                    </p>
-                  )}
                 </div>
+              </div>
+
+              {/* Awards */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Thành tích / Giải thưởng
+                </label>
+                <textarea
+                  name="awards"
+                  rows={3}
+                  value={formData.awards || ""}
+                  onChange={handleChange}
+                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3"
+                  placeholder="VD: Giải nhất NCKH cấp khoa..."
+                />
               </div>
             </div>
           </div>

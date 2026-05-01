@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->string('design_type', 50);
             $table->string('tools_used', 150);
+
             $table->string('drive_link', 255)->nullable();
             $table->string('behance_link', 255)->nullable();
 
