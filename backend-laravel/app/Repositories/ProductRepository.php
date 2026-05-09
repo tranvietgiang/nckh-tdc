@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Repositories\MajorRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProductRepository extends BaseRepository
 {
@@ -236,7 +237,7 @@ class ProductRepository extends BaseRepository
         return $result;
     }
     // lấy tất cả sản phẩm của học sinh theo id
-    public function productAllById(): ?Collection
+    public function productAllById(): LengthAwarePaginator
     {
         $userId = $this->getCurrentUserId();
 
@@ -255,14 +256,13 @@ class ProductRepository extends BaseRepository
                 DB::raw('COALESCE(product_statistics.views, 0) as views'),
                 DB::raw('COALESCE(product_statistics.likes, 0) as likes'),
 
-                // 👉 lấy 1 comment mới nhất
                 DB::raw('(SELECT comment FROM reviews 
-                      WHERE reviews.product_id = products.product_id 
-                      ORDER BY reviews.created_at DESC 
-                      LIMIT 1) as feedback')
+                WHERE reviews.product_id = products.product_id 
+                ORDER BY reviews.created_at DESC 
+                LIMIT 1) as feedback')
             )
             ->orderByDesc('products.created_at')
-            ->get();
+            ->paginate(9);
     }
 
     public function productViewIdTeacher($productId)

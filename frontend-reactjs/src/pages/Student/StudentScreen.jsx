@@ -25,11 +25,14 @@ const StudentScreen = () => {
   const { products, loading, error } = useProductAll();
   const currentStudent = mapCurrentStudent(user, majorName);
 
+  const productData = products?.data;
+  // console.log("productData", productData);
+
   const theme = getMajorTheme(majorName);
 
   const productsArray = useMemo(
-    () => (Array.isArray(products) ? products : []),
-    [products],
+    () => (Array.isArray(productData) ? productData : []),
+    [productData],
   );
 
   const { stats, animatedStats, filteredProducts } = useStudentStats(
