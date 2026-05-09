@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Repositories\BaseRepository;
 use App\Repositories\ProductRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProductService extends BaseRepository
 {
@@ -22,7 +23,7 @@ class ProductService extends BaseRepository
         return $this->productRepository->findProductById($productId);
     }
 
-    public function getAllProductsByUserId(): Collection
+    public function getAllProductsByUserId(): LengthAwarePaginator
     {
         return $this->productRepository->productAllById();
     }

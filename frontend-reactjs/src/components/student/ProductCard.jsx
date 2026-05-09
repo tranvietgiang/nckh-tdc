@@ -51,6 +51,7 @@ const ProductCard = ({
 }) => {
   const statusStyle = getStatusStyle(product.status);
 
+  console.log("1", product);
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-slate-300">
       <div
