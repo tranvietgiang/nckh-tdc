@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ActivityLog;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +34,12 @@ class AuthService
         $token = $user->createToken('auth_token')->plainTextToken;
 
         // RateLimiter::clear($key); // đúng → reset12
+
+        ActivityLog::create([
+            'user_id' => $user->user_id,
+            'action' => 'login',
+            'ip_address' => request()->ip(),
+        ]);
 
 
         return [
