@@ -5,7 +5,7 @@ import UploadProductScreen from "../pages/uploadProductScreen/UploadProductScree
 import NotFoundScreen from "../pages/notFoundScreen/NotFoundScreen";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
-import TeacherProductDetailScreen from "../pages/ProductDetailScreen/TeacherProductDetailScreen";
+import TeacherProductDetailScreen from "../pages/productDetailScreen/TeacherProductDetailScreen";
 import TeacherScreen from "../pages/teacher/TeacherScreen";
 import ProductDetailScreen from "../pages/productDetailScreen/ProductDetailScreen";
 function RoleRoutes() {
