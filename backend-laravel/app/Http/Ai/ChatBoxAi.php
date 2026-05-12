@@ -209,12 +209,19 @@ class ChatBoxAi
             ], 502);
         }
 
+        // Parse reply TRƯỚC
         $result = $response->json();
         $reply  = data_get($result, 'output.0.content.0.text')
             ?? data_get($result, 'output_text')
             ?? 'AI không trả về dữ liệu.';
 
-        return response()->json(['reply' => $reply]);
+        // SAU ĐÓ mới dùng $reply
+        $mentionedProducts = $this->extractMentionedProducts($reply, $majorId);
+
+        return response()->json([
+            'reply'    => $reply,
+            'products' => $mentionedProducts,
+        ]);
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -493,6 +500,40 @@ class ChatBoxAi
             'totalCategories',
             'featuredProducts'
         );
+    }
+
+    private function extractMentionedProducts(string $reply, ?int $majorId): array
+    {
+        // Lấy products liên quan (theo ngành nếu có, không thì lấy tổng)
+        $query = DB::table('products')
+            ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
+            ->select(
+                'products.product_id as id',
+                'products.title',
+                'product_statistics.views'
+            );
+
+        if ($majorId) {
+            $query->where('products.major_id', $majorId);
+        }
+
+        $allProducts = $query->get();
+
+        // Lọc ra những sản phẩm được AI nhắc đến trong reply
+        $mentioned = $allProducts->filter(function ($product) use ($reply) {
+            return str_contains($reply, $product->title);
+        });
+
+        // Nếu AI không nhắc tên cụ thể → trả về top 5 phổ biến nhất
+        if ($mentioned->isEmpty()) {
+            return $query
+                ->orderByDesc('product_statistics.views')
+                ->limit(5)
+                ->get()
+                ->toArray();
+        }
+
+        return $mentioned->values()->toArray();
     }
 
     /* ════════════════════════════════════════════════════════════════

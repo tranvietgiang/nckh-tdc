@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import useChatBoxAi from "../../hooks/ai/useChatBoxAi";
-
+import { Link, useNavigate } from "react-router-dom";
 export default function ChatBoxAi() {
   const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false); // Thêm state cho hiệu ứng đang trả lời
@@ -168,6 +168,11 @@ export default function ChatBoxAi() {
     return () => clearInterval(interval);
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleViewDetail = (id) => {
+    navigate("/visitor-detail", { state: { productId: id } });
+  };
   return (
     <>
       {/* Nút chat nổi */}
@@ -248,16 +253,24 @@ export default function ChatBoxAi() {
 
                 {/* PRODUCTS (chỉ render 1 lần / msg) */}
                 {msg.products?.length > 0 && (
-                  <div className="mt-2 ml-2 space-y-1">
-                    {msg.products.map((p) => (
-                      <a
-                        key={p.id}
-                        href={`/product/${p.slug}`}
-                        className="block text-blue-600 hover:underline"
-                      >
-                        <strong>{p.title}</strong>
-                      </a>
-                    ))}
+                  <div className="mt-3 pt-2 border-t border-gray-200">
+                    <p className="text-xs text-gray-400 mb-1">
+                      Đồ án liên quan:
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {msg.products.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            handleViewDetail(p.id);
+                            setIsOpen(false);
+                          }}
+                          className="text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-2 py-0.5 hover:bg-blue-100 transition"
+                        >
+                          {p.title}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
