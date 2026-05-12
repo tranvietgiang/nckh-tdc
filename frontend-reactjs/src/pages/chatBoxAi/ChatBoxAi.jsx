@@ -1,42 +1,172 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import useChatBoxAi from "../../hooks/ai/useChatBoxAi";
 
 export default function ChatBoxAi() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
+  const [isTyping, setIsTyping] = useState(false); // Thêm state cho hiệu ứng đang trả lời
+
+  const STORAGE_KEY = "chat_guest_cache";
+  const EXP_TIME = 10 * 60 * 1000;
+
+  const defaultMessage = [
     {
       id: 1,
       text: "Xin chào! Tôi là trợ lý ảo. Bạn cần giúp gì hôm nay?",
       sender: "bot",
     },
-  ]);
+  ];
 
+  const [messages, setMessages] = useState(defaultMessage);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const { sendMessage, loadingAi } = useChatBoxAi();
 
-    // Thêm tin nhắn của user
-    const userMessage = { id: Date.now(), text: input, sender: "user" };
-    setMessages((prev) => [...prev, userMessage]);
+  const isFirstOpen = useRef(false);
+  const messagesEndRef = useRef(null); // Thêm ref để tự động scroll
+
+  /**
+   * =========================
+   * AUTO SCROLL TO BOTTOM
+   * =========================
+   */
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  /**
+   * =========================
+   * LOAD CACHE KHI MỞ CHAT
+   * =========================
+   */
+  useEffect(() => {
+    if (!isOpen) return;
+    if (isFirstOpen.current) return;
+
+    isFirstOpen.current = true;
+
+    const cached = localStorage.getItem(STORAGE_KEY);
+
+    if (!cached) return;
+
+    try {
+      const parsed = JSON.parse(cached);
+      const now = Date.now();
+
+      if (now - parsed.time < EXP_TIME && parsed.messages?.length) {
+        setMessages(parsed.messages);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+        setMessages(defaultMessage);
+      }
+    } catch (e) {
+      localStorage.removeItem(STORAGE_KEY);
+      setMessages(defaultMessage);
+    }
+  }, [isOpen]);
+
+  /**
+   * =========================
+   * SAVE CACHE
+   * =========================
+   */
+  const saveToLocal = (msgs) => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        time: Date.now(),
+        messages: msgs,
+      }),
+    );
+  };
+
+  /**
+   * =========================
+   * SEND MESSAGE
+   * =========================
+   */
+  const handleSend = async () => {
+    if (!input.trim() || loadingAi) return;
+
+    const userMessage = {
+      id: Date.now(),
+      text: input,
+      sender: "user",
+    };
+
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    saveToLocal(newMessages);
+
+    const messageToSend = input;
     setInput("");
 
-    // Giả lập bot reply
+    // Bật hiệu ứng đang trả lời
     setIsTyping(true);
-    setTimeout(() => {
+
+    try {
+      const res = await sendMessage(messageToSend);
+
       const botReply = {
         id: Date.now() + 1,
-        text: "Cảm ơn bạn đã nhắn tin! Tôi sẽ hỗ trợ bạn sớm nhất có thể.",
+        text: res?.reply ?? "AI không trả về dữ liệu",
+        sender: "bot",
+        products: res?.products || [],
+      };
+
+      const updated = [...newMessages, botReply];
+
+      setMessages(updated);
+      saveToLocal(updated);
+    } catch (err) {
+      const errorMsg = {
+        id: Date.now() + 1,
+        text: "Lỗi kết nối server",
         sender: "bot",
       };
-      setMessages((prev) => [...prev, botReply]);
+
+      const updated = [...newMessages, errorMsg];
+
+      setMessages(updated);
+      saveToLocal(updated);
+    } finally {
+      // Tắt hiệu ứng đang trả lời
       setIsTyping(false);
-    }, 1000);
+    }
   };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSend();
   };
+
+  /**
+   * =========================
+   * AUTO EXPIRE CACHE
+   * =========================
+   */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const cached = localStorage.getItem(STORAGE_KEY);
+      if (!cached) return;
+
+      try {
+        const parsed = JSON.parse(cached);
+
+        if (Date.now() - parsed.time > EXP_TIME) {
+          localStorage.removeItem(STORAGE_KEY);
+          setMessages(defaultMessage);
+          isFirstOpen.current = false;
+        }
+      } catch (e) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -98,25 +228,46 @@ export default function ChatBoxAi() {
           {/* Messages */}
           <div className="h-96 overflow-y-auto p-4 space-y-3 bg-gray-50">
             {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={msg.id}>
+                {/* MESSAGE */}
                 <div
-                  className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-                    msg.sender === "user"
-                      ? "bg-blue-600 text-white rounded-br-none"
-                      : "bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-200"
+                  className={`flex ${
+                    msg.sender === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  <p className="text-sm">{msg.text}</p>
+                  <div
+                    className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+                      msg.sender === "user"
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-gray-800 shadow-sm border"
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-line">{msg.text}</p>
+                  </div>
                 </div>
+
+                {/* PRODUCTS (chỉ render 1 lần / msg) */}
+                {msg.products?.length > 0 && (
+                  <div className="mt-2 ml-2 space-y-1">
+                    {msg.products.map((p) => (
+                      <a
+                        key={p.id}
+                        href={`/product/${p.slug}`}
+                        className="block text-blue-600 hover:underline"
+                      >
+                        <strong>{p.title}</strong>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
+
+            {/* Hiệu ứng đang trả lời */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white text-gray-800 px-4 py-2 rounded-2xl rounded-bl-none shadow-sm border border-gray-200">
-                  <div className="flex gap-1">
+                <div className="bg-white text-gray-800 shadow-sm border rounded-2xl px-4 py-3">
+                  <div className="flex items-center gap-1">
                     <span
                       className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
                       style={{ animationDelay: "0ms" }}
@@ -133,6 +284,8 @@ export default function ChatBoxAi() {
                 </div>
               </div>
             )}
+
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
@@ -144,11 +297,12 @@ export default function ChatBoxAi() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Nhập tin nhắn..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                disabled={isTyping}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim()}
+                disabled={!input.trim() || isTyping}
                 className="p-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
@@ -185,8 +339,21 @@ export default function ChatBoxAi() {
             transform: translateY(0);
           }
         }
+        @keyframes bounce {
+          0%,
+          60%,
+          100% {
+            transform: translateY(0);
+          }
+          30% {
+            transform: translateY(-10px);
+          }
+        }
         .animate-slide-up {
           animation: slideUp 0.3s ease-out;
+        }
+        .animate-bounce {
+          animation: bounce 1.4s infinite ease-in-out;
         }
       `}</style>
     </>

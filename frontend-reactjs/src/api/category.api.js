@@ -1,5 +1,7 @@
 import axiosClient from "./axiosClient";
 
-export const categoryApi = {
+const categoryApi = {
   getAll: () => axiosClient.get("/category/all"),
 };
+
+export default categoryApi;

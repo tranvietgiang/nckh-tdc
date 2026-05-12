@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\UploadController;
-
+use App\Http\Ai\ChatBoxAi;
 /*
 |--------------------------------------------------------------------------
 | Auth ROUTES
@@ -79,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
 | Categories ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/category/all', [CategoryController::class, 'getAllCategories'])->middleware('auth:sanctum');
+Route::get('/category/all', [CategoryController::class, 'getAllCategories']);
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +92,13 @@ Route::prefix('visitor')->group(function () {
     Route::get('/product/{id}', [ProductController::class, 'getVisitorProductById']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Ai ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/ai/send', [ChatBoxAi::class, 'chat']);
 
 /*
 |--------------------------------------------------------------------------
