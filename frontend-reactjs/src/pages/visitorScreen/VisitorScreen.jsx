@@ -3,7 +3,7 @@ import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
 import useMajorAll from "../../hooks/common/useMajorAll";
 import useVisitorProduct from "../../hooks/useProduct/useVisitorProduct";
-
+import ChatBoxAi from "../../pages/chatBoxAi/ChatBoxAi";
 const HeartIcon = ({ filled = false }) => (
   <svg
     className={`w-4 h-4 ${
@@ -446,11 +446,13 @@ export default function VisitorScreen() {
         )}
       </main>
 
+      <ChatBoxAi />
+
       {/* FOOTER */}
       <footer className="bg-[#003087] text-white pt-10 pb-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center text-blue-100 text-xs">
-            © 2025 Trường Cao Đẳng Công Nghệ Thủ Đức (TDC). All rights reserved.
+            © 2025 Trường Cao Đẳng Công Nghệ Thủ Đức (TDC)
           </div>
         </div>
       </footer>
