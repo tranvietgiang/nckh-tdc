@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { productApi } from "../../api";
 import { toast } from "react-toastify";
+
 export default function useDeleteProduct() {
   const [deleteLoading, setLoading] = useState(false);
   const [deleteStatus, setStatus] = useState(false);
