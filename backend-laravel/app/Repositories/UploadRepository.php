@@ -63,7 +63,7 @@ class UploadRepository extends BaseRepository
                 throw new \Exception("major_code is required");
             }
 
-            $majorCode = $this->normalizeMajorCode->normalizeMajorCode($data['major_code']);
+            $majorCode = $this->normalizeMajorCode->NormalizeMajorCode($data['major_code']);
 
             switch ($majorCode) {
                 case 'ai':

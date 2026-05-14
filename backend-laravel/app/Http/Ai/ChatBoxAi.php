@@ -166,7 +166,7 @@ class ChatBoxAi
         }
 
         /* ── 2. OVERRIDE MAJOR TỪ TEXT ────────────────────────────── */
-        $majorCode = $this->normalizeMajorCode->normalizeMajorCode($message);
+        $majorCode = $this->normalizeMajorCode->NormalizeMajorCode($message);
         if ($majorCode) {
             $detectedMajorId = DB::table('majors')
                 ->where('major_code', $majorCode)
