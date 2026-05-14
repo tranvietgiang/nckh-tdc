@@ -2,9 +2,9 @@
 
 namespace App\Http\common;
 
-class normalizeMajorCode
+class NormalizeMajorCode
 {
-    function normalizeMajorCode(?string $value): ?string
+    function NormalizeMajorCode(?string $value): ?string
     {
         if (!$value) return null;
 

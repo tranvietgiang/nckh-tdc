@@ -46,6 +46,7 @@ export default function ChatBoxAi({ user }) {
           return;
         }
       } catch (e) {
+        console.log(e);
         localStorage.removeItem(STORAGE_KEY);
       }
     }
@@ -145,9 +146,9 @@ export default function ChatBoxAi({ user }) {
   const handleViewDetail = (id, user) => {
     let url = "/visitor-detail";
 
-    if (user?.role === ROLE.TEACHER) {
+    if (user?.role == ROLE.TEACHER) {
       url = "/product-detail-teacher";
-    } else if (user?.role === ROLE.STUDENT) {
+    } else if (user?.role == ROLE.STUDENT) {
       url = "/product-detail";
     }
 
