@@ -1,4 +1,5 @@
-<img width="791" height="230" alt="image" src="https://github.com/user-attachments/assets/9596e6e3-bd3e-4cd4-9213-5cff9665e47b" /># 🎓 Hệ thống quản lý và trưng bày sản phẩm Khoa CNTT
+
+# 🎓 Hệ thống quản lý và trưng bày sản phẩm Khoa CNTT
 
 ## 📌 Giới thiệu đề tài
 
