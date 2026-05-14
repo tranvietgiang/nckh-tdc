@@ -10,6 +10,7 @@ import StudentHeader from "../../components/student/StudentHeader";
 import ProductCard from "../../components/student/ProductCard";
 import { STATUS } from "../../utils/constants";
 import { getMajorTheme } from "../../utils/uploadProductScreen/uploadRegistry";
+import ChatBoxAi from "../../pages/ChatBoxAi/ChatBoxAi";
 
 const StudentScreen = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -123,6 +124,7 @@ const StudentScreen = () => {
           </div>
         )}
       </div>
+      <ChatBoxAi idUser={user?.user_id} />
     </div>
   );
 };

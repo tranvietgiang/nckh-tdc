@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import useChatBoxAi from "../../hooks/ai/useChatBoxAi";
 import { Link, useNavigate } from "react-router-dom";
-export default function ChatBoxAi() {
+
+export default function ChatBoxAi({ idUser = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false); // Thêm state cho hiệu ứng đang trả lời
 
@@ -63,6 +64,7 @@ export default function ChatBoxAi() {
         setMessages(defaultMessage);
       }
     } catch (e) {
+      console.error("Lỗi khi đọc cache:", e);
       localStorage.removeItem(STORAGE_KEY);
       setMessages(defaultMessage);
     }
@@ -108,7 +110,7 @@ export default function ChatBoxAi() {
     setIsTyping(true);
 
     try {
-      const res = await sendMessage(messageToSend);
+      const res = await sendMessage(messageToSend, idUser);
 
       const botReply = {
         id: Date.now() + 1,
@@ -122,6 +124,7 @@ export default function ChatBoxAi() {
       setMessages(updated);
       saveToLocal(updated);
     } catch (err) {
+      console.error("Lỗi khi nhận phản hồi từ AI:", err);
       const errorMsg = {
         id: Date.now() + 1,
         text: "Lỗi kết nối server",
@@ -161,6 +164,7 @@ export default function ChatBoxAi() {
           isFirstOpen.current = false;
         }
       } catch (e) {
+        console.error("Lỗi khi kiểm tra cache:", e);
         localStorage.removeItem(STORAGE_KEY);
       }
     }, 60000);
