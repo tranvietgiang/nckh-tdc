@@ -11,6 +11,7 @@ import { getStatusColor } from "../../components/common/getStatusColor";
 import { getStatusText } from "../../components/common/getStatusText";
 import { formatDate } from "../../utils/formatDate";
 import { STATUS } from "../../utils/constants";
+import ChatBoxAi from "../ChatBoxAi/ChatBoxAi";
 // ========== Extracted components ==========
 
 const ProductCard = React.memo(
@@ -135,6 +136,8 @@ const ProductCard = React.memo(
     );
   },
 );
+const currentStudent = JSON.parse(sessionStorage.getItem("auth_user"));
+
 ProductCard.displayName = "ProductCard";
 
 const LoadingSkeleton = () => (
@@ -388,7 +391,7 @@ const TeacherScreen = () => {
           )}
         </div>
       </div>
-
+      {currentStudent && <ChatBoxAi user={currentStudent} />}
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading && <LoadingSkeleton />}
