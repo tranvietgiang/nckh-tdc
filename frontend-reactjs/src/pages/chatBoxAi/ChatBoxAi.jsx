@@ -1,100 +1,100 @@
 import React, { useEffect, useState, useRef } from "react";
 import useChatBoxAi from "../../hooks/ai/useChatBoxAi";
-import { Link, useNavigate } from "react-router-dom";
-
-export default function ChatBoxAi({ idUser = null }) {
+import { useNavigate } from "react-router-dom";
+import { ROLE } from "../../utils/constants";
+export default function ChatBoxAi({ user }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isTyping, setIsTyping] = useState(false); // Thêm state cho hiệu ứng đang trả lời
-
-  const STORAGE_KEY = "chat_guest_cache";
-  const EXP_TIME = 10 * 60 * 1000;
-
-  const defaultMessage = [
-    {
-      id: 1,
-      text: "Xin chào! Tôi là trợ lý ảo. Bạn cần giúp gì hôm nay?",
-      sender: "bot",
-    },
-  ];
-
-  const [messages, setMessages] = useState(defaultMessage);
+  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
+  const navigate = useNavigate();
   const { sendMessage, loadingAi } = useChatBoxAi();
+  const messagesEndRef = useRef(null);
 
-  const isFirstOpen = useRef(false);
-  const messagesEndRef = useRef(null); // Thêm ref để tự động scroll
+  const userId = user?.user_id ?? "guest";
+  const userName = user?.name;
 
-  /**
-   * =========================
-   * AUTO SCROLL TO BOTTOM
-   * =========================
-   */
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const STORAGE_KEY = userId ? `chat_${userId}` : null;
+  const EXP_TIME = 10 * 60 * 1000;
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
-
-  /**
-   * =========================
-   * LOAD CACHE KHI MỞ CHAT
-   * =========================
-   */
+  // =========================
+  // LOAD MESSAGES KHI MỞ CHAT
+  // =========================
   useEffect(() => {
     if (!isOpen) return;
-    if (isFirstOpen.current) return;
 
-    isFirstOpen.current = true;
+    // Guest không lưu cache
+    if (!STORAGE_KEY) {
+      setMessages([
+        {
+          id: Date.now(),
+          text: "Xin chào! Bạn cần đăng nhập để sử dụng trợ lý ảo 😊",
+          sender: "bot",
+        },
+      ]);
+      return;
+    }
 
     const cached = localStorage.getItem(STORAGE_KEY);
 
-    if (!cached) return;
-
-    try {
-      const parsed = JSON.parse(cached);
-      const now = Date.now();
-
-      if (now - parsed.time < EXP_TIME && parsed.messages?.length) {
-        setMessages(parsed.messages);
-      } else {
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.time < EXP_TIME && parsed.messages?.length) {
+          setMessages(parsed.messages);
+          return;
+        }
+      } catch (e) {
         localStorage.removeItem(STORAGE_KEY);
-        setMessages(defaultMessage);
       }
-    } catch (e) {
-      console.error("Lỗi khi đọc cache:", e);
-      localStorage.removeItem(STORAGE_KEY);
-      setMessages(defaultMessage);
     }
-  }, [isOpen]);
 
-  /**
-   * =========================
-   * SAVE CACHE
-   * =========================
-   */
+    // Không có cache hợp lệ → greeting mới
+    setMessages([
+      {
+        id: `bot_${Date.now()}`,
+        text: `Xin chào ${userName || ""}! Mình có thể giúp gì cho bạn? 😊`,
+        sender: "bot",
+      },
+    ]);
+  }, [isOpen, STORAGE_KEY]);
+
+  // =========================
+  // RESET KHI ĐỔI USER (logout/login)
+  // =========================
+  useEffect(() => {
+    setMessages([]);
+    setInput("");
+    setIsOpen(false);
+  }, [userId]);
+
+  // =========================
+  // SCROLL
+  // =========================
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping]);
+
+  // =========================
+  // SAVE CACHE
+  // =========================
   const saveToLocal = (msgs) => {
+    if (!STORAGE_KEY) return;
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({
-        time: Date.now(),
-        messages: msgs,
-      }),
+      JSON.stringify({ time: Date.now(), messages: msgs }),
     );
   };
 
-  /**
-   * =========================
-   * SEND MESSAGE
-   * =========================
-   */
+  // =========================
+  // SEND MESSAGE
+  // =========================
   const handleSend = async () => {
-    if (!input.trim() || loadingAi) return;
+    if (!input.trim() || loadingAi || isTyping) return;
 
     const userMessage = {
-      id: Date.now(),
+      id: `user_${Date.now()}_${Math.random()}`,
       text: input,
       sender: "user",
     };
@@ -105,38 +105,34 @@ export default function ChatBoxAi({ idUser = null }) {
 
     const messageToSend = input;
     setInput("");
-
-    // Bật hiệu ứng đang trả lời
     setIsTyping(true);
 
     try {
-      const res = await sendMessage(messageToSend, idUser);
+      const res = await sendMessage(messageToSend);
 
       const botReply = {
-        id: Date.now() + 1,
+        id: `bot_${Date.now()}_${Math.random()}`,
         text: res?.reply ?? "AI không trả về dữ liệu",
         sender: "bot",
         products: res?.products || [],
       };
 
       const updated = [...newMessages, botReply];
-
       setMessages(updated);
       saveToLocal(updated);
     } catch (err) {
-      console.error("Lỗi khi nhận phản hồi từ AI:", err);
+      console.error(err);
+
       const errorMsg = {
-        id: Date.now() + 1,
-        text: "Lỗi kết nối server",
+        id: `bot_${Date.now()}_${Math.random()}`,
+        text: "Lỗi kết nối server, vui lòng thử lại 😥",
         sender: "bot",
       };
 
       const updated = [...newMessages, errorMsg];
-
       setMessages(updated);
       saveToLocal(updated);
     } finally {
-      // Tắt hiệu ứng đang trả lời
       setIsTyping(false);
     }
   };
@@ -145,45 +141,34 @@ export default function ChatBoxAi({ idUser = null }) {
     if (e.key === "Enter") handleSend();
   };
 
-  /**
-   * =========================
-   * AUTO EXPIRE CACHE
-   * =========================
-   */
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (!cached) return;
+  console.log(user);
+  const handleViewDetail = (id, user) => {
+    let url = "/visitor-detail";
 
-      try {
-        const parsed = JSON.parse(cached);
+    if (user?.role === ROLE.TEACHER) {
+      url = "/product-detail-teacher";
+    } else if (user?.role === ROLE.STUDENT) {
+      url = "/product-detail";
+    }
 
-        if (Date.now() - parsed.time > EXP_TIME) {
-          localStorage.removeItem(STORAGE_KEY);
-          setMessages(defaultMessage);
-          isFirstOpen.current = false;
-        }
-      } catch (e) {
-        console.error("Lỗi khi kiểm tra cache:", e);
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }, 60000);
+    console.log(url);
+    navigate(url, {
+      state: { productId: id },
+    });
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const navigate = useNavigate();
-
-  const handleViewDetail = (id) => {
-    navigate("/visitor-detail", { state: { productId: id } });
+    setIsOpen(false);
   };
+
+  // Guest không hiển thị chatbox
+  if (!userId) return null;
+
   return (
     <>
       {/* Nút chat nổi */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 group"
+          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
           aria-label="Mở chat"
         >
           <div className="relative">
@@ -238,26 +223,44 @@ export default function ChatBoxAi({ idUser = null }) {
           <div className="h-96 overflow-y-auto p-4 space-y-3 bg-gray-50">
             {messages.map((msg) => (
               <div key={msg.id}>
-                {/* MESSAGE */}
                 <div
-                  className={`flex ${
-                    msg.sender === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex items-end gap-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div
-                    className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-                      msg.sender === "user"
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-800 shadow-sm border"
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-line">{msg.text}</p>
+                  {/* Avatar bot */}
+                  {msg.sender === "bot" && (
+                    <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      AI
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-1 max-w-[80%]">
+                    <span
+                      className={`text-xs text-gray-400 ${msg.sender === "user" ? "text-right" : "text-left"}`}
+                    >
+                      {msg.sender === "user" ? userName || "Bạn" : "Trợ lý ảo"}
+                    </span>
+                    <div
+                      className={`px-4 py-2 rounded-2xl ${
+                        msg.sender === "user"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-800 shadow-sm border"
+                      }`}
+                    >
+                      <p className="text-sm whitespace-pre-line">{msg.text}</p>
+                    </div>
                   </div>
+
+                  {/* Avatar user */}
+                  {msg.sender === "user" && (
+                    <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {userName?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+                  )}
                 </div>
 
-                {/* PRODUCTS (chỉ render 1 lần / msg) */}
+                {/* Products */}
                 {msg.products?.length > 0 && (
-                  <div className="mt-3 pt-2 border-t border-gray-200">
+                  <div className="mt-2 ml-9 pt-2 border-t border-gray-200">
                     <p className="text-xs text-gray-400 mb-1">
                       Đồ án liên quan:
                     </p>
@@ -265,10 +268,7 @@ export default function ChatBoxAi({ idUser = null }) {
                       {msg.products.map((p) => (
                         <button
                           key={p.id}
-                          onClick={() => {
-                            handleViewDetail(p.id);
-                            setIsOpen(false);
-                          }}
+                          onClick={() => handleViewDetail(p.id)}
                           className="text-xs bg-blue-50 text-blue-600 border border-blue-200 rounded-full px-2 py-0.5 hover:bg-blue-100 transition"
                         >
                           {p.title}
@@ -280,9 +280,12 @@ export default function ChatBoxAi({ idUser = null }) {
               </div>
             ))}
 
-            {/* Hiệu ứng đang trả lời */}
+            {/* Typing indicator */}
             {isTyping && (
-              <div className="flex justify-start">
+              <div className="flex items-end gap-2 justify-start">
+                <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  AI
+                </div>
                 <div className="bg-white text-gray-800 shadow-sm border rounded-2xl px-4 py-3">
                   <div className="flex items-center gap-1">
                     <span
@@ -344,7 +347,6 @@ export default function ChatBoxAi({ idUser = null }) {
         </div>
       )}
 
-      {/* CSS animations */}
       <style jsx>{`
         @keyframes slideUp {
           from {

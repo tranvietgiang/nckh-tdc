@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Http\Common\NormalizeMajorCode;
+use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Auth;
 
 class ChatBoxAi
 {
@@ -123,8 +125,8 @@ class ChatBoxAi
 
     public function chat(Request $request)
     {
-        $user    = $request->user();
-        $role    = $user->role    ?? 'guest';
+        $user    = Auth::user();
+        $role    = $user->role ?? 'guest';
         $majorId = $user->major_id ?? null;
 
         /* ── 1. PARSE MESSAGE ─────────────────────────────────────── */
@@ -144,12 +146,18 @@ class ChatBoxAi
         }
 
         if (!$this->isRelevantQuestion($message)) {
+            // Lời từ chối có tên nếu là student đã login
+            $userName = ($role === 'student' && $user)
+                ? ($user->name ?? $user->username ?? null)
+                : null;
+
+            $nameTag = $userName ? " {$userName}" : "";
+
             $replies = [
-                'Xin lỗi, mình chỉ hỗ trợ các câu hỏi liên quan đến hệ thống quản lý đồ án. Bạn có thể hỏi về sản phẩm, ngành học, danh mục, thống kê, v.v.',
-                'Câu hỏi này nằm ngoài phạm vi hỗ trợ của mình rồi 😅',
-                'Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Bạn quan tâm đến đồ án hay tài liệu học thuật nào không?',
-                'Xin chào! Mình là trợ lý hệ thống đồ án. Bạn cần tìm kiếm tài liệu hay xem thống kê gì không?',
-                'Hi bạn! Hỏi mình về đồ án, ngành học, hay thống kê hệ thống đi nhé 😊',
+                "Xin lỗi{$nameTag}, mình chỉ hỗ trợ các câu hỏi liên quan đến hệ thống quản lý đồ án. Bạn có thể hỏi về sản phẩm, ngành học, danh mục, thống kê, v.v.",
+                "Câu hỏi này nằm ngoài phạm vi hỗ trợ của mình rồi 😅",
+                "Chào{$nameTag}! Tôi có thể giúp gì cho bạn hôm nay? Bạn quan tâm đến đồ án hay tài liệu học thuật nào không?",
+                "Xin chào{$nameTag}! Mình là trợ lý hệ thống đồ án. Bạn cần tìm kiếm tài liệu hay xem thống kê gì không?",
             ];
 
             return response()->json([
@@ -160,24 +168,46 @@ class ChatBoxAi
         /* ── 2. OVERRIDE MAJOR TỪ TEXT ────────────────────────────── */
         $majorCode = $this->normalizeMajorCode->normalizeMajorCode($message);
         if ($majorCode) {
-            $majorId = DB::table('majors')
+            $detectedMajorId = DB::table('majors')
                 ->where('major_code', $majorCode)
                 ->value('major_id');
+
+            // Student chỉ được hỏi đúng ngành của mình
+            if ($role === 'student' && $detectedMajorId && $detectedMajorId != $majorId) {
+                $userName  = $user->name ?? $user->username ?? 'bạn';
+                $majorName = DB::table('majors')
+                    ->where('major_id', $majorId)
+                    ->value('major_name') ?? 'ngành của bạn';
+
+                return response()->json([
+                    'reply' => "Xin lỗi {$userName}, bạn chỉ có thể xem thông tin trong phạm vi {$majorName} thôi nhé 😊"
+                ]);
+            }
+
+            // Admin / teacher được override major bình thường
+            if ($role !== 'student') {
+                $majorId = $detectedMajorId;
+            }
         }
 
         /* ── 3. BUILD CONTEXT THEO ROLE ───────────────────────────── */
         $data = match (true) {
-            $role === 'admin'                          => $this->buildAdminContext(),
-            in_array($role, ['teacher', 'student'])   => $this->buildMajorContext($majorId, $role),
-            default                                    => $this->buildGuestContext(),
+            $role === 'admin'                        => $this->buildAdminContext(),
+            in_array($role, ['teacher', 'student'])  => $this->buildMajorContext($majorId, $role),
+            default                                  => $this->buildGuestContext(),
         };
+
+        if ($role === 'teacher') {
+            $data = array_merge($data, $this->buildTeacherContext($majorId));
+        }
 
         if (isset($data['__error'])) {
             return response()->json(['reply' => $data['__error']], 403);
         }
 
         /* ── 4. CALL OPENAI ───────────────────────────────────────── */
-        $systemPrompt = $this->buildSystemPrompt($role, $data);
+        // Truyền $user để buildSystemPrompt tạo lời chào đúng tên
+        $systemPrompt = $this->buildSystemPrompt($role, $data, $user);
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
@@ -209,13 +239,11 @@ class ChatBoxAi
             ], 502);
         }
 
-        // Parse reply TRƯỚC
         $result = $response->json();
         $reply  = data_get($result, 'output.0.content.0.text')
             ?? data_get($result, 'output_text')
             ?? 'AI không trả về dữ liệu.';
 
-        // SAU ĐÓ mới dùng $reply
         $mentionedProducts = $this->extractMentionedProducts($reply, $majorId);
 
         return response()->json([
@@ -227,6 +255,31 @@ class ChatBoxAi
     /* ════════════════════════════════════════════════════════════════
      *  CONTEXT BUILDERS
      * ════════════════════════════════════════════════════════════════ */
+
+
+    private function buildTeacherContext(?int $majorId): array
+    {
+        if (!$majorId) {
+            return ['__error' => 'Bạn chưa được gán ngành học.'];
+        }
+        /* Teacher có thêm context về review cần duyệt */
+        $pendingReviews = DB::table('reviews')
+            ->join('products', 'reviews.product_id', '=', 'products.product_id')
+            ->where('products.major_id', $majorId)
+            ->where('reviews.status', 'pending')
+            ->select(
+                'reviews.review_id',
+                'products.title as product_title',
+                'reviews.comment',
+                'reviews.created_at'
+            )
+            ->latest('reviews.created_at')
+            ->get();
+
+        return [
+            'pending_reviews' => $pendingReviews,
+        ];
+    }
 
     private function buildAdminContext(): array
     {
@@ -540,7 +593,7 @@ class ChatBoxAi
      *  SYSTEM PROMPT
      * ════════════════════════════════════════════════════════════════ */
 
-    private function buildSystemPrompt(string $role, array $data): string
+    private function buildSystemPrompt(string $role, array $data, ?object $user = null): string
     {
         $roleLabel = match ($role) {
             'admin'   => 'Quản trị viên',
@@ -551,25 +604,73 @@ class ChatBoxAi
 
         $dataJson = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
+        $userName    = $user?->name ?? $user?->username ?? null;
+        $userInfoLine = $userName
+            ? "- Tên người dùng: {$userName}"
+            : "- Người dùng: Khách (chưa đăng nhập)";
+
+        // ── Lời chào theo role ──────────────────────────────────────
+        $greetingRule = match ($role) {
+            'admin' => $userName
+                ? "10. Khi người dùng chào hoặc mở đầu hội thoại, hãy chào: \"Xin chào {$userName}! Bạn cần tra cứu hoặc thống kê gì trong hệ thống không? 📊\""
+                : "10. Khi người dùng chào, hãy chào thân thiện và giới thiệu khả năng quản trị hệ thống.",
+
+            'teacher' => $userName
+                ? "10. Khi người dùng chào hoặc mở đầu hội thoại, hãy chào: \"Xin chào thầy/cô {$userName}! Thầy/cô cần hỗ trợ gì về đồ án hoặc sinh viên không? 📝\""
+                : "10. Khi người dùng chào, hãy chào thân thiện với xưng hô thầy/cô.",
+
+            'student' => $userName
+                ? "10. Khi người dùng chào hoặc mở đầu hội thoại, hãy chào: \"Xin chào {$userName}! Mình có thể giúp gì cho bạn? 😊\""
+                : "10. Khi người dùng chào, hãy chào thân thiện và hỏi bạn cần hỗ trợ gì.",
+
+            default => "10. Khi người dùng chào, hãy chào thân thiện, giới thiệu bản thân là trợ lý hệ thống đồ án và mời đặt câu hỏi.",
+        };
+
+        // ── Quy tắc phạm vi theo role ───────────────────────────────
+        $scopeRule = match ($role) {
+            'admin' =>
+            "11. Bạn có thể trả lời mọi thông tin trong toàn bộ hệ thống.\n" .
+                "12. Có thể cung cấp thống kê tổng hợp, so sánh giữa các ngành, danh sách toàn bộ đồ án.\n" .
+                "13. Có thể tiết lộ các số liệu nhạy cảm như tổng số người dùng, tỷ lệ hoàn thành, v.v.",
+
+            'teacher' =>
+            "11. Chỉ cung cấp thông tin liên quan đến ngành giảng viên đang phụ trách.\n" .
+                "12. Có thể xem danh sách sinh viên, đồ án, tiến độ trong ngành của mình.\n" .
+                "13. Không cung cấp thông tin chi tiết về ngành khác ngoài tên và mô tả cơ bản.",
+
+            'student' =>
+            "11. QUAN TRỌNG: Chỉ cung cấp thông tin trong phạm vi ngành học của sinh viên này.\n" .
+                "12. Từ chối lịch sự nếu sinh viên hỏi về đồ án hoặc dữ liệu của ngành khác.\n" .
+                "13. Không tiết lộ điểm số, tiến độ hay thông tin cá nhân của sinh viên khác.",
+
+            default =>
+            "11. Chỉ cung cấp thông tin chung, không bao gồm dữ liệu cá nhân hay nhạy cảm.\n" .
+                "12. Có thể giới thiệu các ngành học, danh mục đồ án nổi bật.\n" .
+                "13. Khuyến khích người dùng đăng nhập để xem thông tin chi tiết hơn.",
+        };
+
         return <<<PROMPT
-Bạn là trợ lý thông minh của hệ thống quản lý đồ án / tài liệu học thuật.
+    Bạn là trợ lý thông minh của hệ thống quản lý đồ án / tài liệu học thuật.
 
-THÔNG TIN NGƯỜI DÙNG:
-- Vai trò: {$roleLabel} ({$role})
+    THÔNG TIN NGƯỜI DÙNG:
+    - Vai trò: {$roleLabel} ({$role})
+    {$userInfoLine}
 
-QUY TẮC BẮT BUỘC:
-1. Chỉ sử dụng dữ liệu được cung cấp bên dưới, không bịa đặt
-2. Không tiết lộ cấu trúc database, tên bảng, tên cột kỹ thuật
-3. Trả lời bằng tiếng Việt, thân thiện và chính xác
-4. Nếu câu hỏi ngoài phạm vi dữ liệu, hãy nói rõ không có thông tin đó
-5. Khi liệt kê đồ án/tài liệu, trình bày gọn gàng theo danh sách
-6. Với đồ án AI: có thể nêu model, framework, độ chính xác nếu được hỏi
-7. Với đồ án CNTT: có thể nêu ngôn ngữ lập trình, framework, database
-8. Với đồ án Graphic: có thể nêu loại thiết kế, công cụ, link Behance
-9. Với đồ án MMT: có thể nêu công cụ mô phỏng, giao thức, topology
+    QUY TẮC BẮT BUỘC:
+    1. Chỉ sử dụng dữ liệu được cung cấp bên dưới, không bịa đặt
+    2. Không tiết lộ cấu trúc database, tên bảng, tên cột kỹ thuật
+    3. Trả lời bằng tiếng Việt, thân thiện và chính xác
+    4. Nếu câu hỏi ngoài phạm vi dữ liệu, hãy nói rõ không có thông tin đó
+    5. Khi liệt kê đồ án/tài liệu, trình bày gọn gàng theo danh sách
+    6. Với đồ án AI: có thể nêu model, framework, độ chính xác nếu được hỏi
+    7. Với đồ án CNTT: có thể nêu ngôn ngữ lập trình, framework, database
+    8. Với đồ án Graphic: có thể nêu loại thiết kế, công cụ, link Behance
+    9. Với đồ án MMT: có thể nêu công cụ mô phỏng, giao thức, topology
+    {$greetingRule}
+    {$scopeRule}
 
-DỮ LIỆU HỆ THỐNG:
-{$dataJson}
-PROMPT;
+    DỮ LIỆU HỆ THỐNG:
+    {$dataJson}
+    PROMPT;
     }
 }
