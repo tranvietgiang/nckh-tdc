@@ -12,10 +12,11 @@ import { getStatusText } from "../../components/common/getStatusText";
 import { formatDate } from "../../utils/formatDate";
 import { STATUS } from "../../utils/constants";
 import ChatBoxAi from "../ChatBoxAi/ChatBoxAi";
+import SearchAi from "../search/SearchAi";
 // ========== Extracted components ==========
 
 const ProductCard = React.memo(
-  ({ product, type, onViewDetail, onOpenImageViewer }) => {
+  ({ product, type, onViewDetail, onOpenImageViewer, index }) => {
     const statusColor = getStatusColor(type);
     const statusText = getStatusText(type);
 
@@ -23,6 +24,11 @@ const ProductCard = React.memo(
       <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
         <div className="flex flex-col sm:flex-row gap-4 p-4">
           <div className="relative w-full sm:w-32 h-32 flex-shrink-0">
+            {index && (
+              <span className="absolute top-1 left-1 z-10 px-2 py-0.5 text-xs font-semibold rounded-md bg-white/95 text-gray-700 shadow-sm">
+                #{index}
+              </span>
+            )}
             <img
               src={product.thumbnail}
               alt={product.title}
@@ -173,6 +179,8 @@ EmptyState.displayName = "EmptyState";
 const TeacherScreen = () => {
   const [filter, setFilter] = useState("pending");
   const [isHeaderExpanded, setIsHeaderExpanded] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 6;
   useTitle("Trang chủ giáo viên");
 
   const { user } = useContext(AuthContext);
@@ -227,9 +235,15 @@ const TeacherScreen = () => {
     [],
   );
   const handleStatClick = useCallback((label) => {
+    setCurrentPage(1);
     if (label === "Chờ duyệt") setFilter(STATUS.PENDING);
     else if (label === "Đã duyệt") setFilter(STATUS.APPROVED);
     else if (label === "Từ chối") setFilter(STATUS.REJECTED);
+  }, []);
+
+  const handleTabChange = useCallback((tab) => {
+    setFilter(tab);
+    setCurrentPage(1);
   }, []);
 
   const colorMap = {
@@ -272,6 +286,56 @@ const TeacherScreen = () => {
       count: rejectedProducts.length,
     },
   };
+
+  const activeProducts = useMemo(() => {
+    if (filter === STATUS.APPROVED) return approvedProducts;
+    if (filter === STATUS.REJECTED) return rejectedProducts;
+    return pendingProducts;
+  }, [filter, approvedProducts, rejectedProducts, pendingProducts]);
+
+  const totalPages = Math.ceil(activeProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return activeProducts.slice(start, start + ITEMS_PER_PAGE);
+  }, [activeProducts, currentPage]);
+
+  const pagination = totalPages > 1 && (
+    <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 disabled:opacity-50"
+      >
+        Trước
+      </button>
+
+      {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+        (page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`px-4 py-2 rounded-md border text-sm ${
+              currentPage === page
+                ? "bg-gray-900 text-white border-gray-900"
+                : "bg-white text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            {page}
+          </button>
+        ),
+      )}
+
+      <button
+        onClick={() =>
+          setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+        }
+        disabled={currentPage === totalPages}
+        className="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 disabled:opacity-50"
+      >
+        Sau
+      </button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -374,7 +438,7 @@ const TeacherScreen = () => {
                     ([tab, { label, color, count }]) => (
                       <button
                         key={tab}
-                        onClick={() => setFilter(tab)}
+                        onClick={() => handleTabChange(tab)}
                         className={`px-4 py-1.5 rounded-lg font-medium text-xs transition-all duration-200 ${
                           filter === tab
                             ? `bg-${color}-500 text-white shadow-sm`
@@ -394,6 +458,8 @@ const TeacherScreen = () => {
       {currentStudent && <ChatBoxAi user={currentStudent} />}
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SearchAi embedded user={user} majorName={majorName} />
+
         {loading && <LoadingSkeleton />}
         {error && (
           <div className="bg-red-50 text-red-700 p-4 rounded-xl">
@@ -418,17 +484,19 @@ const TeacherScreen = () => {
                   <EmptyState message="Không có sản phẩm chờ duyệt" />
                 ) : (
                   <div className="space-y-4">
-                    {pendingProducts.map((product) => (
+                    {paginatedProducts.map((product, idx) => (
                       <ProductCard
                         key={product.product_id}
                         product={product}
                         type="pending"
+                        index={(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                         onViewDetail={handleViewDetail}
                         onOpenImageViewer={openViewer}
                       />
                     ))}
                   </div>
                 )}
+                {pagination}
               </div>
             )}
 
@@ -447,17 +515,19 @@ const TeacherScreen = () => {
                   <EmptyState message="Không có sản phẩm đã duyệt" />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {approvedProducts.map((product) => (
+                    {paginatedProducts.map((product, idx) => (
                       <ProductCard
                         key={product.product_id}
                         product={product}
                         type="approved"
+                        index={(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                         onViewDetail={handleViewDetail}
                         onOpenImageViewer={openViewer}
                       />
                     ))}
                   </div>
                 )}
+                {pagination}
               </div>
             )}
 
@@ -476,17 +546,19 @@ const TeacherScreen = () => {
                   <EmptyState message="Không có sản phẩm bị từ chối" />
                 ) : (
                   <div className="space-y-4">
-                    {rejectedProducts.map((product) => (
+                    {paginatedProducts.map((product, idx) => (
                       <ProductCard
                         key={product.product_id}
                         product={product}
                         type="rejected"
+                        index={(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                         onViewDetail={handleViewDetail}
                         onOpenImageViewer={openViewer}
                       />
                     ))}
                   </div>
                 )}
+                {pagination}
               </div>
             )}
           </>

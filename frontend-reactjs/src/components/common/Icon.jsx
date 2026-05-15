@@ -1,3 +1,5 @@
+import logoTdc from "../../assets/logo-tdc-orginal.webp";
+
 // SVG Icons component
 export const Icons = {
   // Icon Settings (cài đặt)
@@ -186,7 +188,7 @@ export const Icons = {
   ),
   Logo: () => (
     <img
-      src="/Images/logo-tdc-orginal.webp"
+      src={logoTdc}
       alt="TDC - Trường Cao Đẳng Công Nghệ Thủ Đức"
       className="h-12 w-auto"
     />
