@@ -31,10 +31,22 @@ axiosClient.interceptors.request.use((config) => {
 axiosClient.interceptors.response.use(
   (res) => res.data,
   (error) => {
+    // Handle unauthorized (401) - token expired or invalid
     if (error.response?.status === 401) {
       clearAuth();
       window.location.href = "/login";
     }
+
+    // Handle forbidden (403) - insufficient permissions
+    if (error.response?.status === 403) {
+      console.error("Access Forbidden:", error.response.data?.message);
+    }
+
+    // Handle too many requests (429) - rate limited
+    if (error.response?.status === 429) {
+      console.warn("Rate limited:", error.response.data?.message);
+    }
+
     return Promise.reject(error);
   },
 );

@@ -40,7 +40,7 @@ export const useLoginLogic = () => {
     }
 
     try {
-      const res = await login({ username, password });
+      const res = await login({ username, password, user_role: userRole });
 
       if (remember) {
         localStorage.setItem("savedUser", username);
@@ -50,20 +50,7 @@ export const useLoginLogic = () => {
 
       toast.dismiss();
 
-      // Kiểm tra role chọn vs role thực tế
       const actualRole = res.user.role;
-
-      if (userRole === "student" && actualRole !== ROLE.STUDENT) {
-        toast.error("Tài khoản này không phải sinh viên!");
-        setLoading(false);
-        return;
-      }
-
-      if (userRole === "lecturer" && actualRole === ROLE.STUDENT) {
-        toast.error("Tài khoản này không phải giảng viên!");
-        setLoading(false);
-        return;
-      }
 
       // Điều hướng theo role thực tế
       if (actualRole === ROLE.STUDENT) {
@@ -77,11 +64,41 @@ export const useLoginLogic = () => {
       toast.dismiss();
 
       if (error.response?.status === 429) {
-        toast.error(error.response.data.message);
+        // Account lockout - show the server message
+        toast.error(
+          error.response.data.message ||
+            "Quá nhiều lần đăng nhập sai. Vui lòng thử lại sau.",
+          { autoClose: 5000 },
+        );
+      } else if (error.response?.status === 422) {
+        // Role mismatch error
+        toast.error(
+          error.response.data.message ||
+            "Tài khoản không phù hợp với vai trò được chọn!",
+          { autoClose: 3000 },
+        );
+      } else if (error.response?.data?.message) {
+        // Any other error from server with message
+        toast.error(error.response.data.message, { autoClose: 3000 });
+      } else if (error.response?.status === 401) {
+        // Unauthorized
+        toast.error("Sai tài khoản hoặc mật khẩu!", { autoClose: 3000 });
       } else if (error.response) {
-        toast.error("Sai tài khoản hoặc mật khẩu!");
+        // Other server errors
+        toast.error("Lỗi từ máy chủ. Vui lòng thử lại sau.", {
+          autoClose: 3000,
+        });
+      } else if (error.request) {
+        // Request made but no response
+        toast.error(
+          "Không thể kết nối tới máy chủ. Kiểm tra kết nối internet của bạn.",
+          { autoClose: 3000 },
+        );
       } else {
-        toast.error(error.message || "Không thể kết nối tới máy chủ!");
+        // Other errors
+        toast.error(error.message || "Đã xảy ra lỗi. Vui lòng thử lại.", {
+          autoClose: 3000,
+        });
       }
     } finally {
       setLoading(false);
