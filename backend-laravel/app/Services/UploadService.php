@@ -8,14 +8,14 @@ use App\Http\Ai\CheckImage;
 use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
 use Illuminate\Support\Facades\Log;
-use App\Http\common\normalizeMajorCode;
+use App\Http\Common\NormalizeMajorCode;
 
 class UploadService extends BaseRepository
 {
     public function __construct(
         protected UploadRepository $upload_repository,
         protected CheckImage $Check_ai_image,
-        protected normalizeMajorCode $normalizeMajorCode
+        protected NormalizeMajorCode $normalizeMajorCode
     ) {}
 
 
@@ -69,7 +69,7 @@ class UploadService extends BaseRepository
                 $uploadedImages[] = $url;
             }
 
-            $majorCode = $this->normalizeMajorCode->normalizeMajorCode($data['major_code'] ?? null);
+            $majorCode = $this->normalizeMajorCode->NormalizeMajorCode($data['major_code'] ?? null);
 
             $tags = array_filter($data['tags'] ?? []);
 

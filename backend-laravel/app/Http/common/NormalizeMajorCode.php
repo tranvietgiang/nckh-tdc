@@ -4,7 +4,7 @@ namespace App\Http\common;
 
 class NormalizeMajorCode
 {
-    function NormalizeMajorCode(?string $value): ?string
+    public function NormalizeMajorCode(?string $value): ?string
     {
         if (!$value) return null;
 
