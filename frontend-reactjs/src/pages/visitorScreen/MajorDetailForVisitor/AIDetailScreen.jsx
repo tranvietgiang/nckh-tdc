@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // ✅ bỏ useEffect
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../../components/common/BackButton";
 import useImageViewer from "../../../shared/useImageViewer";
@@ -13,7 +13,7 @@ const AIDetailScreen = ({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("model");
   const [isLiked, setIsLiked] = useState(false);
-  // ✅ Khởi tạo trực tiếp, không cần useEffect
+
   const [likeCount, setLikeCount] = useState(productVisitorDetail?.likes || 0);
   const { openViewer, ImageViewerModal } = useImageViewer();
 

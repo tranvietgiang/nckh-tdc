@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback, Suspense } from "react";
+
 import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
 import useMajorAll from "../../hooks/common/useMajorAll";
@@ -46,19 +47,24 @@ export default function VisitorScreen() {
   const { majorAll, loadingMajorAll } = useMajorAll();
   const { productVisitor, loadingVisitor, errorVisitor } = useVisitorProduct();
 
-  const handleViewDetail = (id) => {
-    navigate("/visitor-detail", { state: { productId: id } });
-  };
+  const handleViewDetail = useCallback(
+    (id) => {
+      navigate("/visitor-detail", { state: { productId: id } });
+    },
+    [navigate],
+  );
 
-  const handleLike = (id) => {
+  const handleLike = useCallback((id) => {
     setLikedProducts((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
+  }, []);
 
   const filteredProducts = useMemo(() => {
-    return [...productVisitor]
+    const base = productVisitor ?? [];
+
+    return base
       .filter((p) => {
         const matchMajor =
           selectedMajor === "all" ||
@@ -66,9 +72,14 @@ export default function VisitorScreen() {
 
         return matchMajor;
       })
+      .filter((p) => {
+        // 🔥 thêm search luôn (bạn đang giữ UI nhưng chưa dùng)
+        if (!searchTerm) return true;
+        return p.title?.toLowerCase().includes(searchTerm.toLowerCase());
+      })
       .sort((a, b) => {
         if (sortBy === "newest") {
-          return parseInt(b.year || 0) - parseInt(a.year || 0);
+          return (b.year || 0) - (a.year || 0);
         }
 
         if (sortBy === "most_viewed") {
@@ -85,14 +96,14 @@ export default function VisitorScreen() {
 
         return 0;
       });
-  }, [productVisitor, selectedMajor, sortBy, likedProducts]);
+  }, [productVisitor, selectedMajor, sortBy, likedProducts, searchTerm]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
 
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
 
   const stats = [
     { value: "128", label: "Sản phẩm tiêu biểu" },
@@ -446,7 +457,7 @@ export default function VisitorScreen() {
         )}
       </main>
 
-      <ChatBoxAi />
+      <ChatBoxAi user={null} />
 
       {/* FOOTER */}
       <footer className="bg-[#003087] text-white pt-10 pb-6">

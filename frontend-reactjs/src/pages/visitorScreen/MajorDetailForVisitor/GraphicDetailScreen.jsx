@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // ✅ bỏ useEffect
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../../components/common/BackButton";
 import useImageViewer from "../../../shared/useImageViewer";

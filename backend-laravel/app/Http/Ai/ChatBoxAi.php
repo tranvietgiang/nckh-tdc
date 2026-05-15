@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Http\Common\NormalizeMajorCode;
+use Illuminate\Support\Facades\Auth;
 
 class ChatBoxAi
 {
@@ -16,7 +17,7 @@ class ChatBoxAi
         $msg = mb_strtolower($message, 'UTF-8');
 
         $keywords = [
-            // Đồ án / sản phẩm
+            // ── Đồ án / Sản phẩm ─────────────────────────────────────
             'đồ án',
             'sản phẩm',
             'tài liệu',
@@ -25,26 +26,205 @@ class ChatBoxAi
             'upload',
             'tải lên',
             'nộp',
+            'bài tập',
+            'tiểu luận',
+            'báo cáo',
+            'nghiên cứu',
+            'đề tài',
+            'khóa luận',
 
-            // Ngành học
+            // ── Ngành học chung ───────────────────────────────────────
             'ngành',
             'major',
-            'cntt',
-            'ai',
-            'mmt',
-            'graphic',
-            'công nghệ',
-            'thông tin',
-            'trí tuệ nhân tạo',
-            'mạng máy tính',
-            'thiết kế',
+            'chuyên ngành',
+            'khoa',
 
-            // Danh mục
+            // ── CNTT ─────────────────────────────────────────────────
+            'cntt',
+            'công nghệ thông tin',
+            'information technology',
+            'lập trình',
+            'phần mềm',
+            'software',
+            'web',
+            'website',
+            'mobile',
+            'ứng dụng',
+            'android',
+            'ios',
+            'frontend',
+            'backend',
+            'fullstack',
+            'api',
+            'restful',
+            'database',
+            'cơ sở dữ liệu',
+            'sql',
+            'mysql',
+            'mongodb',
+            'postgresql',
+            'laravel',
+            'nodejs',
+            'reactjs',
+            'vuejs',
+            'angular',
+            'spring',
+            'django',
+            'flask',
+            'php',
+            'python',
+            'java',
+            'javascript',
+            'typescript',
+            'c#',
+            'dotnet',
+            'docker',
+            'kubernetes',
+            'devops',
+            'git',
+            'github',
+            'microservice',
+            'cloud',
+            'aws',
+            'azure',
+            'firebase',
+
+            // ── AI ───────────────────────────────────────────────────
+            'trí tuệ nhân tạo',
+            'artificial intelligence',
+            'machine learning',
+            'học máy',
+            'deep learning',
+            'học sâu',
+            'neural network',
+            'mạng nơ ron',
+            'nlp',
+            'xử lý ngôn ngữ',
+            'computer vision',
+            'thị giác máy tính',
+            'image recognition',
+            'object detection',
+            'classification',
+            'phân loại',
+            'regression',
+            'clustering',
+            'reinforcement learning',
+            'chatbot',
+            'robot',
+            'tự động hóa',
+            'automation',
+            'tensorflow',
+            'pytorch',
+            'keras',
+            'scikit',
+            'opencv',
+            'dataset',
+            'dữ liệu',
+            'training',
+            'huấn luyện',
+            'accuracy',
+            'độ chính xác',
+            'prediction',
+            'dự đoán',
+            'yolo',
+            'bert',
+            'gpt',
+            'transformer',
+            'llm',
+
+            // ── MMT ──────────────────────────────────────────────────
+            'mmt',
+            'mạng máy tính',
+            'network',
+            'mạng',
+            'an ninh mạng',
+            'bảo mật',
+            'cybersecurity',
+            'security',
+            'firewall',
+            'vpn',
+            'proxy',
+            'dns',
+            'dhcp',
+            'tcp',
+            'udp',
+            'ftp',
+            'ssh',
+            'protocol',
+            'giao thức',
+            'topology',
+            'mô hình mạng',
+            'router',
+            'switch',
+            'cisco',
+            'packet tracer',
+            'wireshark',
+            'iot',
+            'internet of things',
+            'vạn vật kết nối',
+            'cloud computing',
+            'điện toán đám mây',
+            'simulation',
+            'mô phỏng',
+            'gns3',
+            'vmware',
+            'penetration testing',
+            'ethical hacking',
+            'pentest',
+            'encryption',
+            'mã hóa',
+            'ssl',
+            'tls',
+
+            // ── Đồ họa ───────────────────────────────────────────────
+            'graphic',
+            'đồ họa',
+            'thiết kế',
+            'design',
+            'thiết kế đồ họa',
+            'ui',
+            'ux',
+            'ui/ux',
+            'hình ảnh',
+            'poster',
+            'banner',
+            'logo',
+            'branding',
+            'motion',
+            'motion graphic',
+            'animation',
+            'hoạt hình',
+            'illustration',
+            'minh họa',
+            'typography',
+            'font',
+            'photoshop',
+            'illustrator',
+            'figma',
+            'canva',
+            'indesign',
+            'after effects',
+            'premiere',
+            'xd',
+            'behance',
+            'dribbble',
+            'mockup',
+            'wireframe',
+            'màu sắc',
+            'layout',
+            'bố cục',
+            'in ấn',
+            'packaging',
+            'bao bì',
+            'social media',
+            'quảng cáo',
+            'marketing',
+
+            // ── Danh mục / Thống kê ───────────────────────────────────
             'danh mục',
             'category',
             'loại',
-
-            // Thống kê
+            'phân loại',
             'thống kê',
             'bao nhiêu',
             'tổng',
@@ -57,8 +237,9 @@ class ChatBoxAi
             'top',
             'nổi bật',
             'phổ biến',
+            'trending',
 
-            // Người dùng
+            // ── Người dùng ────────────────────────────────────────────
             'người dùng',
             'tài khoản',
             'giảng viên',
@@ -66,50 +247,50 @@ class ChatBoxAi
             'teacher',
             'student',
             'user',
+            'thầy',
+            'cô',
+            'giáo viên',
 
-            // Review
+            // ── Review ────────────────────────────────────────────────
             'đánh giá',
             'nhận xét',
             'review',
             'comment',
+            'phản hồi',
+            'feedback',
+            'duyệt',
+            'approve',
+            'pending',
 
-            // Tìm kiếm
+            // ── Tìm kiếm ─────────────────────────────────────────────
             'tìm',
             'search',
             'danh sách',
             'liệt kê',
             'cho tôi biết',
+            'cho mình biết',
             'hiển thị',
             'show',
+            'xem',
+            'tra cứu',
+            'tìm kiếm',
 
-            // Tags
+            // ── Tags ──────────────────────────────────────────────────
             'tag',
             'nhãn',
             'từ khóa',
+            'keyword',
 
-            // Kỹ thuật (chuyên ngành)
-            'framework',
-            'language',
-            'model',
-            'dataset',
-            'accuracy',
-            'database',
-            'network',
-            'topology',
-            'protocol',
-            'design',
-            'behance',
-            'github',
-            'demo',
-
-            // Hệ thống chung
+            // ── Hệ thống ─────────────────────────────────────────────
             'hệ thống',
-            'website',
-            'ứng dụng',
-            'app',
             'hoạt động',
             'log',
             'lịch sử',
+            'activity',
+            'demo',
+            'link',
+            'github',
+            'source code',
         ];
 
         foreach ($keywords as $keyword) {
@@ -123,11 +304,11 @@ class ChatBoxAi
 
     public function chat(Request $request)
     {
-        $user    = $request->user();
-        $role    = $user->role    ?? 'guest';
+        $user    = Auth::user();
+        $role    = $user->role ?? 'guest';
         $majorId = $user->major_id ?? null;
 
-        /* ── 1. PARSE MESSAGE ─────────────────────────────────────── */
+        /* ── 1. PARSE MESSAGE ────────────────────────────────────── */
         $message = $request->input('message');
 
         if (is_array($message)) {
@@ -144,40 +325,72 @@ class ChatBoxAi
         }
 
         if (!$this->isRelevantQuestion($message)) {
+            $userName = $user ? ($user->name ?? $user->username ?? null) : null;
+            $nameTag  = $userName ? " {$userName}" : "";
+
             $replies = [
-                'Xin lỗi, mình chỉ hỗ trợ các câu hỏi liên quan đến hệ thống quản lý đồ án. Bạn có thể hỏi về sản phẩm, ngành học, danh mục, thống kê, v.v.',
-                'Câu hỏi này nằm ngoài phạm vi hỗ trợ của mình rồi 😅',
-                'Chào bạn! Tôi có thể giúp gì cho bạn hôm nay? Bạn quan tâm đến đồ án hay tài liệu học thuật nào không?',
-                'Xin chào! Mình là trợ lý hệ thống đồ án. Bạn cần tìm kiếm tài liệu hay xem thống kê gì không?',
-                'Hi bạn! Hỏi mình về đồ án, ngành học, hay thống kê hệ thống đi nhé 😊',
+                "Xin lỗi{$nameTag}, mình chỉ hỗ trợ các câu hỏi liên quan đến hệ thống quản lý đồ án. Bạn có thể hỏi về sản phẩm, ngành học, danh mục, thống kê, v.v.",
+                "Câu hỏi này nằm ngoài phạm vi hỗ trợ của mình rồi 😅",
+                "Chào{$nameTag}! Tôi có thể giúp gì cho bạn hôm nay? Bạn quan tâm đến đồ án hay tài liệu học thuật nào không?",
+                "Xin chào{$nameTag}! Mình là trợ lý hệ thống đồ án. Bạn cần tìm kiếm tài liệu hay xem thống kê gì không?",
             ];
 
-            return response()->json([
-                'reply' => $replies[array_rand($replies)]
-            ]);
+            return response()->json(['reply' => $replies[array_rand($replies)]]);
         }
 
-        /* ── 2. OVERRIDE MAJOR TỪ TEXT ────────────────────────────── */
-        $majorCode = $this->normalizeMajorCode->normalizeMajorCode($message);
+        /* ── 2. OVERRIDE MAJOR TỪ TEXT ───────────────────────────── */
+        $majorCode = $this->normalizeMajorCode->NormalizeMajorCode($message);
         if ($majorCode) {
-            $majorId = DB::table('majors')
+            $detectedMajorId = DB::table('majors')
                 ->where('major_code', $majorCode)
                 ->value('major_id');
+
+            // Student chỉ được hỏi đúng ngành của mình
+            if ($role === 'student' && $detectedMajorId && $detectedMajorId != $majorId) {
+                $userName  = $user->name ?? $user->username ?? 'bạn';
+                $majorName = DB::table('majors')->where('major_id', $majorId)->value('major_name') ?? 'ngành của bạn';
+
+                return response()->json([
+                    'reply' => "Xin lỗi {$userName}, bạn chỉ có thể xem thông tin trong phạm vi {$majorName} thôi nhé 😊"
+                ]);
+            }
+
+            // Teacher chỉ được hỏi đúng ngành của mình
+            if ($role === 'teacher' && $detectedMajorId && $detectedMajorId != $majorId) {
+                $userName  = $user->name ?? $user->username ?? 'thầy/cô';
+                $majorName = DB::table('majors')->where('major_id', $majorId)->value('major_name') ?? 'ngành của bạn';
+
+                return response()->json([
+                    'reply' => "Xin lỗi thầy/cô {$userName}, thầy/cô chỉ có thể xem thông tin trong phạm vi {$majorName} thôi nhé 📝"
+                ]);
+            }
+
+            //  Admin được xem tất cả, override major bình thường
+            if ($role === 'admin') {
+                $majorId = $detectedMajorId;
+            }
+
+            // Guest không override major
         }
 
-        /* ── 3. BUILD CONTEXT THEO ROLE ───────────────────────────── */
-        $data = match (true) {
-            $role === 'admin'                          => $this->buildAdminContext(),
-            in_array($role, ['teacher', 'student'])   => $this->buildMajorContext($majorId, $role),
-            default                                    => $this->buildGuestContext(),
+        /* ── 3. BUILD CONTEXT THEO ROLE ──────────────────────────── */
+        $data = match ($role) {
+            'admin'   => $this->buildAdminContext(),
+            'teacher' => $this->buildMajorContext($majorId, $role),
+            'student' => $this->buildMajorContext($majorId, $role),
+            default   => $this->buildGuestContext(), // guest
         };
+
+        if ($role === 'teacher') {
+            $data = array_merge($data, $this->buildTeacherContext($majorId));
+        }
 
         if (isset($data['__error'])) {
             return response()->json(['reply' => $data['__error']], 403);
         }
 
-        /* ── 4. CALL OPENAI ───────────────────────────────────────── */
-        $systemPrompt = $this->buildSystemPrompt($role, $data);
+        /* ── 4. CALL OPENAI ──────────────────────────────────────── */
+        $systemPrompt = $this->buildSystemPrompt($role, $data, $user);
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
@@ -187,36 +400,26 @@ class ChatBoxAi
             'input' => [
                 [
                     'role'    => 'system',
-                    'content' => [[
-                        'type' => 'input_text',
-                        'text' => $systemPrompt,
-                    ]],
+                    'content' => [['type' => 'input_text', 'text' => $systemPrompt]],
                 ],
                 [
                     'role'    => 'user',
-                    'content' => [[
-                        'type' => 'input_text',
-                        'text' => $message,
-                    ]],
+                    'content' => [['type' => 'input_text', 'text' => $message]],
                 ],
             ],
         ]);
 
-        /* ── 5. PARSE RESPONSE ────────────────────────────────────── */
+        /* ── 5. PARSE RESPONSE ───────────────────────────────────── */
         if ($response->failed()) {
-            return response()->json([
-                'reply' => 'Không thể kết nối AI lúc này, vui lòng thử lại.',
-            ], 502);
+            return response()->json(['reply' => 'Không thể kết nối AI lúc này, vui lòng thử lại.'], 502);
         }
 
-        // Parse reply TRƯỚC
         $result = $response->json();
         $reply  = data_get($result, 'output.0.content.0.text')
             ?? data_get($result, 'output_text')
             ?? 'AI không trả về dữ liệu.';
 
-        // SAU ĐÓ mới dùng $reply
-        $mentionedProducts = $this->extractMentionedProducts($reply, $majorId);
+        $mentionedProducts = $this->extractMentionedProducts($reply, $majorId, $role);
 
         return response()->json([
             'reply'    => $reply,
@@ -224,13 +427,29 @@ class ChatBoxAi
         ]);
     }
 
-    /* ════════════════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
      *  CONTEXT BUILDERS
-     * ════════════════════════════════════════════════════════════════ */
+     * ═══════════════════════════════════════════════════════════════ */
+
+    private function buildTeacherContext(?int $majorId): array
+    {
+        if (!$majorId) {
+            return ['__error' => 'Bạn chưa được gán ngành học.'];
+        }
+
+        $pendingReviews = DB::table('reviews')
+            ->join('products', 'reviews.product_id', '=', 'products.product_id')
+            ->where('products.major_id', $majorId)
+            ->where('reviews.status', 'pending')
+            ->select('reviews.review_id', 'products.title as product_title', 'reviews.comment', 'reviews.created_at')
+            ->latest('reviews.created_at')
+            ->get();
+
+        return ['pending_reviews' => $pendingReviews];
+    }
 
     private function buildAdminContext(): array
     {
-        /* Thống kê tổng quan */
         $overview = [
             'total_products'   => DB::table('products')->count(),
             'total_categories' => DB::table('categories')->count(),
@@ -241,7 +460,6 @@ class ChatBoxAi
             'total_images'     => DB::table('product_images')->count(),
         ];
 
-        /* Sản phẩm theo ngành — dùng major_name (đúng theo model) */
         $productsByMajor = DB::table('products')
             ->join('majors', 'products.major_id', '=', 'majors.major_id')
             ->selectRaw('majors.major_name, majors.major_code, COUNT(*) as total')
@@ -249,34 +467,21 @@ class ChatBoxAi
             ->orderByDesc('total')
             ->get();
 
-        /* Top 10 sản phẩm được xem nhiều nhất — dùng views (đúng theo model) */
         $topViewedProducts = DB::table('product_statistics')
             ->join('products', 'product_statistics.product_id', '=', 'products.product_id')
-            ->select(
-                'products.product_id',
-                'products.title',
-                'product_statistics.views',
-                'product_statistics.likes'
-            )
+            ->select('products.product_id', 'products.title', 'products.github_link', 'products.demo_link', 'product_statistics.views', 'product_statistics.likes')
             ->orderByDesc('product_statistics.views')
             ->limit(10)
             ->get();
 
-        /* Đánh giá (reviews chỉ có comment, không có rating theo model) */
         $recentReviewsAll = DB::table('reviews')
             ->join('products', 'reviews.product_id', '=', 'products.product_id')
             ->join('users', 'reviews.teacher_id', '=', 'users.id')
-            ->select(
-                'products.title as product_title',
-                'users.name as teacher_name',
-                'reviews.comment',
-                'reviews.created_at'
-            )
+            ->select('products.title as product_title', 'users.name as teacher_name', 'reviews.comment', 'reviews.created_at')
             ->latest('reviews.created_at')
             ->limit(10)
             ->get();
 
-        /* Thống kê theo ngành: views + likes tổng */
         $statsByMajor = DB::table('product_statistics')
             ->join('products', 'product_statistics.product_id', '=', 'products.product_id')
             ->join('majors', 'products.major_id', '=', 'majors.major_id')
@@ -285,7 +490,6 @@ class ChatBoxAi
             ->orderByDesc('total_views')
             ->get();
 
-        /* Tags phổ biến — dùng tag_name (đúng theo model) */
         $popularTags = DB::table('product_tags')
             ->selectRaw('tag_name, COUNT(*) as total')
             ->groupBy('tag_name')
@@ -293,7 +497,6 @@ class ChatBoxAi
             ->limit(15)
             ->get();
 
-        /* Danh mục + số sản phẩm — dùng cate_name, cate_id (đúng theo model) */
         $categoriesWithCount = DB::table('categories')
             ->leftJoin('products', 'categories.cate_id', '=', 'products.cate_id')
             ->selectRaw('categories.category_name, COUNT(products.product_id) as product_count')
@@ -301,7 +504,6 @@ class ChatBoxAi
             ->orderByDesc('product_count')
             ->get();
 
-        /* Sản phẩm theo loại chuyên ngành (AI / CNTT / Graphic / MMT) */
         $specializedCounts = [
             'AI'      => DB::table('product_ai')->count(),
             'CNTT'    => DB::table('product_cntt')->count(),
@@ -309,7 +511,6 @@ class ChatBoxAi
             'MMT'     => DB::table('product_mmt')->count(),
         ];
 
-        /* Log hoạt động gần nhất */
         $recentActivities = DB::table('activity_logs')
             ->select('user_id', 'action', 'description', 'created_at')
             ->latest('created_at')
@@ -340,9 +541,10 @@ class ChatBoxAi
             return ['__error' => 'Ngành học không tồn tại.'];
         }
 
-        /* Danh sách sản phẩm trong ngành — join categories qua cate_id */
+        // lấy hết sản phẩm trong ngành
         $products = DB::table('products')
             ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
+            ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
             ->where('products.major_id', $majorId)
             ->select(
                 'products.product_id',
@@ -351,26 +553,21 @@ class ChatBoxAi
                 'products.github_link',
                 'products.demo_link',
                 'categories.category_name',
-                'products.submitted_at'
-            )
-            ->latest('products.submitted_at')
-            ->limit(30)
-            ->get();
-
-        /* Thống kê views / likes trong ngành */
-        $topStats = DB::table('product_statistics')
-            ->join('products', 'product_statistics.product_id', '=', 'products.product_id')
-            ->where('products.major_id', $majorId)
-            ->select(
-                'products.title',
+                'products.submitted_at',
                 'product_statistics.views',
                 'product_statistics.likes'
             )
+            ->latest('products.submitted_at')
+            ->get();
+
+        $topStats = DB::table('product_statistics')
+            ->join('products', 'product_statistics.product_id', '=', 'products.product_id')
+            ->where('products.major_id', $majorId)
+            ->select('products.title', 'product_statistics.views', 'product_statistics.likes')
             ->orderByDesc('product_statistics.views')
             ->limit(10)
             ->get();
 
-        /* Tags phổ biến trong ngành — dùng tag_name */
         $popularTags = DB::table('product_tags')
             ->join('products', 'product_tags.product_id', '=', 'products.product_id')
             ->where('products.major_id', $majorId)
@@ -380,22 +577,15 @@ class ChatBoxAi
             ->limit(10)
             ->get();
 
-        /* Review của giảng viên trong ngành */
         $recentReviews = DB::table('reviews')
             ->join('products', 'reviews.product_id', '=', 'products.product_id')
             ->join('users', 'reviews.teacher_id', '=', 'users.id')
             ->where('products.major_id', $majorId)
-            ->select(
-                'products.title as product_title',
-                'users.name as teacher_name',
-                'reviews.comment',
-                'reviews.created_at'
-            )
+            ->select('products.title as product_title', 'users.name as teacher_name', 'reviews.comment', 'reviews.created_at')
             ->latest('reviews.created_at')
             ->limit(10)
             ->get();
 
-        /* Danh mục có trong ngành */
         $categories = DB::table('categories')
             ->join('products', 'categories.cate_id', '=', 'products.cate_id')
             ->where('products.major_id', $majorId)
@@ -404,27 +594,22 @@ class ChatBoxAi
             ->orderByDesc('total')
             ->get();
 
-        /* Chi tiết chuyên ngành tùy major_code */
         $specializedData = $this->buildSpecializedData($majorId, $major->major_code);
 
         return [
-            'major_name'      => $major->major_name,
-            'major_code'      => $major->major_code,
-            'role'            => $role,
-            'product_count'   => count($products),
-            'products'        => $products,
-            'top_stats'       => $topStats,
-            'popular_tags'    => $popularTags,
-            'recent_reviews'  => $recentReviews,
-            'categories'      => $categories,
-            'specialized'     => $specializedData,
+            'major_name'     => $major->major_name,
+            'major_code'     => $major->major_code,
+            'role'           => $role,
+            'product_count'  => $products->count(),
+            'products'       => $products,
+            'top_stats'      => $topStats,
+            'popular_tags'   => $popularTags,
+            'recent_reviews' => $recentReviews,
+            'categories'     => $categories,
+            'specialized'    => $specializedData,
         ];
     }
 
-    /**
-     * Lấy chi tiết chuyên ngành theo major_code
-     * AI, CNTT, Graphic, MMT có bảng riêng
-     */
     private function buildSpecializedData(int $majorId, string $majorCode): array
     {
         $code = strtoupper($majorCode);
@@ -433,40 +618,32 @@ class ChatBoxAi
             return DB::table('product_ai')
                 ->join('products', 'product_ai.product_id', '=', 'products.product_id')
                 ->where('products.major_id', $majorId)
-                ->select('products.title', 'product_ai.model_used', 'product_ai.framework', 'product_ai.language', 'product_ai.accuracy_score')
-                ->limit(20)
-                ->get()
-                ->toArray();
+                ->select('products.product_id', 'products.title', 'products.github_link', 'products.demo_link', 'product_ai.model_used', 'product_ai.framework', 'product_ai.language', 'product_ai.accuracy_score')
+                ->get()->toArray();
         }
 
         if (str_contains($code, 'CNTT') || str_contains($code, 'IT')) {
             return DB::table('product_cntt')
                 ->join('products', 'product_cntt.product_id', '=', 'products.product_id')
                 ->where('products.major_id', $majorId)
-                ->select('products.title', 'product_cntt.programming_language', 'product_cntt.framework', 'product_cntt.database_used')
-                ->limit(20)
-                ->get()
-                ->toArray();
+                ->select('products.product_id', 'products.title', 'products.github_link', 'products.demo_link', 'product_cntt.programming_language', 'product_cntt.framework', 'product_cntt.database_used')
+                ->get()->toArray();
         }
 
         if (str_contains($code, 'GR') || str_contains($code, 'GRAPHIC')) {
             return DB::table('product_graphic')
                 ->join('products', 'product_graphic.product_id', '=', 'products.product_id')
                 ->where('products.major_id', $majorId)
-                ->select('products.title', 'product_graphic.design_type', 'product_graphic.tools_used', 'product_graphic.behance_link')
-                ->limit(20)
-                ->get()
-                ->toArray();
+                ->select('products.product_id', 'products.title', 'products.demo_link', 'product_graphic.design_type', 'product_graphic.tools_used', 'product_graphic.behance_link')
+                ->get()->toArray();
         }
 
         if (str_contains($code, 'MMT')) {
             return DB::table('product_mmt')
                 ->join('products', 'product_mmt.product_id', '=', 'products.product_id')
                 ->where('products.major_id', $majorId)
-                ->select('products.title', 'product_mmt.simulation_tool', 'product_mmt.network_protocol', 'product_mmt.topology_type')
-                ->limit(20)
-                ->get()
-                ->toArray();
+                ->select('products.product_id', 'products.title', 'products.github_link', 'products.demo_link', 'product_mmt.simulation_tool', 'product_mmt.network_protocol', 'product_mmt.topology_type')
+                ->get()->toArray();
         }
 
         return [];
@@ -474,73 +651,73 @@ class ChatBoxAi
 
     private function buildGuestContext(): array
     {
-        $majors = DB::table('majors')
-            ->select('major_name', 'major_code')
-            ->get();
+        $majors     = DB::table('majors')->select('major_name', 'major_code')->get();
+        $categories = DB::table('categories')->select('category_name')->get();
 
-        $categories = DB::table('categories')
-            ->select('category_name')
-            ->get();
-
-        $totalProducts   = DB::table('products')->count();
-        $totalCategories = $categories->count();
-
-        /* Top 5 sản phẩm nổi bật */
-        $featuredProducts = DB::table('product_statistics')
-            ->join('products', 'product_statistics.product_id', '=', 'products.product_id')
-            ->select('products.title', 'product_statistics.views', 'product_statistics.likes')
+        // ✅ Lấy hết sản phẩm cho guest kèm github_link, demo_link
+        $allProducts = DB::table('products')
+            ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
+            ->leftJoin('majors', 'products.major_id', '=', 'majors.major_id')
+            ->leftJoin('categories', 'products.cate_id', '=', 'categories.cate_id')
+            ->select(
+                'products.product_id',
+                'products.title',
+                'products.github_link',
+                'products.demo_link',
+                'products.status',
+                'majors.major_name',
+                'majors.major_code',
+                'categories.category_name',
+                'product_statistics.views',
+                'product_statistics.likes'
+            )
             ->orderByDesc('product_statistics.views')
-            ->limit(5)
             ->get();
 
-        return compact(
-            'majors',
-            'categories',
-            'totalProducts',
-            'totalCategories',
-            'featuredProducts'
-        );
+        return [
+            'majors'          => $majors,
+            'categories'      => $categories,
+            'totalProducts'   => $allProducts->count(),
+            'totalCategories' => $categories->count(),
+            'allProducts'     => $allProducts,
+        ];
     }
 
-    private function extractMentionedProducts(string $reply, ?int $majorId): array
+    private function extractMentionedProducts(string $reply, ?int $majorId, string $role): array
     {
-        // Lấy products liên quan (theo ngành nếu có, không thì lấy tổng)
         $query = DB::table('products')
             ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
-            ->select(
-                'products.product_id as id',
-                'products.title',
-                'product_statistics.views'
-            );
+            ->select('products.product_id as id', 'products.title', 'product_statistics.views');
 
-        if ($majorId) {
+        // ✅ Student và Teacher chỉ lấy đúng ngành của mình
+        if (in_array($role, ['student', 'teacher']) && $majorId) {
             $query->where('products.major_id', $majorId);
         }
 
         $allProducts = $query->get();
 
-        // Lọc ra những sản phẩm được AI nhắc đến trong reply
-        $mentioned = $allProducts->filter(function ($product) use ($reply) {
-            return str_contains($reply, $product->title);
-        });
+        $mentioned = $allProducts->filter(fn($product) => str_contains($reply, $product->title));
 
-        // Nếu AI không nhắc tên cụ thể → trả về top 5 phổ biến nhất
         if ($mentioned->isEmpty()) {
-            return $query
-                ->orderByDesc('product_statistics.views')
-                ->limit(5)
-                ->get()
-                ->toArray();
+            $fallback = DB::table('products')
+                ->leftJoin('product_statistics', 'products.product_id', '=', 'product_statistics.product_id')
+                ->select('products.product_id as id', 'products.title', 'product_statistics.views');
+
+            if (in_array($role, ['student', 'teacher']) && $majorId) {
+                $fallback->where('products.major_id', $majorId);
+            }
+
+            return $fallback->orderByDesc('product_statistics.views')->limit(5)->get()->toArray();
         }
 
         return $mentioned->values()->toArray();
     }
 
-    /* ════════════════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
      *  SYSTEM PROMPT
-     * ════════════════════════════════════════════════════════════════ */
+     * ═══════════════════════════════════════════════════════════════ */
 
-    private function buildSystemPrompt(string $role, array $data): string
+    private function buildSystemPrompt(string $role, array $data, ?object $user = null): string
     {
         $roleLabel = match ($role) {
             'admin'   => 'Quản trị viên',
@@ -549,27 +726,66 @@ class ChatBoxAi
             default   => 'Khách',
         };
 
-        $dataJson = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $dataJson     = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $userName     = $user?->name ?? $user?->username ?? null;
+        $userInfoLine = $userName
+            ? "- Tên người dùng: {$userName}"
+            : "- Người dùng: Khách (chưa đăng nhập)";
+
+        $greetingRule = match ($role) {
+            'admin' => $userName
+                ? "10. Khi người dùng chào hoặc mở đầu hội thoại, hãy chào: \"Xin chào {$userName}! Bạn cần tra cứu hoặc thống kê gì trong hệ thống không? 📊\""
+                : "10. Khi người dùng chào, hãy chào thân thiện và giới thiệu khả năng quản trị hệ thống.",
+            'teacher' => $userName
+                ? "10. Khi người dùng chào hoặc mở đầu hội thoại, hãy chào: \"Xin chào thầy/cô {$userName}! Thầy/cô cần hỗ trợ gì về đồ án hoặc sinh viên không? 📝\""
+                : "10. Khi người dùng chào, hãy chào thân thiện với xưng hô thầy/cô.",
+            'student' => $userName
+                ? "10. Khi người dùng chào hoặc mở đầu hội thoại, hãy chào: \"Xin chào {$userName}! Mình có thể giúp gì cho bạn? 😊\""
+                : "10. Khi người dùng chào, hãy chào thân thiện và hỏi bạn cần hỗ trợ gì.",
+            default => "10. Khi người dùng chào, hãy chào thân thiện, giới thiệu bản thân là trợ lý hệ thống đồ án và mời đặt câu hỏi.",
+        };
+
+        $scopeRule = match ($role) {
+            'admin' =>
+            "11. Bạn có thể trả lời mọi thông tin trong toàn bộ hệ thống.\n" .
+                "12. Có thể cung cấp thống kê tổng hợp, so sánh giữa các ngành, danh sách toàn bộ đồ án.\n" .
+                "13. Có thể tiết lộ các số liệu nhạy cảm như tổng số người dùng, tỷ lệ hoàn thành, v.v.",
+            'teacher' =>
+            "11. Chỉ cung cấp thông tin liên quan đến ngành giảng viên đang phụ trách.\n" .
+                "12. Có thể xem danh sách đồ án, tiến độ trong ngành của mình.\n" .
+                "13. Không cung cấp thông tin chi tiết về ngành khác ngoài tên và mô tả cơ bản.",
+            'student' =>
+            "11. QUAN TRỌNG: Chỉ cung cấp thông tin trong phạm vi ngành học của sinh viên này.\n" .
+                "12. Từ chối lịch sự nếu sinh viên hỏi về đồ án hoặc dữ liệu của ngành khác.\n" .
+                "13. Không tiết lộ điểm số, tiến độ hay thông tin cá nhân của sinh viên khác.",
+            default =>
+            "11. Chỉ cung cấp thông tin chung, không bao gồm dữ liệu cá nhân hay nhạy cảm.\n" .
+                "12. Có thể giới thiệu các ngành học, danh mục đồ án nổi bật, link github/demo nếu có.\n" .
+                "13. Khuyến khích người dùng đăng nhập để xem thông tin chi tiết hơn.",
+        };
 
         return <<<PROMPT
-Bạn là trợ lý thông minh của hệ thống quản lý đồ án / tài liệu học thuật.
+        Bạn là trợ lý thông minh của hệ thống quản lý đồ án / tài liệu học thuật.
 
-THÔNG TIN NGƯỜI DÙNG:
-- Vai trò: {$roleLabel} ({$role})
+        THÔNG TIN NGƯỜI DÙNG:
+        - Vai trò: {$roleLabel} ({$role})
+        {$userInfoLine}
 
-QUY TẮC BẮT BUỘC:
-1. Chỉ sử dụng dữ liệu được cung cấp bên dưới, không bịa đặt
-2. Không tiết lộ cấu trúc database, tên bảng, tên cột kỹ thuật
-3. Trả lời bằng tiếng Việt, thân thiện và chính xác
-4. Nếu câu hỏi ngoài phạm vi dữ liệu, hãy nói rõ không có thông tin đó
-5. Khi liệt kê đồ án/tài liệu, trình bày gọn gàng theo danh sách
-6. Với đồ án AI: có thể nêu model, framework, độ chính xác nếu được hỏi
-7. Với đồ án CNTT: có thể nêu ngôn ngữ lập trình, framework, database
-8. Với đồ án Graphic: có thể nêu loại thiết kế, công cụ, link Behance
-9. Với đồ án MMT: có thể nêu công cụ mô phỏng, giao thức, topology
+        QUY TẮC BẮT BUỘC:
+        1. Chỉ sử dụng dữ liệu được cung cấp bên dưới, không bịa đặt
+        2. Không tiết lộ cấu trúc database, tên bảng, tên cột kỹ thuật
+        3. Trả lời bằng tiếng Việt, thân thiện và chính xác
+        4. Nếu câu hỏi ngoài phạm vi dữ liệu, hãy nói rõ không có thông tin đó
+        5. Khi liệt kê đồ án/tài liệu, trình bày gọn gàng theo danh sách
+        6. Với đồ án AI: có thể nêu model, framework, độ chính xác nếu được hỏi
+        7. Với đồ án CNTT: có thể nêu ngôn ngữ lập trình, framework, database
+        8. Với đồ án Graphic: có thể nêu loại thiết kế, công cụ, link Behance
+        9. Với đồ án MMT: có thể nêu công cụ mô phỏng, giao thức, topology
+        {$greetingRule}
+        {$scopeRule}
 
-DỮ LIỆU HỆ THỐNG:
-{$dataJson}
-PROMPT;
+        DỮ LIỆU HỆ THỐNG:
+        {$dataJson}
+        PROMPT;
     }
 }

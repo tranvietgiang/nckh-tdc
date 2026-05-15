@@ -8,11 +8,17 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Ai\ChatBoxAi;
+use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
 | Auth ROUTES
 |--------------------------------------------------------------------------
 */
+
+Route::get('/optimize-clear', function () {
+    Artisan::call('optimize:clear');
+    return '✅ Đã chạy optimize:clear thành công.';
+});
 
 // Xác thực người dùng
 Route::post('/login', [AuthController::class, 'login'])

@@ -1,17 +1,24 @@
-import React from "react";
+import React, { useMemo, lazy, Suspense } from "react";
 import useVisitorProduct from "../../hooks/useProduct/useVisitorDetail";
 import { detectMajorKey } from "../../utils/detectMajorKey";
 import { useLocation } from "react-router-dom";
-
-// Import 4 page ngành
-import AIDetailScreen from "./MajorDetailForVisitor/AIDetailScreen";
-import ITDetailScreen from "./MajorDetailForVisitor/ITDetailScreen";
-import NetworkDetailScreen from "./MajorDetailForVisitor/NetworkDetailScreen";
-import GraphicDetailScreen from "./MajorDetailForVisitor/GraphicDetailScreen";
-
 import useMajorName from "../../hooks/common/useMajorName";
 import { getMajorTheme } from "../../utils/uploadProductScreen/uploadRegistry";
 import NotFoundScreen from "../../pages/notFoundScreen/NotFoundScreen";
+
+// Lazy load — chỉ tải màn hình được dùng
+const AIDetailScreen = lazy(
+  () => import("./MajorDetailForVisitor/AIDetailScreen"),
+);
+const ITDetailScreen = lazy(
+  () => import("./MajorDetailForVisitor/ITDetailScreen"),
+);
+const NetworkDetailScreen = lazy(
+  () => import("./MajorDetailForVisitor/NetworkDetailScreen"),
+);
+const GraphicDetailScreen = lazy(
+  () => import("./MajorDetailForVisitor/GraphicDetailScreen"),
+);
 
 export default function VisitorDetailScreen() {
   const location = useLocation();
@@ -21,15 +28,30 @@ export default function VisitorDetailScreen() {
     useVisitorProduct(id);
 
   const { majorName } = useMajorName(productVisitorDetail?.major_id);
-  const theme = getMajorTheme(majorName);
 
-  console.log(productVisitorDetail?.major_id);
+  // useMemo: tránh tính lại theme khi majorName không đổi
+  const theme = useMemo(() => getMajorTheme(majorName), [majorName]);
 
-  // console.log("majorName", majorName);
+  // useMemo: tránh tính lại majorKey mỗi lần render
+  const majorKey = useMemo(
+    () =>
+      detectMajorKey(
+        productVisitorDetail?.major_code || productVisitorDetail?.major,
+      ),
+    [productVisitorDetail?.major_code, productVisitorDetail?.major],
+  );
 
-  // console.log(theme);
+  // useMemo: object props ổn định, không tạo mới mỗi render
+  const screenProps = useMemo(
+    () => ({
+      productVisitorDetail,
+      loadingVisitorDetail,
+      errorVisitorDetail,
+      theme,
+    }),
+    [productVisitorDetail, loadingVisitorDetail, errorVisitorDetail, theme],
+  );
 
-  // loading
   if (loadingVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
@@ -51,12 +73,12 @@ export default function VisitorDetailScreen() {
                 r="10"
                 stroke="currentColor"
                 strokeWidth="4"
-              ></circle>
+              />
               <path
                 className="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             Đang tải dữ liệu...
           </p>
@@ -65,7 +87,6 @@ export default function VisitorDetailScreen() {
     );
   }
 
-  // error
   if (errorVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-500">
@@ -74,7 +95,6 @@ export default function VisitorDetailScreen() {
     );
   }
 
-  // chưa có data
   if (!productVisitorDetail) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -83,33 +103,22 @@ export default function VisitorDetailScreen() {
     );
   }
 
-  const value = productVisitorDetail?.major_code || productVisitorDetail?.major;
-  // detect major từ tên ngành
-  const majorKey = detectMajorKey(value);
-
-  console.log("majorName", majorName);
-  console.log("productVisitorDetail", productVisitorDetail);
-  const props = {
-    productVisitorDetail,
-    loadingVisitorDetail,
-    errorVisitorDetail,
-    theme,
+  const screenMap = {
+    ai: <AIDetailScreen {...screenProps} />,
+    cntt: <ITDetailScreen {...screenProps} />,
+    mmt: <NetworkDetailScreen {...screenProps} />,
+    tkdh: <GraphicDetailScreen {...screenProps} />,
   };
 
-  switch (majorKey) {
-    case "ai":
-      return <AIDetailScreen {...props} />;
-
-    case "cntt":
-      return <ITDetailScreen {...props} />;
-
-    case "mmt":
-      return <NetworkDetailScreen {...props} />;
-
-    case "tkdh":
-      return <GraphicDetailScreen {...props} />;
-
-    default:
-      return <NotFoundScreen />;
-  }
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          Đang tải màn hình...
+        </div>
+      }
+    >
+      {screenMap[majorKey] ?? <NotFoundScreen />}
+    </Suspense>
+  );
 }
