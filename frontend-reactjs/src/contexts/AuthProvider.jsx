@@ -53,8 +53,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await authApi.login(data);
 
-      if (!res || !res.token || !res.user) {
-        throw new Error("Sai tài khoản hoặc mật khẩu!");
+      if (!res?.success || !res?.token || !res?.user) {
+        throw new Error(res?.message || "Sai tài khoản hoặc mật khẩu!");
       }
 
       setToken(res.token);

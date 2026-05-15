@@ -25,7 +25,7 @@ Route::get('/optimize-clear', function () {
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware('throttle:5,1');
 
-Route::get('/me', [AuthController::class, 'me']); // trả user từ cookie
+Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 // đăng xuất
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->prefix('student')->group(function () {
     Route::post('/delete', [ProductController::class, 'deleteProductStudent']);
 });
 
-Route::middleware('auth:sanctum')->prefix('teacher')->group(function () {
+Route::middleware(['auth:sanctum', 'role:teacher,admin'])->prefix('teacher')->group(function () {
     Route::get('/product/{product_id}', [ProductController::class, 'productViewIdTeacher']);
     Route::post('/product/{product_id}/approve', [TeacherController::class, 'teacherApprove']);
     Route::post('/product/reject', [TeacherController::class, 'teacherReject']);

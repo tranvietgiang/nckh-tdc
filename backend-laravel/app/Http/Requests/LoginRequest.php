@@ -24,6 +24,7 @@ class LoginRequest extends FormRequest
         return [
             'username' => 'required|string',
             'password' => 'required|string',
+            'user_role' => 'required|string|in:student,lecturer,teacher,admin',
         ];
     }
 }
