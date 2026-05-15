@@ -1,76 +1,101 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import AdminScreen from "../pages/admin/AdminScreen";
-import StudentScreen from "../pages/student/StudentScreen";
-import UploadProductScreen from "../pages/uploadProductScreen/UploadProductScreen";
-import NotFoundScreen from "../pages/notFoundScreen/NotFoundScreen";
+import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import ProtectedRoute from "./protected.route";
 import { ROLE } from "../utils/constants";
-import TeacherProductDetailScreen from "../pages/productDetailScreen/TeacherProductDetailScreen";
-import TeacherScreen from "../pages/teacher/TeacherScreen";
-import ProductDetailScreen from "../pages/productDetailScreen/ProductDetailScreen";
-import ChatBoxAi from "../pages/chatBoxAi/ChatBoxAi";
+import NotFoundScreen from "../pages/notFoundScreen/NotFoundScreen";
 
+/* ================= LAZY LOAD PAGES ================= */
+const AdminScreen = lazy(() => import("../pages/admin/AdminScreen"));
+const StudentScreen = lazy(() => import("../pages/student/StudentScreen"));
+const TeacherScreen = lazy(() => import("../pages/teacher/TeacherScreen"));
+
+const UploadProductScreen = lazy(
+  () => import("../pages/uploadProductScreen/UploadProductScreen"),
+);
+
+const ProductDetailScreen = lazy(
+  () => import("../pages/productDetailScreen/ProductDetailScreen"),
+);
+
+const TeacherProductDetailScreen = lazy(
+  () => import("../pages/productDetailScreen/TeacherProductDetailScreen"),
+);
+
+/* ================= ROUTES ================= */
 function RoleRoutes() {
   return (
-    <Routes>
-      <Route
-        path="/nckh-admin"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.ADMIN]}>
-            <AdminScreen />
-          </ProtectedRoute>
-        }
-      />
+    <Suspense
+      fallback={
+        <div className="h-screen flex items-center justify-center text-gray-500">
+          Đang tải...
+        </div>
+      }
+    >
+      <Routes>
+        {/* ADMIN */}
+        <Route
+          path="/nckh-admin"
+          element={
+            <ProtectedRoute allowedRoles={[ROLE.ADMIN]}>
+              <AdminScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/nckh-student"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
-            <StudentScreen />
-            {/* <ChatBoxAi /> */}
-          </ProtectedRoute>
-        }
-      />
+        {/* STUDENT */}
+        <Route
+          path="/nckh-student"
+          element={
+            <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
+              <StudentScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/nckh-teacher"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.TEACHER]}>
-            <TeacherScreen />
-          </ProtectedRoute>
-        }
-      />
+        {/* TEACHER */}
+        <Route
+          path="/nckh-teacher"
+          element={
+            <ProtectedRoute allowedRoles={[ROLE.TEACHER]}>
+              <TeacherScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/upload-product"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
-            <UploadProductScreen />
-          </ProtectedRoute>
-        }
-      />
+        {/* UPLOAD */}
+        <Route
+          path="/upload-product"
+          element={
+            <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
+              <UploadProductScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/product-detail"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
-            <ProductDetailScreen />
-          </ProtectedRoute>
-        }
-      />
+        {/* PRODUCT DETAIL - STUDENT */}
+        <Route
+          path="/product-detail"
+          element={
+            <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
+              <ProductDetailScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/product-detail-teacher"
-        element={
-          <ProtectedRoute allowedRoles={[ROLE.TEACHER]}>
-            <TeacherProductDetailScreen />
-          </ProtectedRoute>
-        }
-      />
+        {/* PRODUCT DETAIL - TEACHER */}
+        <Route
+          path="/product-detail-teacher"
+          element={
+            <ProtectedRoute allowedRoles={[ROLE.TEACHER]}>
+              <TeacherProductDetailScreen />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* 404 Page - luôn đặt ở cuối cùng */}
-      <Route path="*" element={<NotFoundScreen />} />
-    </Routes>
+        {/* 404 */}
+        <Route path="*" element={<NotFoundScreen />} />
+      </Routes>
+    </Suspense>
   );
 }
 
