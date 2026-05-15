@@ -51,14 +51,5 @@ services:
     depends_on:
       - mysql
 
-  meilisearch:
-    image: getmeili/meilisearch:latest
-    container_name: project-meilisearch
-    environment:
-      - MEILI_MASTER_KEY=mysecret
-    ports:
-      - "7700:7700"
-    restart: always
-
 volumes:
   mysql_data:

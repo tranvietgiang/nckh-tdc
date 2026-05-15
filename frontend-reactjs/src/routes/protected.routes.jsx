@@ -8,6 +8,8 @@ import { ROLE } from "../utils/constants";
 import TeacherProductDetailScreen from "../pages/productDetailScreen/TeacherProductDetailScreen";
 import TeacherScreen from "../pages/teacher/TeacherScreen";
 import ProductDetailScreen from "../pages/productDetailScreen/ProductDetailScreen";
+import ChatBoxAi from "../pages/chatBoxAi/ChatBoxAi";
+
 function RoleRoutes() {
   return (
     <Routes>
@@ -25,6 +27,7 @@ function RoleRoutes() {
         element={
           <ProtectedRoute allowedRoles={[ROLE.STUDENT]}>
             <StudentScreen />
+            {/* <ChatBoxAi /> */}
           </ProtectedRoute>
         }
       />

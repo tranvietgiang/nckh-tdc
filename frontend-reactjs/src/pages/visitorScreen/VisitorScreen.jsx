@@ -446,7 +446,7 @@ export default function VisitorScreen() {
         )}
       </main>
 
-      <ChatBoxAi />
+      <ChatBoxAi user={null} />
 
       {/* FOOTER */}
       <footer className="bg-[#003087] text-white pt-10 pb-6">

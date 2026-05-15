@@ -18,13 +18,13 @@ const StudentScreen = () => {
   const navigate = useNavigate();
 
   const { user } = useContext(AuthContext);
-  // console.log(user);
   const { majorName } = useMajorName(user?.major_id);
-
   localStorage.setItem("majorName", majorName);
 
   const { products, loading, error } = useProductAll();
   const currentStudent = mapCurrentStudent(user, majorName);
+  const aiBox = JSON.parse(sessionStorage.getItem("auth_user"));
+  // console.log(user);
 
   const productData = products?.data;
   // console.log("productData", productData);
@@ -58,7 +58,7 @@ const StudentScreen = () => {
 
   if (loading) return <p className="p-6">Đang tải...</p>;
   if (error) return <p className="p-6 text-red-500">Có lỗi xảy ra</p>;
-
+  if (!user) return <p>Loading...</p>;
   return (
     <div className="min-h-screen bg-slate-50">
       <StudentHeader
@@ -86,7 +86,6 @@ const StudentScreen = () => {
             />
           ))}
         </div>
-
         {filteredProducts.length === 0 && (
           <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-slate-200">
             <svg
@@ -123,8 +122,9 @@ const StudentScreen = () => {
             </button>
           </div>
         )}
+
+        {aiBox && <ChatBoxAi user={aiBox} />}
       </div>
-      <ChatBoxAi idUser={user?.user_id} />
     </div>
   );
 };

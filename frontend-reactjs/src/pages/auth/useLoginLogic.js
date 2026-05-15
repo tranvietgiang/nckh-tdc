@@ -1,13 +1,11 @@
 // useLoginLogic.js
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { ROLE } from "../../utils/constants";
 import { toast } from "react-toastify";
 import { validateLogin } from "./validateLogin";
 
 export const useLoginLogic = () => {
-  const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -52,9 +50,29 @@ export const useLoginLogic = () => {
 
       toast.dismiss();
 
-      if (res.user.role === ROLE.STUDENT) navigate("/nckh-student");
-      else if (res.user.role === ROLE.TEACHER) navigate("/nckh-teacher");
-      else if (res.user.role === ROLE.ADMIN) navigate("/nckh-admin");
+      // Kiểm tra role chọn vs role thực tế
+      const actualRole = res.user.role;
+
+      if (userRole === "student" && actualRole !== ROLE.STUDENT) {
+        toast.error("Tài khoản này không phải sinh viên!");
+        setLoading(false);
+        return;
+      }
+
+      if (userRole === "lecturer" && actualRole === ROLE.STUDENT) {
+        toast.error("Tài khoản này không phải giảng viên!");
+        setLoading(false);
+        return;
+      }
+
+      // Điều hướng theo role thực tế
+      if (actualRole === ROLE.STUDENT) {
+        window.location.href = "/nckh-student";
+      } else if (actualRole === ROLE.TEACHER) {
+        window.location.href = "/nckh-teacher";
+      } else if (actualRole === ROLE.ADMIN) {
+        window.location.href = "/nckh-admin";
+      }
     } catch (error) {
       toast.dismiss();
 
