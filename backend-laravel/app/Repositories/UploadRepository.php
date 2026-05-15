@@ -9,7 +9,7 @@ use App\Models\ProductTag;
 use App\Models\User;
 use App\Repositories\MajorRepository;
 use Carbon\Carbon;
-use App\Http\common\normalizeMajorCode;
+use App\Http\Common\NormalizeMajorCode;
 use App\Models\ProductAi;
 use App\Models\ProductCNTT;
 use App\Models\ProductGraphic;
@@ -23,7 +23,7 @@ class UploadRepository extends BaseRepository
 
     public function __construct(
         protected MajorRepository $major_repository,
-        protected normalizeMajorCode $normalizeMajorCode
+        protected NormalizeMajorCode $normalizeMajorCode
     ) {}
 
     public function countPublishedProducts(): ?int
