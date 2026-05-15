@@ -13,7 +13,7 @@ const AIDetailScreen = ({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("model");
   const [isLiked, setIsLiked] = useState(false);
-  // ✅ Khởi tạo trực tiếp, không cần useEffect
+
   const [likeCount, setLikeCount] = useState(productVisitorDetail?.likes || 0);
   const { openViewer, ImageViewerModal } = useImageViewer();
 
