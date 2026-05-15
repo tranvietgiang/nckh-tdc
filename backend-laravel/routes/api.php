@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Ai\ChatBoxAi;
+use App\Http\Ai\SearchAi;
 use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +106,8 @@ Route::prefix('visitor')->group(function () {
 */
 
 Route::post('/ai/send', [ChatBoxAi::class, 'chat']);
+
+Route::post('/ai/search', [SearchAi::class, 'searchAi']);
 
 /*
 |--------------------------------------------------------------------------

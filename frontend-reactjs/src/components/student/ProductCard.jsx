@@ -48,6 +48,7 @@ const ProductCard = ({
   onViewDetail,
   onEdit,
   onDelete,
+  index,
 }) => {
   const statusStyle = getStatusStyle(product.status);
 
@@ -59,6 +60,14 @@ const ProductCard = ({
         onClick={() => onViewDetail(product.product_id)}
         className="relative h-44 cursor-pointer overflow-hidden bg-slate-100"
       >
+        {index && (
+          <div className="absolute top-3 left-3 z-10">
+            <span className="px-2.5 py-1 text-xs font-semibold rounded-md bg-white/95 text-slate-700 shadow-sm">
+              #{index}
+            </span>
+          </div>
+        )}
+
         {product.thumbnail ? (
           <img
             src={product.thumbnail}

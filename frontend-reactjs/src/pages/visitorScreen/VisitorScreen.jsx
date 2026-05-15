@@ -1,10 +1,19 @@
-import React, { useMemo, useState, useCallback, Suspense } from "react";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  Suspense,
+} from "react";
 
 import { Icons } from "../../components/common/Icon";
 import { useNavigate } from "react-router-dom";
 import useMajorAll from "../../hooks/common/useMajorAll";
 import useVisitorProduct from "../../hooks/useProduct/useVisitorProduct";
 import ChatBoxAi from "../../pages/chatBoxAi/ChatBoxAi";
+import useSearchAi from "../../hooks/ai/useSearchAi";
+import useDebounce from "../../hooks/common/useDebounce";
 const HeartIcon = ({ filled = false }) => (
   <svg
     className={`w-4 h-4 ${
@@ -30,6 +39,63 @@ const majorIcons = {
   "Thiết kế đồ họa": "🎨",
 };
 
+const normalizeAiProduct = (product) => ({
+  id: product.product_id,
+  title: product.title,
+  cate_id: product.cate_id,
+  description: product.description,
+  thumbnail: product.thumbnail,
+  year: product.submitted_at
+    ? new Date(product.submitted_at).getFullYear()
+    : null,
+  student: product.student || "Ẩn danh",
+  studentId: product.studentId || null,
+  major_id: product.major_id,
+  major: product.major_name,
+  type: product.category_name,
+  views: Number(product.views || 0),
+  likes: Number(product.likes || 0),
+  advisor: product.advisor || null,
+});
+
+const getRoleSearchConfig = (role, majorName) => {
+  if (role === "student") {
+    return {
+      placeholder: majorName
+        ? `Tìm đồ án ${majorName}: AI Python, web Laravel, tài liệu tham khảo...`
+        : "Tìm đồ án trong ngành của bạn...",
+      suggestions: [
+        `Đồ án mới nhất trong ngành ${majorName || "của tôi"}`,
+        `Đồ án nhiều lượt xem trong ngành ${majorName || "của tôi"}`,
+        `Tài liệu tham khảo phù hợp ngành ${majorName || "của tôi"}`,
+      ],
+    };
+  }
+
+  if (role === "teacher") {
+    return {
+      placeholder: majorName
+        ? `Tìm đồ án ${majorName}: chờ duyệt, đã duyệt, nhiều lượt xem...`
+        : "Tìm đồ án trong ngành phụ trách...",
+      suggestions: [
+        `Đồ án chờ duyệt trong ngành ${majorName || "phụ trách"}`,
+        `Đồ án đã duyệt nhiều lượt xem ngành ${majorName || "phụ trách"}`,
+        `Đồ án cần nhận xét trong ngành ${majorName || "phụ trách"}`,
+      ],
+    };
+  }
+
+  return {
+    placeholder:
+      "Tìm đồ án đã duyệt: AI Python, web Laravel, thiết kế Figma...",
+    suggestions: [
+      "Đồ án đã duyệt nhiều lượt xem",
+      "Đồ án AI dùng Python",
+      "Đồ án thiết kế bằng Figma",
+    ],
+  };
+};
+
 export default function VisitorScreen() {
   const [likedProducts, setLikedProducts] = useState({});
   const [selectedMajor, setSelectedMajor] = useState("all");
@@ -46,6 +112,85 @@ export default function VisitorScreen() {
 
   const { majorAll, loadingMajorAll } = useMajorAll();
   const { productVisitor, loadingVisitor, errorVisitor } = useVisitorProduct();
+  const { searchAi, clearSearch, searchResult, searchError, loadingSearchAi } =
+    useSearchAi();
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 700);
+  const lastSearchRef = useRef("");
+
+  const currentUser = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem("auth_user"));
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const currentMajorName = useMemo(() => {
+    if (!currentUser?.major_id) return "";
+
+    return (
+      majorAll?.find(
+        (major) => String(major.major_id) === String(currentUser.major_id),
+      )?.major_name || ""
+    );
+  }, [currentUser, majorAll]);
+
+  const searchConfig = getRoleSearchConfig(
+    currentUser?.role ?? "guest",
+    currentMajorName,
+  );
+
+  const productsSource = useMemo(() => {
+    if (searchResult) {
+      return (searchResult.products ?? []).map(normalizeAiProduct);
+    }
+
+    return productVisitor ?? [];
+  }, [productVisitor, searchResult]);
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    const keyword = searchTerm.trim();
+    if (!keyword || lastSearchRef.current === keyword) return;
+
+    lastSearchRef.current = keyword;
+    setCurrentPage(1);
+    await searchAi(keyword);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    lastSearchRef.current = "";
+    clearSearch();
+    setCurrentPage(1);
+  };
+
+  const handleSuggestionSearch = async (suggestion) => {
+    setSearchTerm(suggestion);
+    if (lastSearchRef.current === suggestion) return;
+
+    lastSearchRef.current = suggestion;
+    setCurrentPage(1);
+    await searchAi(suggestion);
+  };
+
+  useEffect(() => {
+    const keyword = debouncedSearchTerm.trim();
+
+    if (!keyword) {
+      if (lastSearchRef.current) {
+        lastSearchRef.current = "";
+        clearSearch();
+      }
+      return;
+    }
+
+    if (keyword.length < 2 || lastSearchRef.current === keyword) return;
+
+    lastSearchRef.current = keyword;
+    searchAi(keyword);
+  }, [debouncedSearchTerm, clearSearch, searchAi]);
 
   const handleViewDetail = useCallback(
     (id) => {
@@ -62,7 +207,7 @@ export default function VisitorScreen() {
   }, []);
 
   const filteredProducts = useMemo(() => {
-    const base = productVisitor ?? [];
+    const base = productsSource;
 
     return base
       .filter((p) => {
@@ -73,8 +218,7 @@ export default function VisitorScreen() {
         return matchMajor;
       })
       .filter((p) => {
-        // 🔥 thêm search luôn (bạn đang giữ UI nhưng chưa dùng)
-        if (!searchTerm) return true;
+        if (!searchTerm || searchResult) return true;
         return p.title?.toLowerCase().includes(searchTerm.toLowerCase());
       })
       .sort((a, b) => {
@@ -96,7 +240,14 @@ export default function VisitorScreen() {
 
         return 0;
       });
-  }, [productVisitor, selectedMajor, sortBy, likedProducts, searchTerm]);
+  }, [
+    productsSource,
+    selectedMajor,
+    sortBy,
+    likedProducts,
+    searchTerm,
+    searchResult,
+  ]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
 
@@ -220,17 +371,31 @@ export default function VisitorScreen() {
 
         {/* FILTER */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20">
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-2 md:p-3 flex flex-col md:flex-row gap-3">
-            {/* GIỮ UI SEARCH */}
+          <form
+            onSubmit={handleSearchSubmit}
+            className="bg-white rounded-lg shadow-md border border-gray-200 p-2 md:p-3 flex flex-col md:flex-row gap-3"
+          >
             <div className="flex-1 flex items-center bg-gray-50 rounded-md px-4 py-2.5 gap-2">
               <Icons.Search />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo tên sản phẩm..."
+                placeholder={searchConfig.placeholder}
                 className="flex-1 bg-transparent outline-none text-gray-700 text-sm"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="text-gray-400 hover:text-gray-700 text-sm"
+                >
+                  Xóa
+                </button>
+              )}
             </div>
 
             <select
@@ -266,6 +431,52 @@ export default function VisitorScreen() {
               <option value="most_viewed">👁️ Xem nhiều nhất</option>
               <option value="most_liked">❤️ Yêu thích nhất</option>
             </select>
+
+            <button
+              type="submit"
+              disabled={loadingSearchAi || !searchTerm.trim()}
+              className="px-5 py-2.5 bg-[#003087] text-white rounded-md font-semibold text-sm hover:bg-[#00266b] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingSearchAi ? "Đang tìm..." : "Tìm AI"}
+            </button>
+          </form>
+
+          {searchError && (
+            <p className="mt-3 text-sm text-red-600 bg-red-50 border border-red-100 rounded-md px-4 py-2">
+              {searchError}
+            </p>
+          )}
+
+          {searchResult && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-gray-600">
+              <p>
+                AI tìm thấy{" "}
+                <span className="font-semibold text-[#003087]">
+                  {searchResult.count ?? filteredProducts.length}
+                </span>{" "}
+                sản phẩm phù hợp
+              </p>
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="text-[#003087] font-medium hover:underline"
+              >
+                Quay lại danh sách ban đầu
+              </button>
+            </div>
+          )}
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {searchConfig.suggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => handleSuggestionSearch(suggestion)}
+                className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-[#003087]/30 hover:bg-blue-50 hover:text-[#003087] transition"
+              >
+                {suggestion}
+              </button>
+            ))}
           </div>
         </section>
 
@@ -302,8 +513,10 @@ export default function VisitorScreen() {
         </section>
 
         {/* PRODUCTS */}
-        {loadingVisitor ? (
-          <p className="p-6 text-center">Đang tải...</p>
+        {loadingVisitor || loadingSearchAi ? (
+          <p className="p-6 text-center">
+            {loadingSearchAi ? "AI đang tìm kiếm..." : "Đang tải..."}
+          </p>
         ) : errorVisitor ? (
           <p className="p-6 text-center text-red-500">Có lỗi xảy ra</p>
         ) : (

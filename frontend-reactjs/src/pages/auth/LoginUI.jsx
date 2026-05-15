@@ -1,5 +1,6 @@
 // LoginUI.jsx
 import { Link } from "react-router-dom";
+import logoTdc from "../../assets/logo-tdc-orginal.webp";
 import {
   Eye,
   EyeOff,
@@ -105,11 +106,7 @@ export const LoginUI = ({
                 className="group inline-flex items-center gap-3"
               >
                 <div className="bg-white/10 backdrop-blur-sm w-12 h-12 rounded-xl flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
-                  <img
-                    src="/Images/logo-tdc-orginal.webp"
-                    alt="TDC"
-                    className="h-8 w-auto"
-                  />
+                  <img src={logoTdc} alt="TDC" className="h-8 w-auto" />
                 </div>
                 <div>
                   <p className="text-white font-semibold text-sm">
