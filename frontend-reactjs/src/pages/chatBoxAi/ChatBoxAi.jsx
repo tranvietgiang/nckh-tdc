@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import "./ChatBoxAi.css";
 import useChatBoxAi from "../../hooks/ai/useChatBoxAi";
 import { useNavigate } from "react-router-dom";
 import { ROLE } from "../../utils/constants";
@@ -14,6 +15,7 @@ export default function ChatBoxAi({ user }) {
 
   const userId = user?.user_id ?? "guest";
   const userName = user?.name;
+  const userRole = user?.role ?? "guest";
 
   const STORAGE_KEY = userId ? `chat_${userId}` : null;
   const EXP_TIME = 10 * 60 * 1000;
@@ -142,17 +144,19 @@ export default function ChatBoxAi({ user }) {
     if (e.key === "Enter") handleSend();
   };
 
-  console.log(user);
-  const handleViewDetail = (id, user) => {
+  const handleViewDetail = (id) => {
+    if (!userRole) return;
+
     let url = "/visitor-detail";
 
-    if (user?.role == ROLE.TEACHER) {
+    if (userRole == ROLE.TEACHER) {
       url = "/product-detail-teacher";
-    } else if (user?.role == ROLE.STUDENT) {
+    } else if (userRole == ROLE.STUDENT) {
       url = "/product-detail";
+    } else if (userRole == "guest") {
+      url = "/visitor-detail";
     }
 
-    console.log(url);
     navigate(url, {
       state: { productId: id },
     });
@@ -347,35 +351,6 @@ export default function ChatBoxAi({ user }) {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes bounce {
-          0%,
-          60%,
-          100% {
-            transform: translateY(0);
-          }
-          30% {
-            transform: translateY(-10px);
-          }
-        }
-        .animate-slide-up {
-          animation: slideUp 0.3s ease-out;
-        }
-        .animate-bounce {
-          animation: bounce 1.4s infinite ease-in-out;
-        }
-      `}</style>
     </>
   );
 }
