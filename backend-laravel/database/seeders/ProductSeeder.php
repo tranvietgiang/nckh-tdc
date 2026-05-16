@@ -668,6 +668,10 @@ class ProductSeeder extends Seeder
         $submittedAt = now()->subDays(rand(10, 60));
         $approvedAt = (clone $submittedAt)->addDays(rand(1, 14));
 
+        $status = $this->getRandomStatus();
+
+        $approve_by = ($status === 'pending') ? null : $teacher->user_id;
+
         return Product::create([
             'title' => $title,
             'description' => $description,
@@ -676,7 +680,7 @@ class ProductSeeder extends Seeder
             'user_id' => $student->user_id,
             'major_id' => $majorId,
             'cate_id' => Category::inRandomOrder()->value('cate_id'),
-            'approved_by' => $teacher->user_id,
+            'approved_by' =>  $approve_by,
             'submitted_at' => $submittedAt,
             'approved_at' => $approvedAt,
             'github_link' => 'https://demo.tdc.edu.vn/github-link',
