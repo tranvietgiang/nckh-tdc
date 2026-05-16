@@ -143,32 +143,45 @@ class ContentModeration
         }
     }
 
-    private function buildPrompt(array $payload): string
+    private function buildPrompt(array $payload, string $role = 'student'): string
     {
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
         return <<<PROMPT
-        You are a content moderation system for a student scientific research platform.
+        You are an AI content moderation system for a student scientific research platform.
 
-        Analyze the product image and content.
+        User role: {$role}
 
-        Check:
-        - Whether the image is related to the product content
-        - Whether it is appropriate for an educational environment
-        - Whether it contains 18+, nudity, or sensitive content
-        - Whether it contains violence, gore, or dangerous content
-        - Whether it is spam, meme, or unserious content
-        - Whether it matches the selected major
-        - Whether it contains visible watermarks, obvious stock-photo marks, or signs of stolen content
+        ROLE RULES:
+        - student: strict moderation, block sensitive or unsafe content immediately
+        - teacher: allow more flexibility but still block NSFW, violence, illegal, stolen content
+
+        Your tasks:
+        - Analyze product image and content
+        - Check educational suitability
+        - Check NSFW / nudity / sexual content
+        - Check violence / dangerous content
+        - Check spam / meme / low quality content
+        - Check major relevance
+        - Check watermark or stolen content
 
         Product data:
         {$json}
 
-        Return only JSON in this exact shape:
+        IMPORTANT RULES:
+        - If role = student → stricter scoring (lower tolerance)
+        - If role = teacher → allow borderline educational content
+        - Always return valid JSON only
+        - No explanation outside JSON
+
+        Return format:
+
         {
         "approved": true,
-        "reason": "Vietnamese explanation for the teacher",
+        "score": 0-100,
+        "reason": "short explanation in Vietnamese for teacher",
         "violations": [],
+        "role": "{$role}",
         "checks": {
             "image_related": true,
             "educational": true,
@@ -180,7 +193,10 @@ class ContentModeration
         }
         }
 
-        Set approved to false if any serious violation is detected.
+        Reject (approved=false) if:
+        - NSFW / sexual content detected
+        - violence/gore detected
+        - stolen/watermark heavy content (for student always reject)
         PROMPT;
     }
 

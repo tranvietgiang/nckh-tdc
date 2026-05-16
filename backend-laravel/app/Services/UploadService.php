@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Common\NormalizeMajorCode;
+use App\Http\Ai\ContentModeration;
 
 class UploadService extends BaseRepository
 {
     public function __construct(
         protected UploadRepository $upload_repository,
         protected CheckImage $Check_ai_image,
-        protected NormalizeMajorCode $normalizeMajorCode
+        protected NormalizeMajorCode $normalizeMajorCode,
+        protected ContentModeration $contentModeration
     ) {}
 
 
@@ -37,7 +39,7 @@ class UploadService extends BaseRepository
 
             foreach ($data['images'] as $index => $image) {
 
-                $result = $this->Check_ai_image->checkNSFW($image);
+                $result = $this->contentModeration->moderateProduct($image);
 
                 Log::info([
                     'index' => $index,
@@ -51,7 +53,6 @@ class UploadService extends BaseRepository
 
                     return [
                         'error' => true,
-                        // 'message' => 'Ảnh thứ ' . ($index + 1) . ' vi phạm nội dung',
                         'message' => 'Ảnh vi phạm nội dung',
                         'detail' => $result
                     ];

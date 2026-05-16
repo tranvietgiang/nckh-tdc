@@ -9,7 +9,7 @@ use App\Repositories\UserRepository;
 use App\Repositories\ReviewRepository;
 use Illuminate\Support\Collection;
 use App\Http\Ai\ContentModeration;
-
+use App\Models\Product;
 use App\Repositories\common\CommonRepository as RepositoriesCommonRepository;
 use Carbon\Carbon;
 
@@ -119,6 +119,11 @@ class TeacherService extends BaseRepository
                 'teacher_id' => $userId,
                 'comment' => $feedback
             ]);
+
+            $now = Product::where('product_id', $product_id)->first();
+            $now->created_at = now();
+
+            $now->save();
         }
 
         return [
