@@ -8,8 +8,11 @@ use App\Repositories\TeacherRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\ReviewRepository;
 use Illuminate\Support\Collection;
+use App\Http\Ai\ContentModeration;
+
 use App\Repositories\common\CommonRepository as RepositoriesCommonRepository;
 use Carbon\Carbon;
+
 
 class TeacherService extends BaseRepository
 {
@@ -19,8 +22,10 @@ class TeacherService extends BaseRepository
         protected UserRepository $user_repository,
         protected RepositoriesCommonRepository $common_repository,
         protected ReviewRepository $review_repo,
-        protected ContentModerationService $contentModerationService
+        protected ContentModeration $contentModerationService
     ) {}
+
+
 
     public function teacherStatistic(): ?array
     {
