@@ -5,14 +5,18 @@ export const useHandleApprove = (
   navigate,
   teacherApprove,
 ) => {
-  return (productId) => {
+  return (productId, moderationPayload = {}) => {
     confirmToast({
       message: "Bạn có chắc chắn muốn duyệt sản phẩm này?",
       onConfirm: async () => {
         setIsSubmitting(true);
 
         try {
-          await teacherApprove(productId);
+          const result = await teacherApprove(productId, moderationPayload);
+
+          if (!result?.result) {
+            return;
+          }
 
           toast.success("Duyệt sản phẩm thành công", {
             autoClose: 1500,
@@ -21,7 +25,7 @@ export const useHandleApprove = (
             },
           });
         } catch (err) {
-          toast.error("❌ Có lỗi xảy ra, vui lòng thử lại!");
+          toast.error("Có lỗi xảy ra, vui lòng thử lại!");
           console.error(err);
         } finally {
           setIsSubmitting(false);

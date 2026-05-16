@@ -80,7 +80,12 @@ const TeacherProductDetailScreen = () => {
   const handleApprove = async () => {
     setIsSubmitting(true);
     try {
-      await handleApproveOriginal(id);
+      await handleApproveOriginal(id, {
+        title: productData?.title,
+        description: productData?.description,
+        major: productData?.major_name || productData?.major_code,
+        image: productData?.thumbnail || images?.[0]?.image_url,
+      });
     } catch (err) {
       console.error(err);
     } finally {
