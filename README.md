@@ -14,6 +14,7 @@ Trường Cao đẳng Công nghệ Thủ Đức (TDC)
 </div>
 
 ---
+website: https://tvg.adtech.pro.vn/nckh-visitor
 
 ## 📌 Giới thiệu
 
@@ -95,30 +96,54 @@ Môi trường: Docker Compose · Vagrant + VirtualBox
 ## 📁 Cấu trúc project
 
 ```bash
-.
-├── backend/                  # Laravel 12 API
+├── backend-laravel/                 # Laravel 12 API
 │   ├── app/
-│   │   ├── Http/Controllers/ # API Controllers
-│   │   ├── Models/           # Eloquent Models
-│   │   └── Services/         # AI Service (Claude API)
+│   │   ├── Http/
+│   │   │   ├── Ai/                  # AI xử lý nội dung / vision
+│   │   │   ├── Common/              # Helpers / constants / utils
+│   │   │   ├── Controllers/         # API Controllers
+│   │   │   ├── Middleware/          # Middleware
+│   │   │   ├── Requests/            # Validate Requests
+│   │   │   └── Resources/           # API Resources
+│   │   │
+│   │   ├── Models/                  # Eloquent Models
+│   │   ├── Providers/               # Service Providers
+│   │   ├── Repositories/            # Database layer
+│   │   └── Services/                # Business Logic Services
+│   │
 │   ├── database/
 │   │   ├── migrations/
 │   │   └── seeders/
+│   │
 │   └── routes/
 │       └── api.php
 │
-├── client/                   # ReactJS Frontend
+├── frontend-reactjs/                # ReactJS Frontend 19 UI 
 │   ├── src/
-│   │   ├── pages/
-│   │   │   ├── admin/        # Giao diện quản trị
-│   │   │   ├── student/      # Giao diện sinh viên
-│   │   │   └── teacher/      # Giao diện giảng viên
-│   │   ├── components/       # Shared components
-│   │   └── services/         # API calls
+│   │   ├── api/                     # Axios / API configs
+│   │   ├── assets/                  # Images / icons / styles
+│   │   ├── components/              # Shared components
+│   │   ├── contexts/                # React contexts
+│   │   ├── hooks/                   # Custom hooks
+│   │   ├── layouts/                 # Layout components
+│   │   ├── pages/                   # Application pages
+│   │   │   ├── admin/               # Admin pages
+│   │   │   ├── student/             # Student pages
+│   │   │   └── teacher/             # Teacher pages
+│   │   │
+│   │   ├── routes/                  # React Router config
+│   │   ├── shared/                  # Shared constants / configs
+│   │   ├── utils/                   # Utility functions
+│   │   │
+│   │   ├── App.jsx                  # Root component
+│   │   ├── App.css                  # Global app styles
+│   │   ├── index.css                # Base styles
+│   │   └── main.jsx                 # Entry point
+│   │
 │   └── public/
 │
-├── docker-compose.yml        # Docker services config
-├── Vagrantfile               # Vagrant VM config
+├── docker-compose.yml               # Docker services config
+├── Vagrantfile                      # Vagrant VM config
 └── README.md
 ```
 
