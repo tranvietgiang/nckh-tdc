@@ -326,9 +326,7 @@ const TeacherScreen = () => {
       )}
 
       <button
-        onClick={() =>
-          setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-        }
+        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
         disabled={currentPage === totalPages}
         className="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 disabled:opacity-50"
       >
@@ -483,7 +481,7 @@ const TeacherScreen = () => {
                 {pendingProducts.length === 0 ? (
                   <EmptyState message="Không có sản phẩm chờ duyệt" />
                 ) : (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {paginatedProducts.map((product, idx) => (
                       <ProductCard
                         key={product.product_id}

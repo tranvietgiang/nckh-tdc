@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Http\Ai;
 
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class ContentModerationService
+class ContentModeration
 {
     public function moderateProduct(Product $product, array $frontendContext = []): array
     {
@@ -50,26 +50,25 @@ class ContentModerationService
         }
 
         try {
+            $messages = [
+                [
+                    'role' => 'system',
+                    'content' => 'You are a strict content moderation system for a student scientific research platform. Return only valid JSON.',
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $content,
+                ],
+            ];
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json',
-            ])->timeout(45)->post('https://api.openai.com/v1/responses', [
-                'model' => env('OPENAI_VISION_MODEL', 'gpt-4.1-mini'),
-                'input' => [
-                    [
-                        'role' => 'system',
-                        'content' => [
-                            [
-                                'type' => 'input_text',
-                                'text' => 'You are a strict content moderation system for a student scientific research platform. Return only valid JSON.',
-                            ],
-                        ],
-                    ],
-                    [
-                        'role' => 'user',
-                        'content' => $content,
-                    ],
-                ],
+            ])->timeout(45)->post('https://api.openai.com/v1/chat/completions', [
+                'model' => env('OPENAI_VISION_MODEL', 'gpt-4o'),
+                'messages' => $messages,
+                'max_tokens' => 1000,
+                'temperature' => 0.3,
             ]);
 
             if ($response->failed()) {
@@ -82,9 +81,7 @@ class ContentModerationService
                 return $this->blocked('Không thể kết nối AI kiểm duyệt lúc này, vui lòng thử lại.');
             }
 
-            $text = data_get($response->json(), 'output.0.content.0.text')
-                ?? data_get($response->json(), 'output_text')
-                ?? '';
+            $text = data_get($response->json(), 'choices.0.message.content') ?? '';
 
             $result = $this->parseJson($text);
 
