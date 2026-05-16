@@ -18,7 +18,8 @@ class TeacherService extends BaseRepository
         protected ProductRepository $product_repo,
         protected UserRepository $user_repository,
         protected RepositoriesCommonRepository $common_repository,
-        protected ReviewRepository $review_repo
+        protected ReviewRepository $review_repo,
+        protected ContentModerationService $contentModerationService
     ) {}
 
     public function teacherStatistic(): ?array
@@ -51,7 +52,7 @@ class TeacherService extends BaseRepository
         ]);
     }
 
-    public function updateStatus($product_id, $status, $feedback = null): array
+    public function updateStatus($product_id, $status, $feedback = null, array $moderationContext = []): array
     {
         $productId = (int) $product_id;
         $userId = $this->getCurrentUserId();
@@ -73,6 +74,21 @@ class TeacherService extends BaseRepository
                 'result' => false,
                 'message' => 'Sản phẩm không chờ duyệt!'
             ];
+        }
+
+        if ($status === 'approved') {
+            $moderation = $this->contentModerationService->moderateProduct($product, $moderationContext);
+
+            if (!$moderation['approved']) {
+                return [
+                    'result' => false,
+                    'blocked_by_ai' => true,
+                    'message' => 'AI đã chặn duyệt sản phẩm: ' . $moderation['reason'],
+                    'reason' => $moderation['reason'],
+                    'violations' => $moderation['violations'] ?? [],
+                    'moderation' => $moderation,
+                ];
+            }
         }
 
         // 👉 xử lý theo status

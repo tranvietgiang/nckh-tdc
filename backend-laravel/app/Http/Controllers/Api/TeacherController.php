@@ -51,14 +51,20 @@ class TeacherController extends Controller
         ]);
     }
 
-    public function teacherApprove($product_id)
+    public function teacherApprove(Request $request, $product_id)
     {
         $status = 'approved';
         try {
-            $teacher_approve = $this->teacherService->updateStatus($product_id, $status);
+            $teacher_approve = $this->teacherService->updateStatus(
+                $product_id,
+                $status,
+                null,
+                $request->only(['title', 'description', 'major', 'image', 'thumbnail'])
+            );
 
             return response()->json(
-                $teacher_approve
+                $teacher_approve,
+                ($teacher_approve['blocked_by_ai'] ?? false) ? 422 : 200
             );
         } catch (\Exception $e) {
             return response()->json([
