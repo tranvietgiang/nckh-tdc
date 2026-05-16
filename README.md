@@ -34,11 +34,11 @@ Hiện tại, sản phẩm của sinh viên Khoa CNTT chưa được lưu trữ 
 | Thành phần | Công nghệ | Phiên bản |
 |---|---|---|
 | Backend API | Laravel | 12.x |
-| Frontend | ReactJS | 18.x |
-| Database | MySQL | 8.0 |
-| Container | Docker + Docker Compose | latest |
+| Frontend | ReactJS | 19.x |
+| Database | MySQL | 8.2 |
+| Container | Docker + Docker Compose ver3 | latest |
 | Môi trường ảo | Vagrant + VirtualBox | – |
-| AI Integration | Anthropic Claude API | claude-sonnet |
+| AI Integration |
 
 ---
 
@@ -169,15 +169,16 @@ docker-compose exec backend php artisan migrate --seed
 
 | Service | URL |
 |---|---|
-| Frontend (ReactJS) | http://localhost:3000 |
-| Backend API | http://localhost:8000/api |
-| phpMyAdmin | http://localhost:8080 |
+| Frontend (ReactJS) | http://192.168.33.11:5173 |
+| Backend API | http://192.168.33.11:8000/api |
+| phpMyAdmin | http://192.168.33.11:8080 |
 
 ### Tùy chọn: Dùng Vagrant
 
 ```bash
 vagrant up
 vagrant ssh
+cd /vagrant
 ```
 
 ---
