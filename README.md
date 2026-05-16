@@ -6,7 +6,7 @@
 ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![React](https://img.shields.io/badge/ReactJS-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![MySQL](https://img.shields.io/badge/MySQL-8.2-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Compose-ver3.0-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-ver-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 **Đề tài nghiên cứu khoa học – Khoa Công nghệ Thông tin**  
 Trường Cao đẳng Công nghệ Thủ Đức (TDC)
