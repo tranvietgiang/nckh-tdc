@@ -38,7 +38,7 @@ Hiện tại, sản phẩm của sinh viên Khoa CNTT chưa được lưu trữ 
 | Database | MySQL | 8.2 |
 | Container | Docker + Docker Compose ver3 | latest |
 | Môi trường ảo | Vagrant + VirtualBox | – |
-| AI Integration |
+| AI Integration | gpt-4.1-mini |
 
 ---
 
