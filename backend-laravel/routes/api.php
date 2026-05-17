@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Ai\ChatBoxAi;
 use App\Http\Ai\SearchAi;
+use App\Http\Ai\CompareAi;
 use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::get('/major/{id}', [MajorController::class, 'majorName']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/product/{id}', [ProductController::class, 'productViewId']);
     Route::get('/products', [ProductController::class, 'productAll']);
+    Route::get('/product/{id}/matching-ai', [ProductController::class, 'getMatchingAiProducts']);
 });
 
 Route::middleware('auth:sanctum')->prefix('student')->group(function () {
@@ -106,8 +108,8 @@ Route::prefix('visitor')->group(function () {
 */
 
 Route::post('/ai/send', [ChatBoxAi::class, 'chat']);
-
 Route::post('/ai/search', [SearchAi::class, 'searchAi']);
+Route::middleware('auth:sanctum')->get('/ai/compare/{productId}', [CompareAi::class, 'compareProduct']);
 
 /*
 |--------------------------------------------------------------------------

@@ -12,7 +12,7 @@ import { getStatusText } from "../../components/common/getStatusText";
 import { formatDate } from "../../utils/formatDate";
 import { STATUS } from "../../utils/constants";
 import ChatBoxAi from "../ChatBoxAi/ChatBoxAi";
-import SearchAi from "../search/SearchAi";
+import SearchAi from "../ai/SearchAi";
 // ========== Extracted components ==========
 
 const ProductCard = React.memo(
